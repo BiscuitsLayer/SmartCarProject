@@ -1,0 +1,17 @@
+[submodule "include/OOGL"]
+	path = include/OOGL
+	url = https://github.com/BiscuitsLayer/OOGL.git
+
+[submodule "include/glm"]
+	path = include/glm
+	url = https://github.com/g-truc/glm.git
+
+# [submodule "include/stb"]
+# 	path = include/stb
+# 	url = https://github.com/nothings/stb.git
+
+# RT Example
+# [submodule "include/raytracing-opengl"]
+# 	path = include/raytracing-opengl
+# 	url = https://github.com/engilas/raytracing-opengl.git
+

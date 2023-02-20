@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(SmartCarProject)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/tools/cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_INCLUDE_PATH "${CMAKE_SOURCE_DIR}/src")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
@@ -11,7 +11,33 @@ file(GLOB SRC "src/*.cpp")
 add_library(libsmartcar ${SRC})
 target_include_directories(libsmartcar PUBLIC src)
 
+# OpenGL
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIRS})
+target_link_libraries(libsmartcar PUBLIC ${OPENGL_LIBRARIES})
+
+# OOGL
+set(OOGL_DIR "include/OOGL")
+set(OOGL_INCLUDE_DIR ${OOGL_DIR}/include)
+set(OOGL_LIBRARY ${CMAKE_SOURCE_DIR}/${OOGL_DIR}/lib/OOGL.a)
+include_directories(${OOGL_INCLUDE_DIR})
+
+# GLAD
+# set(GLAD_DIR "include/glad")
+# add_subdirectory(${GLAD_DIR})
+# target_include_directories(libsmartcar PUBLIC ${GLAD_DIR}/include)
+# target_link_directories(libsmartcar PUBLIC ${GLAD_DIR})
+# set(SRC_DEPENDENCIES ${SRC_DEPENDENCIES} ${GLAD_DIR}/src/glad.c)
+
+# GLM
+include_directories(include/glm)
+
 # Main mode
 file(GLOB SRC_MAIN "main.cpp")
-add_executable(SmartCarMain ${SRC_MAIN})
-target_link_libraries(SmartCarMain libsmartcar)
+add_executable(SmartCarMain ${SRC_DEPENDENCIES} ${SRC_MAIN})
+target_link_libraries(SmartCarMain ${OOGL_LIBRARY} libsmartcar)
+
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+foreach(dir ${dirs})
+  message(STATUS "dir='${dir}'")
+endforeach()
