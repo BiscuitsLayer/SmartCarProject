@@ -22,13 +22,6 @@ set(OOGL_INCLUDE_DIR ${OOGL_DIR}/include)
 set(OOGL_LIBRARY ${CMAKE_SOURCE_DIR}/${OOGL_DIR}/lib/OOGL.a)
 include_directories(${OOGL_INCLUDE_DIR})
 
-# GLAD
-# set(GLAD_DIR "include/glad")
-# add_subdirectory(${GLAD_DIR})
-# target_include_directories(libsmartcar PUBLIC ${GLAD_DIR}/include)
-# target_link_directories(libsmartcar PUBLIC ${GLAD_DIR})
-# set(SRC_DEPENDENCIES ${SRC_DEPENDENCIES} ${GLAD_DIR}/src/glad.c)
-
 # GLM
 include_directories(include/glm)
 
@@ -37,7 +30,8 @@ file(GLOB SRC_MAIN "main.cpp")
 add_executable(SmartCarMain ${SRC_DEPENDENCIES} ${SRC_MAIN})
 target_link_libraries(SmartCarMain ${OOGL_LIBRARY} libsmartcar)
 
+# Check include directories
 get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
 foreach(dir ${dirs})
-  message(STATUS "dir='${dir}'")
+  message(STATUS "include dir='${dir}'")
 endforeach()
