@@ -23,7 +23,7 @@ set(OOGL_INCLUDE_DIR ${OOGL_DIR}/include)
 set(OOGL_LIBRARY ${CMAKE_SOURCE_DIR}/${OOGL_DIR}/lib/OOGL.a)
 include_directories(${OOGL_INCLUDE_DIR})
 
-# ImGUI
+# ImGui
 set(IMGUI_DIR "include/imgui")
 set(IMGUI_BACKENDS_DIR "${IMGUI_DIR}/backends")
 file(GLOB SRC_LIB "${IMGUI_DIR}/*.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_win32.cpp")

@@ -18,7 +18,7 @@ public:
         UpdateMatrix();
     }
 
-    Camera() : Camera(GL::Vec3(0.0f, 0.0f, 3.0f), GL::Vec3(0.0f, 0.0f, 0.0f), 0.5f, 1.0f) {
+    Camera() : Camera(GL::Vec3(0.0f, 0.0f, 3.0f), GL::Vec3(0.0f, 0.0f, 0.0f), 5.0f, 10.0f) {
     }
 
     GL::Mat4 GetViewMatrix() const {

@@ -8,7 +8,7 @@
 // OpenGL Wrapper
 #include <GL/OOGL.hpp>
 
-// ImGUI
+// ImGui
 #include "imgui_impl_win32.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
@@ -17,18 +17,19 @@
 #include <transform/transform.hpp>
 #include <camera/camera.hpp>
 #include <timer/timer.hpp>
+#include <window/window.hpp>
 
 const int APP_INIT_WINDOW_WIDTH = 800;
 const int APP_INIT_WINDOW_HEIGHT = 600;
 const std::string APP_INIT_WINDOW_TITLE = "DemoApp";
-const bool APP_INIT_IS_FULLSCREEN = true;
+const bool APP_INIT_IS_FULLSCREEN = false;
 
 const float APP_INIT_FOV_IN_DEGREES = 45.0f;
 const float APP_INIT_NEAR_PLANE = 0.1f;
 const float APP_INIT_FAR_PLANE = 100.0f;
 
-const float APP_INIT_MAX_FPS = 800.0f;
-const bool APP_MAX_FPS_MODE_ON = false;
+const float APP_INIT_MAX_FPS = 90.0f;
+const bool APP_MAX_FPS_MODE_ON = true;
 
 const int APP_VEC2_COMPONENTS_COUNT = 2;
 const int APP_VEC2_BYTESIZE = 2 * sizeof(float);
@@ -185,25 +186,31 @@ std::string ReadFileData(std::string filename, bool debug_dump = true) {
 }
 	 
 int main() try {
-	GL::Window window(APP_INIT_WINDOW_WIDTH, APP_INIT_WINDOW_HEIGHT, 
+	App::CustomWindow window(APP_INIT_WINDOW_WIDTH, APP_INIT_WINDOW_HEIGHT, 
 		APP_INIT_WINDOW_TITLE, APP_INIT_IS_FULLSCREEN ? GL::WindowStyle::Fullscreen : GL::WindowStyle::Close);
+	
 	GL::Context& gl = window.GetContext();
 	App::Camera main_camera;
 
 	gl.Enable(GL::Capability::DepthTest);
 
 // imgui setup part
+	auto raw_window_handle = FindWindowA("OOGL_WINDOW", APP_INIT_WINDOW_TITLE.c_str());
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+    ImGui::StyleColorsClassic();
+    //ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
 
     const char* glsl_version = "#version 140";
-    ImGui_ImplWin32_Init(window.GetRaw());
+    ImGui_ImplWin32_Init(raw_window_handle);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
 	ImVec4 clear_color = ImVec4(1.000F, 1.000F, 1.000F, 1.0F);
-    ImGui::StyleColorsClassic();
+    bool show_imgui_demo_window = true;
 // imgui setup part
 
 	GL::Shader vert(GL::ShaderType::Vertex, ReadFileData("../shader/triangle.vert"));
@@ -275,14 +282,14 @@ int main() try {
 			}
 		}
 
+		gl.ClearColor(GL::Color(std::ceil(255 * 0.2), std::ceil(255 * 0.3), std::ceil(255 * 0.3), std::ceil(255 * 1.0)));
+		gl.Clear(GL::Buffer::Color | GL::Buffer::Depth);
+
 // imgui prepare part
 		ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 // imgui prepare part
-
-		gl.ClearColor(GL::Color(std::ceil(255 * 0.2), std::ceil(255 * 0.3), std::ceil(255 * 0.3), std::ceil(255 * 1.0)));
-		gl.Clear(GL::Buffer::Color | GL::Buffer::Depth);
 
 		float sin_value = (std::sin(texture_timer.Elapsed<App::Timer::Seconds>()) + 1.0f) / 2.0f;
 		program.SetUniform(program.GetUniform("shaderMixCoef"), sin_value);
@@ -300,9 +307,33 @@ int main() try {
 		gl.DrawArrays(vao, GL::Primitive::Triangles, 0, vertices.size());
 
 // imgui draw part
-		ImGui::ShowDemoWindow();
+		if (show_imgui_demo_window) {
+			ImGui::ShowDemoWindow(&show_imgui_demo_window);
+		}
+
+		{
+            static float f = 0.0f;
+            static int counter = 0;
+
+            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+            ImGui::Checkbox("Demo Window", &show_imgui_demo_window);      // Edit bools storing our window open/close state
+
+            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                counter++;
+            ImGui::SameLine();
+            ImGui::Text("counter = %d", counter);
+
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::End();
+        }
+
 		ImGui::EndFrame();
-        ImGui::Render();  
+        ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 // imgui draw part
 
