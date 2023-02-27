@@ -23,12 +23,16 @@ set(OOGL_INCLUDE_DIR ${OOGL_DIR}/include)
 set(OOGL_LIBRARY ${CMAKE_SOURCE_DIR}/${OOGL_DIR}/lib/OOGL.a)
 include_directories(${OOGL_INCLUDE_DIR})
 
-# GLM
-include_directories(include/glm)
+# ImGUI
+set(IMGUI_DIR "include/imgui")
+set(IMGUI_BACKENDS_DIR "${IMGUI_DIR}/backends")
+file(GLOB SRC_LIB "${IMGUI_DIR}/*.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_win32.cpp")
+include_directories(${IMGUI_DIR} ${IMGUI_BACKENDS_DIR})
+target_link_libraries(libsmartcar PUBLIC dwmapi)
 
 # Main mode
 file(GLOB SRC_MAIN "main.cpp")
-add_executable(SmartCarMain ${SRC_MAIN})
+add_executable(SmartCarMain ${SRC_MAIN} ${SRC_LIB})
 target_link_libraries(SmartCarMain ${OOGL_LIBRARY} libsmartcar)
 
 # Check include directories
