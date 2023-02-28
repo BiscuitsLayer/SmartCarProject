@@ -10,7 +10,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 # Library SmartCar
 file(GLOB SRC "src/*.cpp")
 add_library(libsmartcar ${SRC})
-target_include_directories(libsmartcar PUBLIC src)
+include_directories(src)
+include_directories(assets)
 
 # OpenGL
 find_package(OpenGL REQUIRED)
