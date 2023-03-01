@@ -23,7 +23,9 @@
 #include <window/window.hpp>
 
 // Cube model
-#include <cube_example/cube.hpp>
+// #include <cube_example/cube.hpp>
+#include <cube_example/cube_ebo.hpp>
+
 
 // Coordinate space matrices
 // model: local space -> world sapce
@@ -43,7 +45,7 @@ int main() try {
 	gl.Enable(GL::Capability::DepthTest);
 
 	App::Camera main_camera;
-	App::Cube model;
+	App::CubeEbo model;
 	App::Gui gui;
 	gui.Setup();
 

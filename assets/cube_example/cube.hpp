@@ -3,6 +3,9 @@
 // STL
 #include <vector>
 
+// Sources
+#include <constants/constants.hpp>
+
 const int APP_WOODEN_TEXTURE_UNIT = 0;
 const int APP_AWESOME_TEXTURE_UNIT = 1;
 
@@ -16,14 +19,17 @@ public:
     }
 
     void LoadGeometry(GL::Program &program) {
-        vertex_buffer_object = GL::VertexBuffer(vertices.data(), vertices.size() * sizeof(float), GL::BufferUsage::StaticDraw);
+        vertex_buffer_object = GL::VertexBuffer(vertices.data(), vertices.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
+        // colors_buffer_object = GL::VertexBuffer(colors.data(), colors.size() * sizeof(float), GL::BufferUsage::StaticDraw);
         // element_buffer_object = GL::VertexBuffer(indices.data(), indices.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
-        colors_buffer_object = GL::VertexBuffer(colors.data(), colors.size() * sizeof(float), GL::BufferUsage::StaticDraw);
-        tex_coords_buffer_object = GL::VertexBuffer(tex_coords.data(), tex_coords.size() * sizeof(float), GL::BufferUsage::StaticDraw);
 
-        vertex_array_object.BindAttribute(program.GetAttribute("aPos"), vertex_buffer_object, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_VEC3_BYTESIZE, 0);
-        vertex_array_object.BindAttribute(program.GetAttribute("aColor"), colors_buffer_object, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_VEC3_BYTESIZE, 0);
-        vertex_array_object.BindAttribute(program.GetAttribute("aTexCoord"), tex_coords_buffer_object, GL::Type::Float, APP_VEC2_COMPONENTS_COUNT, APP_VEC2_BYTESIZE, 0);
+        // stride = sizeof(GL::Vertex)
+        // vec3 positions: 3 components, offset = 0
+        // vec2 tex coord: 2 components, offset = sizeof(vec3)
+        // vec3 normals (not used): 3 components, offset = sizeof(vec3) + sizeof(vec2)
+        vertex_array_object.BindAttribute(program.GetAttribute("aPos"), vertex_buffer_object, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, 0);
+        vertex_array_object.BindAttribute(program.GetAttribute("aTexCoord"), vertex_buffer_object, GL::Type::Float, APP_VEC2_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_VEC3_BYTESIZE);
+        // vertex_array_object.BindAttribute(program.GetAttribute("aColor"), colors_buffer_object, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_VEC3_BYTESIZE, 0);
         // vertex_array_object.BindElements(element_buffer_object);
     }
 
@@ -47,7 +53,9 @@ public:
     }
 
     void Draw(GL::Context &gl) {
-        //gl.DrawElements(vertex_array_object, GL::Primitive::Triangles, 0, indices.size(), GL::Type::UnsignedInt);
+        // if drawing using induces (element buffer object + vertex buffer object):
+        // gl.DrawElements(vertex_array_object, GL::Primitive::Triangles, 0, indices.size(), GL::Type::UnsignedInt);
+        // if drawing using vertices (only vertex buffer object)
 		gl.DrawArrays(vertex_array_object, GL::Primitive::Triangles, 0, vertices.size());
     }
 
@@ -55,110 +63,61 @@ private:
     GL::VertexArray vertex_array_object;
 
     GL::VertexBuffer vertex_buffer_object;
-    GL::VertexBuffer element_buffer_object;
     GL::VertexBuffer colors_buffer_object;
-    GL::VertexBuffer tex_coords_buffer_object;
+    // GL::VertexBuffer element_buffer_object;
 
     GL::Texture wooden_texture;
     GL::Texture awesome_texture;
 
-        std::vector<float> vertices {
-        -0.5f, -0.5f, -0.5f,  
-        0.5f, -0.5f, -0.5f,  
-        0.5f,  0.5f, -0.5f,  
-        0.5f,  0.5f, -0.5f,  
-        -0.5f,  0.5f, -0.5f,  
-        -0.5f, -0.5f, -0.5f,  
+    // std::vector<float> colors {
+    //     1.0f, 0.0f, 0.0f,	// red
+    //     0.0f, 1.0f, 0.0f,	// green
+    //     0.0f, 0.0f, 1.0f,	// blue
+    //     1.0f, 1.0f, 0.0f,	// yellow
+    // };
 
-        -0.5f, -0.5f,  0.5f,  
-        0.5f, -0.5f,  0.5f,  
-        0.5f,  0.5f,  0.5f,  
-        0.5f,  0.5f,  0.5f,  
-        -0.5f,  0.5f,  0.5f,  
-        -0.5f, -0.5f,  0.5f,  
+    std::vector<GL::Vertex> vertices = {
+        GL::Vertex{GL::Vec3{-0.5f, -0.5f, -0.5f}, GL::Vec2{0.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f, -0.5f, -0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},  
+        GL::Vertex{GL::Vec3{0.5f,  0.5f, -0.5f}, GL::Vec2{1.0f, 1.0f}, GL::Vec3{}},  
+        GL::Vertex{GL::Vec3{0.5f,  0.5f, -0.5f}, GL::Vec2{1.0f, 1.0f}, GL::Vec3{}},  
+        GL::Vertex{GL::Vec3{-0.5f,  0.5f, -0.5f}, GL::Vec2{0.0f, 1.0f}, GL::Vec3{}},  
+        GL::Vertex{GL::Vec3{-0.5f, -0.5f, -0.5f}, GL::Vec2{0.0f, 0.0f}, GL::Vec3{}},  
 
-        -0.5f,  0.5f,  0.5f,  
-        -0.5f,  0.5f, -0.5f,  
-        -0.5f, -0.5f, -0.5f,  
-        -0.5f, -0.5f, -0.5f,  
-        -0.5f, -0.5f,  0.5f,  
-        -0.5f,  0.5f,  0.5f,  
+        GL::Vertex{GL::Vec3{-0.5f, -0.5f,  0.5f}, GL::Vec2{0.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f, -0.5f,  0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f,  0.5f,  0.5f}, GL::Vec2{1.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f,  0.5f,  0.5f}, GL::Vec2{1.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f,  0.5f,  0.5f}, GL::Vec2{0.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f, -0.5f,  0.5f}, GL::Vec2{0.0f, 0.0f}, GL::Vec3{}},
 
-        0.5f,  0.5f,  0.5f,  
-        0.5f,  0.5f, -0.5f,  
-        0.5f, -0.5f, -0.5f,  
-        0.5f, -0.5f, -0.5f,  
-        0.5f, -0.5f,  0.5f,  
-        0.5f,  0.5f,  0.5f,  
+        GL::Vertex{GL::Vec3{-0.5f,  0.5f,  0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f,  0.5f, -0.5f}, GL::Vec2{1.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f, -0.5f, -0.5f}, GL::Vec2{0.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f, -0.5f, -0.5f}, GL::Vec2{0.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f, -0.5f,  0.5f}, GL::Vec2{0.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f,  0.5f,  0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},
 
-        -0.5f, -0.5f, -0.5f,  
-        0.5f, -0.5f, -0.5f,  
-        0.5f, -0.5f,  0.5f,  
-        0.5f, -0.5f,  0.5f,  
-        -0.5f, -0.5f,  0.5f,  
-        -0.5f, -0.5f, -0.5f,  
+        GL::Vertex{GL::Vec3{0.5f,  0.5f,  0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f,  0.5f, -0.5f}, GL::Vec2{1.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f, -0.5f, -0.5f}, GL::Vec2{0.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f, -0.5f, -0.5f}, GL::Vec2{0.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f, -0.5f,  0.5f}, GL::Vec2{0.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f,  0.5f,  0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},
 
-        -0.5f,  0.5f, -0.5f,  
-        0.5f,  0.5f, -0.5f,  
-        0.5f,  0.5f,  0.5f,  
-        0.5f,  0.5f,  0.5f,  
-        -0.5f,  0.5f,  0.5f,  
-        -0.5f,  0.5f, -0.5f,  
-    };
+        GL::Vertex{GL::Vec3{-0.5f, -0.5f, -0.5f}, GL::Vec2{0.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f, -0.5f, -0.5f}, GL::Vec2{1.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f, -0.5f,  0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f, -0.5f,  0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f, -0.5f,  0.5f}, GL::Vec2{0.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f, -0.5f, -0.5f}, GL::Vec2{0.0f, 1.0f}, GL::Vec3{}},
 
-    std::vector<float> colors {
-        1.0f, 0.0f, 0.0f,	// red
-        0.0f, 1.0f, 0.0f,	// green
-        0.0f, 0.0f, 1.0f,	// blue
-        1.0f, 1.0f, 0.0f	// white
-    };
-
-    // texture coordinate axis names:
-    // s <-> x
-    // t <-> y
-    // r <-> z (only for 3D textures)
-    std::vector<float> tex_coords = {
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-
-        0.0f, 1.0f,
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-
-        0.0f, 1.0f,
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0f,
-        0.0f, 1.0f
+        GL::Vertex{GL::Vec3{-0.5f,  0.5f, -0.5f}, GL::Vec2{0.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f,  0.5f, -0.5f}, GL::Vec2{1.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f,  0.5f,  0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f,  0.5f,  0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f,  0.5f,  0.5f}, GL::Vec2{0.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f,  0.5f, -0.5f}, GL::Vec2{0.0f, 1.0}, GL::Vec3{}},
     };
 };
 

@@ -26,7 +26,7 @@ Set-Location ../.. -ErrorAction Stop
 New-Item ./build -ItemType Directory -ErrorAction Ignore
 Set-Location build -ErrorAction Stop
 Invoke-Call -ScriptBlock { cmake .. -G "MinGW Makefiles" } -ErrorAction Stop
-Invoke-Call -ScriptBlock { make } -ErrorAction Stop
+Invoke-Call -ScriptBlock { make -j8 } -ErrorAction Stop
 
 # Run smartcar
 Invoke-Call -ScriptBlock { ./SmartCarMain.exe } -ErrorAction Stop

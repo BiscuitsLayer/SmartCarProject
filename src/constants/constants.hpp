@@ -3,6 +3,9 @@
 // STL
 #include <string>
 
+// OpenGL Wrapper
+#include <GL/OOGL.hpp>
+
 const int APP_INIT_WINDOW_WIDTH = 800;
 const int APP_INIT_WINDOW_HEIGHT = 600;
 const std::string APP_INIT_WINDOW_TITLE = "DemoApp";
@@ -20,3 +23,5 @@ const int APP_VEC2_BYTESIZE = 2 * sizeof(float);
 
 const int APP_VEC3_COMPONENTS_COUNT = 3;
 const int APP_VEC3_BYTESIZE = 3 * sizeof(float);
+
+const int APP_GL_VERTEX_BYTESIZE = sizeof(GL::Vertex);

@@ -9,12 +9,18 @@
 namespace App {
 
 const float APP_VECTOR_LENGTH_EPS = 1e-3;
+const float APP_CAMERA_MIN_LENGTH_TO_TARGET = 1.0f;
+const float APP_CAMERA_MAX_LENGTH_TO_TARGET = 5.0f;
 
 class Camera {
 public:
     Camera(GL::Vec3 camera_position, GL::Vec3 camera_target, float camera_move_speed, float camera_rotate_speed) : camera_position_(camera_position), 
     camera_target_(camera_target), camera_move_speed_(camera_move_speed), camera_rotate_speed_(camera_rotate_speed)
     {
+        float length_to_target = (camera_position_ - camera_target_).Length();
+        if ((length_to_target < APP_CAMERA_MIN_LENGTH_TO_TARGET) || (length_to_target > APP_CAMERA_MAX_LENGTH_TO_TARGET)) {
+            throw std::runtime_error("Camera error: length_to_target is not between MIN and MAX value");
+        }
         UpdateMatrix();
     }
 
@@ -26,12 +32,20 @@ public:
     }
 
     void MoveFront(float delta_time) {
+        float length_to_target = (camera_position_ - camera_target_).Length();
+        if (length_to_target < APP_CAMERA_MIN_LENGTH_TO_TARGET) {
+            return;
+        }
         float delta_coord = camera_move_speed_ * delta_time;
         camera_position_ += (-1.0f * reversed_camera_direction_) * delta_coord;
         UpdateMatrix();
     }
 
     void MoveBack(float delta_time) {
+        float length_to_target = (camera_position_ - camera_target_).Length();
+        if (length_to_target > APP_CAMERA_MAX_LENGTH_TO_TARGET) {
+            return;
+        }
         float delta_coord = camera_move_speed_ * delta_time;
         camera_position_ -= (-1.0f * reversed_camera_direction_) * delta_coord;
         UpdateMatrix();
