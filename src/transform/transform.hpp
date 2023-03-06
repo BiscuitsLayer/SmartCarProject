@@ -85,4 +85,16 @@ GL::Mat4 GetModelViewProjectionMatrix(GL::Mat4 model, GL::Mat4 view, GL::Mat4 pr
     return projection * view * model;
 }
 
+GL::Mat4 GetViewNoTranslationProjectionMatrix(GL::Mat4 view, GL::Mat4 projection) {
+    // remove translation from the view matrix
+    view = GL::Mat4(
+		view.m[0], view.m[4],  view.m[8], 0,
+		view.m[1], view.m[5],  view.m[9], 0,
+		view.m[2], view.m[6], view.m[10], 0,
+		view.m[3], view.m[7], view.m[11], view.m[15]
+	);
+    
+    return projection * view;
+}
+
 } // namespace App

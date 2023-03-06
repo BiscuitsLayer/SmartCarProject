@@ -21,6 +21,7 @@
 #include <gui/gui.hpp>
 #include <timer/timer.hpp>
 #include <window/window.hpp>
+#include <skybox/skybox.hpp>
 
 // Model
 #include <cube_example/src/cube.hpp>
@@ -53,12 +54,25 @@ int main() try {
 	GL::Shader frag(GL::ShaderType::Fragment, App::ReadFileData("../assets/backpack/shader/backpack.frag", false));
 	GL::Program program(vert, frag);
 
+	GL::Shader skybox_vert(GL::ShaderType::Vertex, App::ReadFileData("../assets/skybox/shader/skybox.vert", false));
+	GL::Shader skybox_frag(GL::ShaderType::Fragment, App::ReadFileData("../assets/skybox/shader/skybox.frag", false));
+	GL::Program skybox_program(skybox_vert, skybox_frag);
+
+	std::array<std::string, 6> filenames {
+        "posx.jpg",
+        "negx.jpg",
+        "posy.jpg",
+        "negy.jpg",
+        "posz.jpg",
+        "negz.jpg",
+    };
+	App::Skybox skybox(skybox_program, "../assets/skybox", filenames);
+
 	// App::Cube model{program};
 	App::Model backpack{program, "../assets/backpack/scene.gltf"};
 	backpack.UpdateScale(GL::Vec3(0.01f, 0.01f, 0.01f));
 	backpack.SetTranslation(GL::Vec3(5.0f, 5.0f, 5.0f));
 
-		
 	App::Model garage{program, "../assets/garage/scene.gltf"};
 	garage.UpdateTranslation(GL::Vec3(0.0f, -0.5f, 0.0f));
 
@@ -99,6 +113,8 @@ int main() try {
 			}
 		}
 
+		gl.UseProgram(program);
+
 		gl.ClearColor(GL::Color(std::ceil(255 * 0.2), std::ceil(255 * 0.3), std::ceil(255 * 0.3), std::ceil(255 * 1.0)));
 		gl.Clear(GL::Buffer::Color | GL::Buffer::Depth);
 
@@ -107,8 +123,8 @@ int main() try {
 		float sin_value = (std::sin(texture_timer.Elapsed<App::Timer::Seconds>()) + 1.0f) / 2.0f;
 		program.SetUniform(program.GetUniform("shaderMixCoef"), sin_value);
 
-
 		GL::Mat4 mvp;
+		GL::Mat4 vp;
 
 		backpack.SetRotation(texture_timer.Elapsed<App::Timer::Seconds>(), GL::Vec3(5.0f, 2.0f, 5.0f));
 		mvp = App::GetModelViewProjectionMatrix(backpack.GetModelMatrix(), main_camera->GetViewMatrix(), projection_matrix);
@@ -122,6 +138,12 @@ int main() try {
 		mvp = App::GetModelViewProjectionMatrix(car.GetModelMatrix(), main_camera->GetViewMatrix(), projection_matrix);
 		program.SetUniform(program.GetUniform("MVP"), mvp);
 		car.Draw(gl, program);
+
+		gl.UseProgram(skybox_program);
+
+		vp = App::GetViewNoTranslationProjectionMatrix(main_camera->GetViewMatrix(), projection_matrix);
+		skybox_program.SetUniform(skybox_program.GetUniform("VP"), vp);
+		skybox.Draw(gl, skybox_program);
 
 		gui.Draw();
 		window.Present();

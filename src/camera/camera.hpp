@@ -69,6 +69,7 @@ public:
 
 private:
     void UpdateMatrix() {
+        cur_length_to_target_ = (camera_position_ - camera_target_).Length();
         reversed_camera_direction_ = (camera_position_ - camera_target_).Normal();
 
         world_space_up_ = APP_CAMERA_WORLD_SPACE_UP;

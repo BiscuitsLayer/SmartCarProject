@@ -20,7 +20,7 @@ public:
     }
 
     void LoadGeometry(GL::Program &program) {
-        vbo_ = GL::VertexBuffer(vertices.data(), vertices.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
+        vbo_ = GL::VertexBuffer(vertices_.data(), vertices_.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
   
         vao_.BindAttribute(program.GetAttribute("aPos"), vbo_, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_POS_OFFSET);
         vao_.BindAttribute(program.GetAttribute("aTexCoord"), vbo_, GL::Type::Float, APP_VEC2_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_TEX_OFFSET);
@@ -55,9 +55,8 @@ public:
             program.SetUniform(program.GetUniform(texture_name), textures_[i].texture_unit_);
             gl.BindTexture(textures_[i].texture_, textures_[i].texture_unit_);
         }
-	
 
-		gl.DrawArrays(vao_, GL::Primitive::Triangles, 0, vertices.size());
+		gl.DrawArrays(vao_, GL::Primitive::Triangles, 0, vertices_.size());
     }
 
 private:
@@ -66,7 +65,7 @@ private:
 
     std::vector<Texture> textures_;
 
-    std::vector<GL::Vertex> vertices = {
+    std::vector<GL::Vertex> vertices_ = {
         GL::Vertex{GL::Vec3{-0.5f, -0.5f, -0.5f}, GL::Vec2{0.0f, 0.0f}, GL::Vec3{}},
         GL::Vertex{GL::Vec3{0.5f, -0.5f, -0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},  
         GL::Vertex{GL::Vec3{0.5f,  0.5f, -0.5f}, GL::Vec2{1.0f, 1.0f}, GL::Vec3{}},  

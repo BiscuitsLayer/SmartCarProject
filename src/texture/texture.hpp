@@ -12,7 +12,8 @@ class Texture {
 public:
     enum class Type : uint32_t {
         DIFFUSE = 0,
-        SPECULAR
+        SPECULAR,
+        CUBEMAP
     };
 
     Texture(GL::Texture texture, Type type, int texture_unit = APP_TEXTURE_NEXT_FREE_UNIT++)
@@ -26,6 +27,23 @@ public:
 	    auto image = GL::Image{reinterpret_cast<unsigned char*>(buffer.data()), buffer.size()};
 	    texture_ = GL::Texture{image, GL::InternalFormat::RGB};
         texture_.SetWrapping(GL::Wrapping::Repeat, GL::Wrapping::Repeat);
+    }
+
+    static Texture Cubemap(std::string path, std::array<std::string, 6> filenames) {
+        std::string buffer;
+        std::array<std::shared_ptr<GL::Image>, 6> image_ptrs;
+
+        unsigned int index = 0;
+        for (auto filename : filenames) {
+            std::string full_path = path + "/" + filename;
+            buffer = App::ReadFileData(full_path, false);
+            auto image = std::make_shared<GL::Image>(reinterpret_cast<unsigned char*>(buffer.data()), buffer.size());
+            image_ptrs[index] = image;
+            ++index;
+        }
+
+        // todo: fix texture unit
+        return Texture{GL::Texture::Cubemap(image_ptrs, GL::InternalFormat::RGB), Type::CUBEMAP, 0};
     }
 
 // private:
