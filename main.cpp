@@ -44,7 +44,9 @@ int main() try {
 	GL::Context& gl = window.GetContext();
 	gl.Enable(GL::Capability::DepthTest);
 
+	// orbit camera
 	auto main_camera = std::make_shared<App::Camera>();
+	// todo: add first person camera
 	App::Gui gui(main_camera);
 
 	GL::Shader vert(GL::ShaderType::Vertex, App::ReadFileData("../assets/backpack/shader/backpack.vert", false));
@@ -52,7 +54,15 @@ int main() try {
 	GL::Program program(vert, frag);
 
 	// App::Cube model{program};
-	App::Model model{program, "../assets/backpack/scene.gltf"};
+	App::Model backpack{program, "../assets/backpack/scene.gltf"};
+	backpack.UpdateScale(GL::Vec3(0.01f, 0.01f, 0.01f));
+	backpack.SetTranslation(GL::Vec3(5.0f, 5.0f, 5.0f));
+
+		
+	App::Model garage{program, "../assets/garage/scene.gltf"};
+	garage.UpdateTranslation(GL::Vec3(0.0f, -0.5f, 0.0f));
+
+	App::Model car{program, "../assets/car/scene.gltf"};
 
 	App::Timer main_timer;
 	main_timer.Start();
@@ -97,14 +107,22 @@ int main() try {
 		float sin_value = (std::sin(texture_timer.Elapsed<App::Timer::Seconds>()) + 1.0f) / 2.0f;
 		program.SetUniform(program.GetUniform("shaderMixCoef"), sin_value);
 
-		App::Transform model_matrix;
-		model_matrix.UpdateScale(GL::Vec3(0.01f, 0.01f, 0.01f));
-		model_matrix.UpdateRotation(texture_timer.Elapsed<App::Timer::Seconds>(), GL::Vec3(5.0f, 2.0f, 5.0f));
-		
-		auto mvp = App::GetModelViewProjectionMatrix(model_matrix, main_camera->GetViewMatrix(), projection_matrix);
+
+		GL::Mat4 mvp;
+
+		backpack.SetRotation(texture_timer.Elapsed<App::Timer::Seconds>(), GL::Vec3(5.0f, 2.0f, 5.0f));
+		mvp = App::GetModelViewProjectionMatrix(backpack.GetModelMatrix(), main_camera->GetViewMatrix(), projection_matrix);
 		program.SetUniform(program.GetUniform("MVP"), mvp);
+		backpack.Draw(gl, program);
+
+		mvp = App::GetModelViewProjectionMatrix(garage.GetModelMatrix(), main_camera->GetViewMatrix(), projection_matrix);
+		program.SetUniform(program.GetUniform("MVP"), mvp);
+		garage.Draw(gl, program);
 		
-		model.Draw(gl, program);
+		mvp = App::GetModelViewProjectionMatrix(car.GetModelMatrix(), main_camera->GetViewMatrix(), projection_matrix);
+		program.SetUniform(program.GetUniform("MVP"), mvp);
+		car.Draw(gl, program);
+
 		gui.Draw();
 		window.Present();
 		
