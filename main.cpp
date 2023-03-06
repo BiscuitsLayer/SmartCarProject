@@ -22,13 +22,13 @@
 #include <timer/timer.hpp>
 #include <window/window.hpp>
 
-// Cube model
-// #include <cube_example/cube.hpp>
-#include <cube_example/cube_ebo.hpp>
+// Model
+#include <cube_example/src/cube.hpp>
+#include <model/model.hpp>
 
 
 // Coordinate space matrices
-// model: local space -> world sapce
+// model: local space -> world space
 // view: world space -> camera space
 // projection: specified range of space in camera space (seen by camera) -> [-1.0, 1.0] (NDC), 
 // clip coordinates out of range
@@ -44,17 +44,16 @@ int main() try {
 	GL::Context& gl = window.GetContext();
 	gl.Enable(GL::Capability::DepthTest);
 
-	App::Camera main_camera;
-	App::CubeEbo model;
-	App::Gui gui;
-	gui.Setup();
+	auto main_camera = std::make_shared<App::Camera>();
+	App::Gui gui(main_camera);
 
-	GL::Shader vert(GL::ShaderType::Vertex, App::ReadFileData("../shader/triangle.vert", false));
-	GL::Shader frag(GL::ShaderType::Fragment, App::ReadFileData("../shader/triangle.frag", false));
+	GL::Shader vert(GL::ShaderType::Vertex, App::ReadFileData("../assets/backpack/shader/backpack.vert", false));
+	GL::Shader frag(GL::ShaderType::Fragment, App::ReadFileData("../assets/backpack/shader/backpack.frag", false));
 	GL::Program program(vert, frag);
 
-	model.Load(program);
-	
+	// App::Cube model{program};
+	App::Model model{program, "../assets/backpack/scene.gltf"};
+
 	App::Timer main_timer;
 	main_timer.Start();
 	App::Timer texture_timer;
@@ -71,19 +70,19 @@ int main() try {
 						break;
 					}
 					case GL::Key::W: {
-						main_camera.MoveFront(delta_time);
+						main_camera->MoveFront(delta_time);
 						break;
 					}
 					case GL::Key::A: {
-						main_camera.MoveLeft(delta_time);
+						main_camera->MoveLeft(delta_time);
 						break;
 					}
 					case GL::Key::S: {
-						main_camera.MoveBack(delta_time);
+						main_camera->MoveBack(delta_time);
 						break;
 					}
 					case GL::Key::D: {
-						main_camera.MoveRight(delta_time);
+						main_camera->MoveRight(delta_time);
 						break;
 					}
 				}
@@ -99,13 +98,13 @@ int main() try {
 		program.SetUniform(program.GetUniform("shaderMixCoef"), sin_value);
 
 		App::Transform model_matrix;
+		model_matrix.UpdateScale(GL::Vec3(0.01f, 0.01f, 0.01f));
 		model_matrix.UpdateRotation(texture_timer.Elapsed<App::Timer::Seconds>(), GL::Vec3(5.0f, 2.0f, 5.0f));
 		
-		auto mvp = App::GetModelViewProjectionMatrix(model_matrix, main_camera.GetViewMatrix(), projection_matrix);
+		auto mvp = App::GetModelViewProjectionMatrix(model_matrix, main_camera->GetViewMatrix(), projection_matrix);
 		program.SetUniform(program.GetUniform("MVP"), mvp);
 		
-		model.BindTextures(gl);
-		model.Draw(gl);
+		model.Draw(gl, program);
 		gui.Draw();
 		window.Present();
 		

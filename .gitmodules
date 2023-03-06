@@ -13,3 +13,7 @@
 [submodule "include/assimp"]
 	path = include/assimp
 	url = https://github.com/assimp/assimp.git
+
+[submodule "include/cute_headers"]
+	path = include/cute_headers
+	url = https://github.com/RandyGaul/cute_headers.git

@@ -4,36 +4,38 @@
 #include <GL/Math/Mat4.hpp>
 
 // Sources
+#include <constants/constants.hpp>
 #include <transform/transform.hpp>
 
 namespace App {
 
-const float APP_VECTOR_LENGTH_EPS = 1e-3;
-const float APP_CAMERA_MIN_LENGTH_TO_TARGET = 1.0f;
-const float APP_CAMERA_MAX_LENGTH_TO_TARGET = 5.0f;
-
 class Camera {
 public:
-    Camera(GL::Vec3 camera_position, GL::Vec3 camera_target, float camera_move_speed, float camera_rotate_speed) : camera_position_(camera_position), 
-    camera_target_(camera_target), camera_move_speed_(camera_move_speed), camera_rotate_speed_(camera_rotate_speed)
-    {
-        float length_to_target = (camera_position_ - camera_target_).Length();
-        if ((length_to_target < APP_CAMERA_MIN_LENGTH_TO_TARGET) || (length_to_target > APP_CAMERA_MAX_LENGTH_TO_TARGET)) {
-            throw std::runtime_error("Camera error: length_to_target is not between MIN and MAX value");
+    Camera(GL::Vec3 camera_position, GL::Vec3 camera_target,
+    float camera_move_speed, float camera_rotate_speed,
+    float camera_min_length_to_target, float camera_max_length_to_target) 
+    : camera_position_(camera_position), camera_target_(camera_target), 
+    camera_move_speed_(camera_move_speed), camera_rotate_speed_(camera_rotate_speed),
+    camera_min_length_to_target_(camera_min_length_to_target), camera_max_length_to_target_(camera_max_length_to_target) {
+        cur_length_to_target_ = (camera_position_ - camera_target_).Length();
+        if ((cur_length_to_target_ < camera_min_length_to_target_) || (cur_length_to_target_ > camera_max_length_to_target_)) {
+            throw std::runtime_error("Camera error: current length to target is not between MIN and MAX values");
         }
         UpdateMatrix();
     }
 
-    Camera() : Camera(GL::Vec3(0.0f, 0.0f, 3.0f), GL::Vec3(0.0f, 0.0f, 0.0f), 5.0f, 10.0f) {
-    }
+    Camera()
+    : Camera(APP_CAMERA_POSITION, APP_CAMERA_TARGET, 
+    APP_CAMERA_MOVE_SPEED, APP_CAMERA_ROTATE_SPEED,
+    APP_CAMERA_MIN_LENGTH_TO_TARGET, APP_CAMERA_MAX_LENGTH_TO_TARGET) {}
 
     GL::Mat4 GetViewMatrix() const {
         return view_matrix_;
     }
 
     void MoveFront(float delta_time) {
-        float length_to_target = (camera_position_ - camera_target_).Length();
-        if (length_to_target < APP_CAMERA_MIN_LENGTH_TO_TARGET) {
+        cur_length_to_target_ = (camera_position_ - camera_target_).Length();
+        if (cur_length_to_target_ < camera_min_length_to_target_) {
             return;
         }
         float delta_coord = camera_move_speed_ * delta_time;
@@ -42,8 +44,8 @@ public:
     }
 
     void MoveBack(float delta_time) {
-        float length_to_target = (camera_position_ - camera_target_).Length();
-        if (length_to_target > APP_CAMERA_MAX_LENGTH_TO_TARGET) {
+        cur_length_to_target_ = (camera_position_ - camera_target_).Length();
+        if (cur_length_to_target_ > camera_max_length_to_target_) {
             return;
         }
         float delta_coord = camera_move_speed_ * delta_time;
@@ -69,8 +71,7 @@ private:
     void UpdateMatrix() {
         reversed_camera_direction_ = (camera_position_ - camera_target_).Normal();
 
-        world_space_up_ = GL::Vec3(0.0f, 1.0f, 0.0f);
-        
+        world_space_up_ = APP_CAMERA_WORLD_SPACE_UP;
         camera_right_ = world_space_up_.Cross(reversed_camera_direction_);
 
         if (camera_right_.Length() < APP_VECTOR_LENGTH_EPS) {
@@ -84,9 +85,9 @@ private:
     }
 
     void AlignStepFront(float delta_coord) {
-        float length_to_target = (camera_position_ - camera_target_).Length();
-        if (length_to_target > APP_VECTOR_LENGTH_EPS) {
-            float align_step_front = (delta_coord * delta_coord) / (2 * length_to_target);
+        cur_length_to_target_ = (camera_position_ - camera_target_).Length();
+        if (cur_length_to_target_ > APP_VECTOR_LENGTH_EPS) {
+            float align_step_front = (delta_coord * delta_coord) / (2 * cur_length_to_target_);
             camera_position_ += (-1.0f * reversed_camera_direction_) * align_step_front;
             UpdateMatrix();
         }
@@ -106,6 +107,12 @@ private:
     GL::Vec3 camera_up_;
 
     GL::Mat4 view_matrix_;
+
+    float cur_length_to_target_;
+    float camera_min_length_to_target_;
+    float camera_max_length_to_target_;
+
+    friend class Gui;
 };
 
 } // namespace App

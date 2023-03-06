@@ -14,3 +14,5 @@ To execute:
     cd ./SmartCarProject
     git submodule update --init --recursive
     ./run.ps1
+
+Sport car model: [link](https://sketchfab.com/3d-models/concept-sport-car-566075bdb499404b908895a5f4dc6aa0)

@@ -25,7 +25,15 @@ set(OOGL_LIBRARY ${CMAKE_SOURCE_DIR}/${OOGL_DIR}/lib/OOGL.a)
 include_directories(${OOGL_INCLUDE_DIR})
 
 # Assimp
-add_subdirectory(include/assimp)
+set(ASSIMP_DIR include/assimp)
+set(ASSIMP_INCLUDE_DIRS "${ASSIMP_DIR}/include" "build/${ASSIMP_DIR}/include")
+set(ASSIMP_LIBRARIES "${CMAKE_SOURCE_DIR}/build/${ASSIMP_DIR}/bin/libassimp-5d.dll")
+add_subdirectory(${ASSIMP_DIR})
+include_directories(${ASSIMP_INCLUDE_DIRS})
+
+message("msg" ${ASSIMP_INCLUDE_DIRS})
+message("msg" ${ASSIMP_LIBRARIES})
+
 
 # ImGui
 set(IMGUI_DIR "include/imgui")
@@ -37,7 +45,7 @@ target_link_libraries(libsmartcar PUBLIC dwmapi)
 # Main
 file(GLOB SRC_MAIN "main.cpp")
 add_executable(SmartCarMain ${SRC_MAIN} ${SRC_LIB})
-target_link_libraries(SmartCarMain ${OOGL_LIBRARY} libsmartcar)
+target_link_libraries(SmartCarMain ${OOGL_LIBRARY} ${ASSIMP_LIBRARIES} libsmartcar)
 
 # Check include directories
 get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
