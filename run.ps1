@@ -17,11 +17,6 @@ Invoke-Call -ScriptBlock { git pull } -ErrorAction Stop
 # Save initial location
 Push-Location
 
-# Build OOGL submodule .a (library) file
-Set-Location include/OOGL -ErrorAction Stop
-Invoke-Call -ScriptBlock { make } -ErrorAction Stop
-Set-Location ../.. -ErrorAction Stop
-
 # Build smartcar
 New-Item ./build -ItemType Directory -ErrorAction Ignore
 Set-Location build -ErrorAction Stop
@@ -30,4 +25,6 @@ Invoke-Call -ScriptBlock { make -j8 } -ErrorAction Stop
 
 # Run smartcar
 Invoke-Call -ScriptBlock { ./SmartCarMain.exe } -ErrorAction Stop
+
+# Return to initial location
 Pop-Location -ErrorAction Stop

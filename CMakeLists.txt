@@ -20,6 +20,13 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 target_link_libraries(libsmartcar PUBLIC ${OPENGL_LIBRARIES})
 
 ### OOGL ###
+# Build with Makefile
+add_custom_command(TARGET libsmartcar
+  COMMAND make
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include/OOGL
+  COMMAND_EXPAND_LISTS
+)
+# Include in the project
 set(OOGL_DIR "include/OOGL")
 set(OOGL_INCLUDE_DIR ${OOGL_DIR}/include)
 set(OOGL_LIBRARY ${CMAKE_SOURCE_DIR}/${OOGL_DIR}/lib/OOGL.a)
@@ -36,7 +43,6 @@ set(ASSIMP_BUILD_OBJ_IMPORTER ON)
 # Provide directories
 set(ASSIMP_DIR include/assimp)
 set(ASSIMP_INCLUDE_DIRS "${ASSIMP_DIR}/include" "build/${ASSIMP_DIR}/include")
-set(ASSIMP_LIBRARIES "${CMAKE_SOURCE_DIR}/build/${ASSIMP_DIR}/bin/libassimp-5d.dll")
 add_subdirectory(${ASSIMP_DIR})
 include_directories(${ASSIMP_INCLUDE_DIRS})
 
@@ -50,7 +56,7 @@ target_link_libraries(libsmartcar PUBLIC dwmapi)
 ### Main ###
 file(GLOB SRC_MAIN "main.cpp")
 add_executable(SmartCarMain ${SRC_MAIN} ${SRC_LIB})
-target_link_libraries(SmartCarMain ${OOGL_LIBRARY} ${ASSIMP_LIBRARIES} assimp libsmartcar)
+target_link_libraries(SmartCarMain ${OOGL_LIBRARY} assimp libsmartcar)
 
 ### Move DLLs ###
 add_custom_command(TARGET SmartCarMain POST_BUILD

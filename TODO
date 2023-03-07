@@ -9,7 +9,7 @@ Workflow:
 [] Configs based on JSONs
 [x] Deal with Assimp DLL linkage
 [x] Get rid of Assimp unit test linkage
-[] OOGL make call via CMakeLists.txt
+[x] OOGL make call from CMakeLists.txt
 
 Graphics:
 
