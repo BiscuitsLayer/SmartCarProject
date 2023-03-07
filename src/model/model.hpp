@@ -43,8 +43,7 @@ public:
         transform_.UpdateTranslation(additional_translation);
     }
 
-
-    GL::Mat4 GetModelMatrix() {
+    virtual GL::Mat4 GetModelMatrix() {
         return transform_;
     }
 
@@ -54,7 +53,7 @@ public:
         }
     }
 
-private:
+protected:
     std::vector<Mesh> meshes_;
     Transform transform_;
 };

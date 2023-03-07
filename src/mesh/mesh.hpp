@@ -29,7 +29,6 @@ public:
     }
 
     void Draw(GL::Context &gl, GL::Program &program) {
-        // to be changed
         unsigned int diffuseNumber = 1;
         unsigned int specularNumber = 1;
 

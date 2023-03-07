@@ -5,6 +5,12 @@
 
 namespace App {
 
+enum class KeyboardMode : int {
+	ORBIT_CAMERA = 0,
+	FIRST_PERSON_CAMERA,
+	CAR_MOVEMENT
+};
+
 std::string ReadFileData(std::string filename, bool debug_dump = true) {
     std::ifstream source{filename};
     if (!source) {

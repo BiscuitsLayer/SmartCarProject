@@ -7,6 +7,8 @@
 #include <GL/OOGL.hpp>
 
 // Application constants
+const int APP_KEYBOARD_KEYS_COUNT = GL::Key::key_t::Divide + 1;
+
 const float APP_INIT_MAX_FPS = 90.0f;
 const bool APP_MAX_FPS_MODE_ON = true;
 
@@ -33,7 +35,7 @@ const int APP_VEC3_BYTESIZE = 3 * sizeof(float);
 const float APP_CAMERA_MIN_LENGTH_TO_TARGET = 1.0f;
 const float APP_CAMERA_MAX_LENGTH_TO_TARGET = 1000.0f;
 
-const GL::Vec3 APP_CAMERA_POSITION = GL::Vec3(0.0f, 0.0f, 3.0f);
+const GL::Vec3 APP_CAMERA_POSITION = GL::Vec3(0.0f, 2.0f, -10.0f);
 const GL::Vec3 APP_CAMERA_TARGET = GL::Vec3(0.0f, 0.0f, 0.0f);
 const float APP_CAMERA_MOVE_SPEED = 5.0f;
 const float APP_CAMERA_ROTATE_SPEED = 10.0f;
@@ -53,3 +55,8 @@ const std::string APP_TEXTURE_SPECULAR_BASE_NAME = "textureSpecular";
 
 // Texture indexing
 static int APP_TEXTURE_NEXT_FREE_UNIT = 0;
+
+// Car parameters
+const float APP_CAR_MOVE_SPEED = 2.0f;
+const float APP_CAR_ROTATE_SPEED = 4.0f;
+const GL::Vec3 APP_CAR_CENTER_TRANSLATION = GL::Vec3(0.0f, 0.0f, 1.5f);

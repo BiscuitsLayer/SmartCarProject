@@ -4,13 +4,17 @@
 #include <imgui_impl_win32.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_internal.h>
+#include <imgui.h>
+
+// Sources
+#include <helpers/helpers.hpp>
 
 namespace App {
 
 struct Gui {
 
-    Gui(std::shared_ptr<App::Camera> camera_ptr)
-    : camera_ptr_(camera_ptr) {
+    Gui(std::shared_ptr<App::Camera> camera_ptr, std::shared_ptr<KeyboardMode> keyboard_mode_ptr)
+    : camera_ptr_(camera_ptr), keyboard_mode_ptr_(keyboard_mode_ptr) {
         auto raw_window_handle = FindWindowA("OOGL_WINDOW", APP_INIT_WINDOW_TITLE.c_str());
 
         IMGUI_CHECKVERSION();
@@ -41,11 +45,12 @@ struct Gui {
     }
 
     void Draw() {
+
+        // DEMO WINDOW TOOLS
+
         if (show_imgui_demo_window) {
 			ImGui::ShowDemoWindow(&show_imgui_demo_window);
 		}
-
-        static int counter = 0;
 
         ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
@@ -53,6 +58,8 @@ struct Gui {
         ImGui::Checkbox("Demo Window", &show_imgui_demo_window);      // Edit bools storing our window open/close state
 
         ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+        // CAMERA PARAMETERS
 
         ImGui::SeparatorText("Camera parameters");
 
@@ -68,11 +75,23 @@ struct Gui {
 
         camera_ptr_->UpdateMatrix();
 
-        if (ImGui::Button("Button")) {                          // Buttons return true when clicked (most widgets return true when edited/activated)
-            counter++;
-        }
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
+        // KEYBOARD MODE
+
+        ImGui::SeparatorText("Keyboard mode");
+
+        ImGui::PushItemWidth(160);
+        const char* keyboard_modes[] = { "ORBIT CAMERA", "FIRST PERSON CAMERA", "CAR MOVEMENT" };
+        int* keyboard_mode_ptr_raw = reinterpret_cast<int *>(keyboard_mode_ptr_.get());
+
+        ImGui::PushID(0);
+        ImGui::ListBox("", keyboard_mode_ptr_raw, keyboard_modes, IM_ARRAYSIZE(keyboard_modes));
+        ImGui::PopID();
+
+        ImGui::PopItemWidth();
+
+        // FPS COUNTER
+
+        ImGui::SeparatorText("FPS counter");
 
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         ImGui::End();
@@ -84,8 +103,9 @@ struct Gui {
 
     bool show_imgui_demo_window = true;
     ImVec4 clear_color = ImVec4(1.000F, 1.000F, 1.000F, 1.0F);
-    std::shared_ptr<App::Camera> camera_ptr_ = nullptr;
 
+    std::shared_ptr<App::Camera> camera_ptr_ = nullptr;
+    std::shared_ptr<KeyboardMode> keyboard_mode_ptr_;
 };
 
 } // namespace App

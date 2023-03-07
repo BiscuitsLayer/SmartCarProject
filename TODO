@@ -1,7 +1,2 @@
 [] Prepare cube and cube_ebo <- so they look cool
 and make different shaders/shader programs for them
-
-[] Deal with libassimp dll linkage
-[] FreeCamera
-
-[] Call OOGL make via CMakeLists.txt

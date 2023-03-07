@@ -26,7 +26,7 @@
 // Model
 #include <cube_example/src/cube.hpp>
 #include <model/model.hpp>
-
+#include <car/car.hpp>
 
 // Coordinate space matrices
 // model: local space -> world space
@@ -40,15 +40,18 @@ GL::Mat4 projection_matrix = GL::Mat4::Perspective(
 );
 	 
 int main() try {
+	std::array<bool, APP_KEYBOARD_KEYS_COUNT> keyboard_status;
+	keyboard_status.fill(false);
+
 	App::CustomWindow window(APP_INIT_WINDOW_WIDTH, APP_INIT_WINDOW_HEIGHT, 
 		APP_INIT_WINDOW_TITLE, APP_INIT_IS_FULLSCREEN ? GL::WindowStyle::Fullscreen : GL::WindowStyle::Close);
 	GL::Context& gl = window.GetContext();
 	gl.Enable(GL::Capability::DepthTest);
 
+	auto keyboard_mode = std::make_shared<App::KeyboardMode>(App::KeyboardMode::CAR_MOVEMENT);
 	// orbit camera
 	auto main_camera = std::make_shared<App::Camera>();
 	// todo: add first person camera
-	App::Gui gui(main_camera);
 
 	GL::Shader vert(GL::ShaderType::Vertex, App::ReadFileData("../assets/backpack/shader/backpack.vert", false));
 	GL::Shader frag(GL::ShaderType::Fragment, App::ReadFileData("../assets/backpack/shader/backpack.frag", false));
@@ -66,9 +69,11 @@ int main() try {
         "posz.jpg",
         "negz.jpg",
     };
-	App::Skybox skybox(skybox_program, "../assets/skybox", filenames);
+	App::Skybox skybox(skybox_program, "../assets/skybox/textures", filenames);
 
 	// App::Cube model{program};
+	App::CarModel car_model{program, "../assets/car/scene.gltf"};
+
 	App::Model backpack{program, "../assets/backpack/scene.gltf"};
 	backpack.UpdateScale(GL::Vec3(0.01f, 0.01f, 0.01f));
 	backpack.SetTranslation(GL::Vec3(5.0f, 5.0f, 5.0f));
@@ -76,7 +81,7 @@ int main() try {
 	App::Model garage{program, "../assets/garage/scene.gltf"};
 	garage.UpdateTranslation(GL::Vec3(0.0f, -0.5f, 0.0f));
 
-	App::Model car{program, "../assets/car/scene.gltf"};
+	App::Gui gui(main_camera, keyboard_mode);
 
 	App::Timer main_timer;
 	main_timer.Start();
@@ -86,29 +91,71 @@ int main() try {
 	GL::Event ev;
 	while (window.IsOpen()) {
 		auto delta_time = static_cast<float>(main_timer.Tick<App::Timer::Seconds>());
+
 		while (window.GetEvent(ev)) {
 			if (ev.Type == GL::Event::KeyDown) {
-				switch (ev.Key.Code) {
-					case GL::Key::Escape: {
-						window.Close();
-						break;
+				keyboard_status[ev.Key.Code] = true;
+			} else if (ev.Type == GL::Event::KeyUp) {
+				keyboard_status[ev.Key.Code] = false;
+			}
+		}
+
+		if (keyboard_status[GL::Key::W]) {
+			switch (*keyboard_mode) {
+				case App::KeyboardMode::ORBIT_CAMERA: {
+					main_camera->MoveFront(delta_time);
+					break;
+				}
+				case App::KeyboardMode::CAR_MOVEMENT: {
+					car_model.MoveFront(delta_time);
+					break;
+				}
+			}
+		}
+
+		if (keyboard_status[GL::Key::S]) {
+			switch (*keyboard_mode) {
+				case App::KeyboardMode::ORBIT_CAMERA: {
+					main_camera->MoveBack(delta_time);
+					break;
+				}
+				case App::KeyboardMode::CAR_MOVEMENT: {
+					car_model.MoveBack(delta_time);
+					break;
+				}
+			}
+		}
+
+		if (keyboard_status[GL::Key::A]) {
+			switch (*keyboard_mode) {
+				case App::KeyboardMode::ORBIT_CAMERA: {
+					main_camera->MoveLeft(delta_time);
+					break;
+				}
+				case App::KeyboardMode::CAR_MOVEMENT: {
+					if (keyboard_status[GL::Key::W]) {
+						car_model.MoveFrontLeft(delta_time);
+					} else if (keyboard_status[GL::Key::S]) {
+						car_model.MoveBackLeft(delta_time);
 					}
-					case GL::Key::W: {
-						main_camera->MoveFront(delta_time);
-						break;
+					break;
+				}
+			}
+		}
+
+		if (keyboard_status[GL::Key::D]) {
+			switch (*keyboard_mode) {
+				case App::KeyboardMode::ORBIT_CAMERA: {
+					main_camera->MoveRight(delta_time);
+					break;
+				}
+				case App::KeyboardMode::CAR_MOVEMENT: {
+					if (keyboard_status[GL::Key::W]) {
+						car_model.MoveFrontRight(delta_time);
+					} else if (keyboard_status[GL::Key::S]) {
+						car_model.MoveBackRight(delta_time);
 					}
-					case GL::Key::A: {
-						main_camera->MoveLeft(delta_time);
-						break;
-					}
-					case GL::Key::S: {
-						main_camera->MoveBack(delta_time);
-						break;
-					}
-					case GL::Key::D: {
-						main_camera->MoveRight(delta_time);
-						break;
-					}
+					break;
 				}
 			}
 		}
@@ -135,9 +182,9 @@ int main() try {
 		program.SetUniform(program.GetUniform("MVP"), mvp);
 		garage.Draw(gl, program);
 		
-		mvp = App::GetModelViewProjectionMatrix(car.GetModelMatrix(), main_camera->GetViewMatrix(), projection_matrix);
+		mvp = App::GetModelViewProjectionMatrix(car_model.GetModelMatrix(), main_camera->GetViewMatrix(), projection_matrix);
 		program.SetUniform(program.GetUniform("MVP"), mvp);
-		car.Draw(gl, program);
+		car_model.Draw(gl, program);
 
 		gl.UseProgram(skybox_program);
 
