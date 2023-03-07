@@ -59,4 +59,5 @@ static int APP_TEXTURE_NEXT_FREE_UNIT = 0;
 // Car parameters
 const float APP_CAR_MOVE_SPEED = 2.0f;
 const float APP_CAR_ROTATE_SPEED = 4.0f;
+const float APP_CAR_WHEELS_ROTATE_SPEED = 50.0f;
 const GL::Vec3 APP_CAR_CENTER_TRANSLATION = GL::Vec3(0.0f, 0.0f, 1.5f);

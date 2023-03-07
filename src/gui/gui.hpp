@@ -29,7 +29,7 @@ struct Gui {
         ImGui_ImplOpenGL3_Init();
 
         clear_color = ImVec4(1.000F, 1.000F, 1.000F, 1.0F);
-        show_imgui_demo_window = true;
+        show_imgui_demo_window = false;
     }
 
     void Cleanup() {
@@ -101,10 +101,10 @@ struct Gui {
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
-    bool show_imgui_demo_window = true;
-    ImVec4 clear_color = ImVec4(1.000F, 1.000F, 1.000F, 1.0F);
+    bool show_imgui_demo_window;
+    ImVec4 clear_color;
 
-    std::shared_ptr<App::Camera> camera_ptr_ = nullptr;
+    std::shared_ptr<App::Camera> camera_ptr_;
     std::shared_ptr<KeyboardMode> keyboard_mode_ptr_;
 };
 

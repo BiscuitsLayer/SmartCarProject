@@ -1,2 +1,28 @@
+Engine Demo:
+
 [] Prepare cube and cube_ebo <- so they look cool
 and make different shaders/shader programs for them
+[] Move shader program into model
+
+Workflow:
+
+[] Configs based on JSONs
+[x] Deal with Assimp DLL linkage
+[x] Get rid of Assimp unit test linkage
+[] OOGL make call via CMakeLists.txt
+
+Graphics:
+
+[] PBR for car model
+[x] Wheels rotation
+
+Bugs:
+
+[] Texture unit for cubemap
+[] Texture naming (autogen headers for GLSL)
+[] Max FPS problem
+
+Optional:
+
+[] TinyGLTF loader (optional)
+[] Atlas for textures (optional)

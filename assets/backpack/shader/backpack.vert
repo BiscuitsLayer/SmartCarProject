@@ -6,10 +6,11 @@ in vec3 aNormal;
 
 out vec2 textureCoordinates;
 
+uniform mat4 meshTransform;
 uniform mat4 MVP;
 
 void main() {
-    gl_Position = MVP * vec4(aPos,  1.0);
+    gl_Position = MVP * meshTransform * vec4(aPos,  1.0);
 
     textureCoordinates = aTexCoord;
 }

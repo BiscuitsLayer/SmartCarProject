@@ -15,8 +15,8 @@ namespace App {
 
 class Mesh {
 public:
-    Mesh(GL::Program &program, std::vector<GL::Vertex> vertices, std::vector<int> indices, std::vector<Texture> textures)
-    : vertices_(vertices), indices_(indices), textures_(textures) {
+    Mesh(GL::Program &program, std::string name, Transform transform_to_model, std::vector<GL::Vertex> vertices, std::vector<int> indices, std::vector<Texture> textures)
+    : name_(name), transform_to_model_(transform_to_model), vertices_(vertices), indices_(indices), textures_(textures) {
         offsetof(GL::Vertex, Normal);
         
         vbo_ = GL::VertexBuffer(vertices.data(), vertices.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
@@ -53,10 +53,16 @@ public:
             // std::cout << "Bind texture " << texture_name << " to unit " << textures_[i].texture_unit_ << std::endl;
         }
 
+        program.SetUniform(program.GetUniform("meshTransform"), 
+            static_cast<GL::Mat4>(transform_to_model_) * static_cast<GL::Mat4>(self_transform_));
         gl.DrawElements(vao_, GL::Primitive::Triangles, 0, indices_.size(), GL::Type::UnsignedInt);
     }
 
 private:
+    std::string name_;
+    Transform transform_to_model_;
+    Transform self_transform_;
+
     std::vector<GL::Vertex> vertices_;
     std::vector<int> indices_;
     std::vector<Texture> textures_;
@@ -64,6 +70,8 @@ private:
     GL::VertexArray  vao_;  // vertex array object
     GL::VertexBuffer vbo_;  // vertex buffer object
     GL::VertexBuffer ebo_;  // element buffer object
+
+    friend class CarModel;
 };
 
 } // namespace App

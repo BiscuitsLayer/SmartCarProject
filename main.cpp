@@ -71,12 +71,23 @@ int main() try {
     };
 	App::Skybox skybox(skybox_program, "../assets/skybox/textures", filenames);
 
-	// App::Cube model{program};
-	App::CarModel car_model{program, "../assets/car/scene.gltf"};
+	// std::vector<std::string> car_wheels_nodes = {
+	// 	"Aro externo.001_0",
+	// 	"Aro externo.006_1",
+	// };
 
-	App::Model backpack{program, "../assets/backpack/scene.gltf"};
-	backpack.UpdateScale(GL::Vec3(0.01f, 0.01f, 0.01f));
-	backpack.SetTranslation(GL::Vec3(5.0f, 5.0f, 5.0f));
+	std::vector<std::string> car_wheels_meshes = {
+		"Object_0",
+		"Object_1",
+		"Object_2",
+		"Object_3",
+	};
+	// App::Cube model{program};
+	App::CarModel car_model{program, "../assets/car/scene.gltf", car_wheels_meshes};
+
+	// App::Model backpack{program, "../assets/backpack/scene.gltf"};
+	// backpack.UpdateScale(GL::Vec3(0.01f, 0.01f, 0.01f));
+	// backpack.SetTranslation(GL::Vec3(5.0f, 5.0f, 5.0f));
 
 	App::Model garage{program, "../assets/garage/scene.gltf"};
 	garage.UpdateTranslation(GL::Vec3(0.0f, -0.5f, 0.0f));
@@ -91,6 +102,10 @@ int main() try {
 	GL::Event ev;
 	while (window.IsOpen()) {
 		auto delta_time = static_cast<float>(main_timer.Tick<App::Timer::Seconds>());
+
+
+		car_model.RotateWheels(delta_time);
+
 
 		while (window.GetEvent(ev)) {
 			if (ev.Type == GL::Event::KeyDown) {
@@ -173,10 +188,10 @@ int main() try {
 		GL::Mat4 mvp;
 		GL::Mat4 vp;
 
-		backpack.SetRotation(texture_timer.Elapsed<App::Timer::Seconds>(), GL::Vec3(5.0f, 2.0f, 5.0f));
-		mvp = App::GetModelViewProjectionMatrix(backpack.GetModelMatrix(), main_camera->GetViewMatrix(), projection_matrix);
-		program.SetUniform(program.GetUniform("MVP"), mvp);
-		backpack.Draw(gl, program);
+		// backpack.SetRotation(texture_timer.Elapsed<App::Timer::Seconds>(), GL::Vec3(5.0f, 2.0f, 5.0f));
+		// mvp = App::GetModelViewProjectionMatrix(backpack.GetModelMatrix(), main_camera->GetViewMatrix(), projection_matrix);
+		// program.SetUniform(program.GetUniform("MVP"), mvp);
+		// backpack.Draw(gl, program);
 
 		mvp = App::GetModelViewProjectionMatrix(garage.GetModelMatrix(), main_camera->GetViewMatrix(), projection_matrix);
 		program.SetUniform(program.GetUniform("MVP"), mvp);

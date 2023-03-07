@@ -57,16 +57,18 @@ private:
         std::vector<int> indices;
         std::vector<Texture> textures;
 
+        GL::Mat4 transform_to_model {
+            transformation.a1, transformation.a2, transformation.a3, transformation.a4,
+            transformation.b1, transformation.b2, transformation.b3, transformation.b4,
+            transformation.c1, transformation.c2, transformation.c3, transformation.c4,
+            transformation.d1, transformation.d2, transformation.d3, transformation.d4,
+        };
+
         // Vertices
         for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
             GL::Vertex vertex;
             // process vertex positions, normals and texture coordinates
-            vertex.Pos = GL::Vec3{mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
-            
-            // convert using parent's transformation
-            aiVector3D pos_temp = mesh->mVertices[i];
-            aiTransformVecByMatrix4(&pos_temp, &transformation);
-            vertex.Pos = GL::Vec3{pos_temp.x, pos_temp.y, pos_temp.z};
+            vertex.Pos = GL::Vec3{mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};    
 
             if (mesh->HasTextureCoords(0)) {
                 vertex.Tex = GL::Vec2{mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
@@ -99,7 +101,7 @@ private:
             textures.insert(textures.end(), specular_textures.begin(), specular_textures.end());
         }
 
-        meshes_.push_back(Mesh{program, vertices, indices, textures});
+        meshes_.push_back(Mesh{program, mesh->mName.C_Str(), Transform{transform_to_model}, vertices, indices, textures});
     }
     
     void HandleNodeRecursive(GL::Program program, aiNode* node, const aiScene* scene, aiMatrix4x4 transformation) {
