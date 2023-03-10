@@ -53,8 +53,8 @@ public:
             // std::cout << "Bind texture " << texture_name << " to unit " << textures_[i].texture_unit_ << std::endl;
         }
 
-        program.SetUniform(program.GetUniform("meshTransform"), 
-            static_cast<GL::Mat4>(transform_to_model_) * static_cast<GL::Mat4>(self_transform_));
+        program.SetUniform(program.GetUniform("meshTransformToModel"), transform_to_model_);
+        program.SetUniform(program.GetUniform("meshSelfTransform"), self_transform_);
         gl.DrawElements(vao_, GL::Primitive::Triangles, 0, indices_.size(), GL::Type::UnsignedInt);
     }
 

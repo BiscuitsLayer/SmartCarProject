@@ -46,6 +46,8 @@ int main() try {
 	App::CustomWindow window(APP_INIT_WINDOW_WIDTH, APP_INIT_WINDOW_HEIGHT, 
 		APP_INIT_WINDOW_TITLE, APP_INIT_IS_FULLSCREEN ? GL::WindowStyle::Fullscreen : GL::WindowStyle::Close);
 	GL::Context& gl = window.GetContext();
+
+	// Enable writing to depth buffer
 	gl.Enable(GL::Capability::DepthTest);
 
 	auto keyboard_mode = std::make_shared<App::KeyboardMode>(App::KeyboardMode::CAR_MOVEMENT);
@@ -103,9 +105,7 @@ int main() try {
 	while (window.IsOpen()) {
 		auto delta_time = static_cast<float>(main_timer.Tick<App::Timer::Seconds>());
 
-
 		car_model.RotateWheels(delta_time);
-
 
 		while (window.GetEvent(ev)) {
 			if (ev.Type == GL::Event::KeyDown) {
@@ -178,6 +178,8 @@ int main() try {
 		gl.UseProgram(program);
 
 		gl.ClearColor(GL::Color(std::ceil(255 * 0.2), std::ceil(255 * 0.3), std::ceil(255 * 0.3), std::ceil(255 * 1.0)));
+		
+		// Clear color buffer and depth buffer
 		gl.Clear(GL::Buffer::Color | GL::Buffer::Depth);
 
 		gui.Prepare();

@@ -22,9 +22,9 @@ target_link_libraries(libsmartcar PUBLIC ${OPENGL_LIBRARIES})
 ### OOGL ###
 # Build with Makefile
 add_custom_command(TARGET libsmartcar
-  COMMAND make
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include/OOGL
-  COMMAND_EXPAND_LISTS
+	COMMAND make
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include/OOGL
+	COMMAND_EXPAND_LISTS
 )
 # Include in the project
 set(OOGL_DIR "include/OOGL")
@@ -60,12 +60,12 @@ target_link_libraries(SmartCarMain ${OOGL_LIBRARY} assimp libsmartcar)
 
 ### Move DLLs ###
 add_custom_command(TARGET SmartCarMain POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:SmartCarMain> $<TARGET_FILE_DIR:SmartCarMain>
-  COMMAND_EXPAND_LISTS
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:SmartCarMain> $<TARGET_FILE_DIR:SmartCarMain>
+  	COMMAND_EXPAND_LISTS
 )
 
 ### Check include directories ###
 get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
 foreach(dir ${dirs})
-  message(STATUS "include dir = '${dir}'")
+	message(STATUS "include dir = '${dir}'")
 endforeach()
