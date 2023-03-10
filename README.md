@@ -1,27 +1,29 @@
 # Smart Car Project
 
-OpenGL based self-driving car (with self made neural network)
+OpenGL based self-driving car (with DQN algorithm LibTorch neural network)
 
-Make sure you installed:
-1. Git
-2. Powershell
-3. GNU Make for Windows 
-4. OpenGL
-5. CUDA + + cuDNN + NVIDIA Nsight Graphics
+## Installation
 
-and copy all files from
+**Make sure you have:**
 
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\<version>\extras\visual_studio_integration\MSBuildExtensions
+1. *Git*
+2. *Powershell*
+3. *GNU Make for Windows*
+4. *OpenGL*
+5. *CUDA + cuDNN + NVIDIA Nsight Graphics*
+6. *LibTorch*
 
-to
+**and copied all files from**
 
-C:\Program Files (x86)\Microsoft Visual Studio\<version>\<product>\Microsoft\VC\<version>\BuildCustomizations
+    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\<version>\extras\visual_studio_integration\MSBuildExtensions
 
-where <product> is the MSVC product you use: { BuildTools, Enterprise }
+**to**
 
-6. LibTorch for C++, Windows
+    C:\Program Files (x86)\Microsoft Visual Studio\<version>\<product>\Microsoft\VC\<version>\BuildCustomizations
 
-To execute:
+where *\<product\>* is the MSVC product you use: *{ BuildTools, Enterprise, Community, etc. }*
+
+## Execution
 
     git clone https://github.com/BiscuitsLayer/SmartCarProject.git
     cd ./SmartCarProject
