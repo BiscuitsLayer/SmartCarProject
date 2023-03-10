@@ -4,7 +4,7 @@ OpenGL based self-driving car (with DQN algorithm LibTorch neural network)
 
 ## Installation
 
-**Make sure you have:**
+**Make sure you have**
 
 1. *Git*
 2. *Powershell*
