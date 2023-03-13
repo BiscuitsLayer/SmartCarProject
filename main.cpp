@@ -22,6 +22,7 @@
 #include <timer/timer.hpp>
 #include <window/window.hpp>
 #include <skybox/skybox.hpp>
+#include <config/config_handler.hpp>
 
 // Model
 #include <cube_example/src/cube.hpp>
@@ -40,6 +41,8 @@ GL::Mat4 projection_matrix = GL::Mat4::Perspective(
 );
 	 
 int main() try {
+	App::ConfigHandler config_handler{"../configs/config.json"};
+
 	std::array<bool, APP_KEYBOARD_KEYS_COUNT> keyboard_status;
 	keyboard_status.fill(false);
 
@@ -49,6 +52,8 @@ int main() try {
 
 	// Enable writing to depth buffer
 	gl.Enable(GL::Capability::DepthTest);
+	gl.Enable(GL::Capability::Blend);
+	gl.BlendFunc(GL::BlendingFactor::SourceAlpha, GL::BlendingFactor::OneMinusSourceAlpha);
 
 	auto keyboard_mode = std::make_shared<App::KeyboardMode>(App::KeyboardMode::CAR_MOVEMENT);
 	// orbit camera
@@ -63,6 +68,10 @@ int main() try {
 	GL::Shader skybox_frag(GL::ShaderType::Fragment, App::ReadFileData("../assets/skybox/shader/skybox.frag", false));
 	GL::Program skybox_program(skybox_vert, skybox_frag);
 
+	GL::Shader bbox_vert(GL::ShaderType::Vertex, App::ReadFileData("../shader/bbox.vert", false));
+	GL::Shader bbox_frag(GL::ShaderType::Fragment, App::ReadFileData("../shader/bbox.frag", false));
+	GL::Program bbox_program(bbox_vert, bbox_frag);
+
 	std::array<std::string, 6> filenames {
         "posx.jpg",
         "negx.jpg",
@@ -73,11 +82,6 @@ int main() try {
     };
 	App::Skybox skybox(skybox_program, "../assets/skybox/textures", filenames);
 
-	// std::vector<std::string> car_wheels_nodes = {
-	// 	"Aro externo.001_0",
-	// 	"Aro externo.006_1",
-	// };
-
 	std::vector<std::string> car_wheels_meshes = {
 		"Object_0",
 		"Object_1",
@@ -85,13 +89,13 @@ int main() try {
 		"Object_3",
 	};
 	// App::Cube model{program};
-	App::CarModel car_model{program, "../assets/car/scene.gltf", car_wheels_meshes};
+	App::CarModel car_model{program, bbox_program, "../assets/car/scene.gltf", car_wheels_meshes};
 
 	// App::Model backpack{program, "../assets/backpack/scene.gltf"};
 	// backpack.UpdateScale(GL::Vec3(0.01f, 0.01f, 0.01f));
 	// backpack.SetTranslation(GL::Vec3(5.0f, 5.0f, 5.0f));
 
-	App::Model garage{program, "../assets/garage/scene.gltf"};
+	App::Model garage{program, program, "../assets/garage/scene.gltf"};
 	garage.UpdateTranslation(GL::Vec3(0.0f, -0.5f, 0.0f));
 
 	App::Gui gui(main_camera, keyboard_mode);
@@ -174,9 +178,7 @@ int main() try {
 				}
 			}
 		}
-
-		gl.UseProgram(program);
-
+		
 		gl.ClearColor(GL::Color(std::ceil(255 * 0.2), std::ceil(255 * 0.3), std::ceil(255 * 0.3), std::ceil(255 * 1.0)));
 		
 		// Clear color buffer and depth buffer
@@ -196,16 +198,21 @@ int main() try {
 		// backpack.Draw(gl, program);
 
 		mvp = App::GetModelViewProjectionMatrix(garage.GetModelMatrix(), main_camera->GetViewMatrix(), projection_matrix);
+		gl.UseProgram(program);
 		program.SetUniform(program.GetUniform("MVP"), mvp);
-		garage.Draw(gl, program);
+		gl.UseProgram(bbox_program);
+		bbox_program.SetUniform(bbox_program.GetUniform("MVP"), mvp);
+		garage.Draw(gl, program, program);
 		
 		mvp = App::GetModelViewProjectionMatrix(car_model.GetModelMatrix(), main_camera->GetViewMatrix(), projection_matrix);
+		gl.UseProgram(program);
 		program.SetUniform(program.GetUniform("MVP"), mvp);
-		car_model.Draw(gl, program);
-
-		gl.UseProgram(skybox_program);
+		gl.UseProgram(bbox_program);
+		bbox_program.SetUniform(bbox_program.GetUniform("MVP"), mvp);
+		car_model.Draw(gl, program, bbox_program);
 
 		vp = App::GetViewNoTranslationProjectionMatrix(main_camera->GetViewMatrix(), projection_matrix);
+		gl.UseProgram(skybox_program);
 		skybox_program.SetUniform(skybox_program.GetUniform("VP"), vp);
 		skybox.Draw(gl, skybox_program);
 

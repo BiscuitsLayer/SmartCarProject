@@ -9,27 +9,31 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_INCLUDE_PATH "${CMAKE_SOURCE_DIR}/src")
 
 ### Library SmartCar ###
+# Build new library
 file(GLOB SRC "src/*.cpp")
-add_library(libsmartcar ${SRC})
+add_library(LibSmartCar STATIC ${SRC})
+# Provide includes
 include_directories(src)
 include_directories(assets)
 
 ### OpenGL ###
+# Add package
 find_package(OpenGL REQUIRED)
+# Provide includes
 include_directories(${OPENGL_INCLUDE_DIRS})
-target_link_libraries(libsmartcar PUBLIC ${OPENGL_LIBRARIES})
 
 ### OOGL ###
 # Build with Makefile
-add_custom_command(TARGET libsmartcar
+add_custom_command(TARGET LibSmartCar
 	COMMAND make
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include/OOGL
 	COMMAND_EXPAND_LISTS
 )
-# Include in the project
+# Provide directories
 set(OOGL_DIR "include/OOGL")
 set(OOGL_INCLUDE_DIR ${OOGL_DIR}/include)
 set(OOGL_LIBRARY ${CMAKE_SOURCE_DIR}/${OOGL_DIR}/lib/OOGL.a)
+# Provide includes
 include_directories(${OOGL_INCLUDE_DIR})
 
 ### Assimp ###
@@ -43,20 +47,33 @@ set(ASSIMP_BUILD_OBJ_IMPORTER ON)
 # Provide directories
 set(ASSIMP_DIR include/assimp)
 set(ASSIMP_INCLUDE_DIRS "${ASSIMP_DIR}/include" "build/${ASSIMP_DIR}/include")
+# Add package
 add_subdirectory(${ASSIMP_DIR})
+# Provide includes
 include_directories(${ASSIMP_INCLUDE_DIRS})
 
 ### ImGui ###
+# Provide directories
 set(IMGUI_DIR "include/imgui")
 set(IMGUI_BACKENDS_DIR "${IMGUI_DIR}/backends")
-file(GLOB SRC_LIB "${IMGUI_DIR}/*.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_win32.cpp")
+# Build new library
+file(GLOB SRC_IMGUI "${IMGUI_DIR}/*.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_win32.cpp")
+add_library(MyImGuiSubset STATIC ${SRC_IMGUI})
+target_link_libraries(MyImGuiSubset PUBLIC dwmapi)
+# Provide includes
 include_directories(${IMGUI_DIR} ${IMGUI_BACKENDS_DIR})
-target_link_libraries(libsmartcar PUBLIC dwmapi)
+
+### JSON ###
+# Provide directories
+set(JSON_DIR "include/json")
+# Add package
+add_subdirectory(${JSON_DIR})
 
 ### Main ###
+# Build main target
 file(GLOB SRC_MAIN "main.cpp")
-add_executable(SmartCarMain ${SRC_MAIN} ${SRC_LIB})
-target_link_libraries(SmartCarMain ${OOGL_LIBRARY} assimp libsmartcar)
+add_executable(SmartCarMain ${SRC_MAIN})
+target_link_libraries(SmartCarMain ${OOGL_LIBRARY} ${OPENGL_LIBRARIES} MyImGuiSubset LibSmartCar assimp nlohmann_json::nlohmann_json)
 
 ### Move DLLs ###
 add_custom_command(TARGET SmartCarMain POST_BUILD

@@ -13,8 +13,8 @@ namespace App {
 
 class Model {
 public:
-    Model(GL::Program program, std::string path) {
-        auto loader = AssimpLoader{program, path};
+    Model(GL::Program program, GL::Program bbox_program, std::string path) {
+        auto loader = AssimpLoader{program, bbox_program, path};
         // auto loader = TinyGltfLoader(path);
         meshes_ = loader.GetMeshes();
     }
@@ -50,6 +50,12 @@ public:
     void Draw(GL::Context &gl, GL::Program &program) {
         for (auto&& mesh : meshes_) {
             mesh.Draw(gl, program);
+        }
+    }
+
+    void Draw(GL::Context &gl, GL::Program &program, GL::Program &bbox_program) {
+        for (auto&& mesh : meshes_) {
+            mesh.Draw(gl, program, bbox_program);
         }
     }
 

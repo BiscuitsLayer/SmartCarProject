@@ -10,11 +10,14 @@
 #include <assimp/postprocess.h>
 #include <assimp/cimport.h>
 
+// Sources
+#include <bbox/bbox.hpp>
+
 namespace App {
 
 class AssimpLoader {
 public:
-    AssimpLoader(GL::Program program, std::string& path) {
+    AssimpLoader(GL::Program program, GL::Program bbox_program, std::string& path) {
         directory_ = path.substr(0, path.find_last_of('/')) + '/';
 
         Assimp::Importer importer;
@@ -25,7 +28,7 @@ public:
         }
 
         aiMatrix4x4 transformation;
-        HandleNodeRecursive(program, scene->mRootNode, scene, transformation);
+        HandleNodeRecursive(program, bbox_program, scene->mRootNode, scene, transformation);
     }
 
     std::vector<Mesh> GetMeshes() const {
@@ -52,7 +55,7 @@ private:
         return ans;
     }  
 
-    void HandleMesh(GL::Program program, aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation) {
+    void HandleMesh(GL::Program program, GL::Program bbox_program, aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation) {
         std::vector<GL::Vertex> vertices;
         std::vector<int> indices;
         std::vector<Texture> textures;
@@ -64,11 +67,17 @@ private:
             transformation.d1, transformation.d2, transformation.d3, transformation.d4,
         };
 
+        GL::Vec3 bbox_min;
+        GL::Vec3 bbox_max;
+
         // Vertices
         for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
             GL::Vertex vertex;
             // process vertex positions, normals and texture coordinates
-            vertex.Pos = GL::Vec3{mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};    
+            vertex.Pos = GL::Vec3{mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z}; 
+
+            bbox_min = GL::Vec3{std::min(bbox_min.X, vertex.Pos.X), std::min(bbox_min.Y, vertex.Pos.Y), std::min(bbox_min.Z, vertex.Pos.Z)};
+            bbox_max = GL::Vec3{std::max(bbox_max.X, vertex.Pos.X), std::max(bbox_max.Y, vertex.Pos.Y), std::max(bbox_max.Z, vertex.Pos.Z)};   
 
             if (mesh->HasTextureCoords(0)) {
                 vertex.Tex = GL::Vec2{mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
@@ -101,21 +110,25 @@ private:
             textures.insert(textures.end(), specular_textures.begin(), specular_textures.end());
         }
 
-        meshes_.push_back(Mesh{program, mesh->mName.C_Str(), Transform{transform_to_model}, vertices, indices, textures});
+        // GL::Vec3 bbox_min = GL::Vec3{mesh->mAABB.mMin.x, mesh->mAABB.mMin.y, mesh->mAABB.mMin.z};
+        // GL::Vec3 bbox_max = GL::Vec3{mesh->mAABB.mMax.x, mesh->mAABB.mMax.y, mesh->mAABB.mMax.z};
+        BBox bbox{bbox_program, bbox_min, bbox_max};
+
+        meshes_.push_back(Mesh{program, mesh->mName.C_Str(), Transform{transform_to_model}, vertices, indices, textures, bbox});
     }
     
-    void HandleNodeRecursive(GL::Program program, aiNode* node, const aiScene* scene, aiMatrix4x4 transformation) {
+    void HandleNodeRecursive(GL::Program program, GL::Program bbox_program, aiNode* node, const aiScene* scene, aiMatrix4x4 transformation) {
         // accumulate from parent transformation
         transformation *= node->mTransformation;
 
         // process all the node's meshes (if any)
         for (unsigned int i = 0; i < node->mNumMeshes; ++i) {
             aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-            HandleMesh(program, mesh, scene, transformation);			
+            HandleMesh(program, bbox_program, mesh, scene, transformation);			
         }
         // then do the same for each of its children
         for (unsigned int i = 0; i < node->mNumChildren; ++i) {
-            HandleNodeRecursive(program, node->mChildren[i], scene, transformation);
+            HandleNodeRecursive(program, bbox_program, node->mChildren[i], scene, transformation);
         }
     }
 

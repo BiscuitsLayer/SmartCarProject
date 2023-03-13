@@ -17,3 +17,7 @@
 [submodule "include/cute_headers"]
 	path = include/cute_headers
 	url = https://github.com/RandyGaul/cute_headers.git
+
+[submodule "include/json"]
+	path = include/json
+	url = https://github.com/nlohmann/json.git

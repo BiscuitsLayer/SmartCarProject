@@ -1,0 +1,116 @@
+{
+    "shaders": [
+        {
+            "name": "DEFAULT",
+            "folder": "assets/backpack/shader",
+            "vertex": "backpack.vert",
+            "fragment": "backpack.frag"
+        },
+        {
+            "name": "SKYBOX",
+            "folder": "assets/skybox/shader",
+            "vertex": "skybox.vert",
+            "fragment": "skybox.frag"
+        },
+        {
+            "name": "BBOX",
+            "folder": "shader",
+            "vertex": "bbox.vert",
+            "fragment": "bbox.frag"
+        },
+        {
+            "name": "CUBE_EXAMPLE",
+            "folder": "assets/cube_example/shader",
+            "vertex": "cube.vert",
+            "fragment": "cube.frag"
+        }
+    ],
+
+    "window": {
+        "max_fps": {
+            "value": 90.0,
+            "mode": true
+        },
+        "params": {
+            "width": 800,
+            "height": 600,
+            "title": "DemoApp",
+            "fullscreen": false
+        }
+    },
+
+    "camera": {
+        "projection": {
+            "FOV": 45.0,
+            "near": 0.1,
+            "far": 10000.0
+        },
+        "length_to_target": {
+            "min": 1.0,
+            "max": 1000.0
+        },
+        "position": [ 0.0, 2.0, -10.0 ],
+        "target": [ 0.0, 0.0, 0.0 ],
+        "speed": {
+            "move": 5.0,
+            "rotate": 10.0
+        } 
+    },
+
+    "models": [
+        {
+            "type": "CAR",
+            "GLTF": "assets/car/scene.gltf",
+            "wheels": {
+                "mesh_names": [
+                    "Object_0",
+                    "Object_1",
+                    "Object_2",
+                    "Object_3"
+                ],
+                "speed": {
+                    "rotate": 50.0
+                }
+            },
+            "speed": {
+                "move": 2.0,
+                "rotate": 4.0
+            },
+            "shader": {
+                "standart": "DEFAULT",
+                "bbox": "BBOX"
+            }
+        },
+        {
+            "type": "COMMON",
+            "GLTF": "assets/garage/scene.gltf",
+            "shader": {
+                "standart": "DEFAULT",
+                "bbox": "BBOX"
+            }
+        },
+        {
+            "type": "COMMON",
+            "GLTF": "assets/backpack/scene.gltf",
+            "shader": {
+                "standart": "DEFAULT",
+                "bbox": "BBOX"
+            }
+        },
+        {
+            "type": "SKYBOX",
+            "folder": "assets/skybox/textures",
+            "filenames": [
+                "posx.jpg",
+                "negx.jpg",
+                "posy.jpg",
+                "negy.jpg",
+                "posz.jpg",
+                "negz.jpg"
+            ],
+            "shader": {
+                "skybox": "SKYBOX"
+            }
+        }
+    ]
+}

@@ -41,6 +41,8 @@ public:
 	}
 
     void Draw(GL::Context &gl, GL::Program &program) {
+        gl.UseProgram(program);
+
         gl.DepthFunc(GL::TestFunction::LessEqual);
 
         for (unsigned int i = 0; i < textures_.size(); ++i) {

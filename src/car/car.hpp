@@ -11,11 +11,11 @@ namespace App {
 
 class CarModel : public Model {
 public:
-    CarModel(GL::Program program, std::string path, std::vector<std::string> car_wheel_meshes_names,
+    CarModel(GL::Program program, GL::Program bbox_program, std::string path, std::vector<std::string> car_wheel_meshes_names,
     float car_move_speed = APP_CAR_MOVE_SPEED, float car_rotate_speed = APP_CAR_ROTATE_SPEED,
     float car_wheels_rotate_speed = APP_CAR_WHEELS_ROTATE_SPEED, 
     GL::Vec3 car_center_translation = APP_CAR_CENTER_TRANSLATION)
-    : Model(program, path), 
+    : Model(program, bbox_program, path), 
     car_wheel_meshes_names_(car_wheel_meshes_names),
     car_move_speed_(car_move_speed), car_rotate_speed_(car_rotate_speed),
     car_wheels_rotate_speed_(car_wheels_rotate_speed),

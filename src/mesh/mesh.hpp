@@ -10,15 +10,14 @@
 // Sources
 #include <constants/constants.hpp>
 #include <texture/texture.hpp>
+#include <bbox/bbox.hpp>
 
 namespace App {
 
 class Mesh {
 public:
-    Mesh(GL::Program &program, std::string name, Transform transform_to_model, std::vector<GL::Vertex> vertices, std::vector<int> indices, std::vector<Texture> textures)
-    : name_(name), transform_to_model_(transform_to_model), vertices_(vertices), indices_(indices), textures_(textures) {
-        offsetof(GL::Vertex, Normal);
-        
+    Mesh(GL::Program &program, std::string name, Transform transform_to_model, std::vector<GL::Vertex> vertices, std::vector<int> indices, std::vector<Texture> textures, BBox bbox)
+    : name_(name), transform_to_model_(transform_to_model), vertices_(vertices), indices_(indices), textures_(textures), bbox_(bbox) {       
         vbo_ = GL::VertexBuffer(vertices.data(), vertices.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
         ebo_ = GL::VertexBuffer(indices.data(), indices.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
 
@@ -29,6 +28,8 @@ public:
     }
 
     void Draw(GL::Context &gl, GL::Program &program) {
+        gl.UseProgram(program);
+
         unsigned int diffuseNumber = 1;
         unsigned int specularNumber = 1;
 
@@ -58,10 +59,21 @@ public:
         gl.DrawElements(vao_, GL::Primitive::Triangles, 0, indices_.size(), GL::Type::UnsignedInt);
     }
 
+    void Draw(GL::Context &gl, GL::Program &program, GL::Program &bbox_program) {
+        Draw(gl, program);
+
+        gl.UseProgram(bbox_program);
+
+        bbox_program.SetUniform(bbox_program.GetUniform("meshTransformToModel"), transform_to_model_);
+        bbox_program.SetUniform(bbox_program.GetUniform("meshSelfTransform"), self_transform_);
+        bbox_.Draw(gl, bbox_program);
+    }
+
 private:
     std::string name_;
     Transform transform_to_model_;
     Transform self_transform_;
+    BBox bbox_;
 
     std::vector<GL::Vertex> vertices_;
     std::vector<int> indices_;
