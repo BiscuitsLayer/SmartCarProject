@@ -126,10 +126,10 @@
    ],
    "images" : [
       {
-         "uri" : "Cube_BaseColor.png"
+         "uri" : "textures/Cube_BaseColor.png"
       },
       {
-         "uri" : "Cube_MetallicRoughness.png"
+         "uri" : "textures/Cube_MetallicRoughness.png"
       }
    ],
    "materials" : [

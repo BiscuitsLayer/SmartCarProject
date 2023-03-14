@@ -24,14 +24,14 @@ public:
     Texture(std::string path, Type type, int texture_unit = APP_TEXTURE_NEXT_FREE_UNIT++)
     : texture_unit_(texture_unit), type_(type) {
         std::string buffer = App::ReadFileData(path, false);
-	    auto image = GL::Image{reinterpret_cast<unsigned char*>(buffer.data()), buffer.size()};
+	    auto image = GL::Image{reinterpret_cast<unsigned char*>(buffer.data()), static_cast<GL::uint>(buffer.size())};
 	    texture_ = GL::Texture{image, GL::InternalFormat::RGB};
         texture_.SetWrapping(GL::Wrapping::Repeat, GL::Wrapping::Repeat);
     }
 
-    static Texture Cubemap(std::string path, std::array<std::string, 6> filenames) {
+    static Texture Cubemap(std::string path, std::array<std::string, APP_CUBEMAP_TEXTURES_COUNT> filenames) {
         std::string buffer;
-        std::array<std::shared_ptr<GL::Image>, 6> image_ptrs;
+        std::array<std::shared_ptr<GL::Image>, APP_CUBEMAP_TEXTURES_COUNT> image_ptrs;
 
         unsigned int index = 0;
         for (auto filename : filenames) {

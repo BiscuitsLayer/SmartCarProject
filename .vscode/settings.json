@@ -87,6 +87,11 @@
         "set": "cpp",
         "stack": "cpp",
         "unordered_set": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "filesystem": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "valarray": "cpp",
+        "csignal": "cpp"
     }
 }

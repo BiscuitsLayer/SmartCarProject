@@ -8,14 +8,14 @@
 
 // Sources
 #include <helpers/helpers.hpp>
+#include <config/config_handler.hpp>
 
 namespace App {
 
 struct Gui {
 
-    Gui(std::shared_ptr<App::Camera> camera_ptr, std::shared_ptr<KeyboardMode> keyboard_mode_ptr)
-    : camera_ptr_(camera_ptr), keyboard_mode_ptr_(keyboard_mode_ptr) {
-        auto raw_window_handle = FindWindowA("OOGL_WINDOW", APP_INIT_WINDOW_TITLE.c_str());
+    Gui(App::Config::WindowConfig window_config) {
+        auto raw_window_handle = FindWindowA("OOGL_WINDOW", window_config.params.title.c_str());
 
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -45,6 +45,7 @@ struct Gui {
     }
 
     void Draw() {
+        auto& context = App::Context::Get();
 
         // DEMO WINDOW TOOLS
 
@@ -52,28 +53,30 @@ struct Gui {
 			ImGui::ShowDemoWindow(&show_imgui_demo_window);
 		}
 
-        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+        ImGui::Begin("Parameters");                          // Create a window called "Hello, world!" and append into it.
 
-        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+        ImGui::Text("Sample text");               // Display some text (you can use a format strings too)
         ImGui::Checkbox("Demo Window", &show_imgui_demo_window);      // Edit bools storing our window open/close state
 
         ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
         // CAMERA PARAMETERS
 
+        auto camera_ptr = context.camera.value();
+
         ImGui::SeparatorText("Camera parameters");
 
-        ImGui::DragFloat3("Position", (float*)&camera_ptr_->camera_position_, 0.1f, -100.0f, 100.0f);
-        ImGui::DragFloat3("Target", (float*)&camera_ptr_->camera_target_, 0.1f, -100.0f, 100.0f);
-        ImGui::Text("Length to target: %.3f", camera_ptr_->cur_length_to_target_);
+        ImGui::DragFloat3("Position", (float*)&camera_ptr->camera_position_, 0.1f, -100.0f, 100.0f);
+        ImGui::DragFloat3("Target", (float*)&camera_ptr->camera_target_, 0.1f, -100.0f, 100.0f);
+        ImGui::Text("Length to target: %.3f", camera_ptr->cur_length_to_target_);
 
-        ImGui::SliderFloat("Move speed", &camera_ptr_->camera_move_speed_, 1.0f, 50.0f);
-        ImGui::SliderFloat("Rotate speed", &camera_ptr_->camera_rotate_speed_, 1.0f, 50.0f);
+        ImGui::SliderFloat("Move speed", &camera_ptr->camera_move_speed_, 1.0f, 50.0f);
+        ImGui::SliderFloat("Rotate speed", &camera_ptr->camera_rotate_speed_, 1.0f, 50.0f);
 
-        ImGui::DragFloat("Min length to target", &camera_ptr_->camera_min_length_to_target_, 0.2f, 1.0f, std::min(camera_ptr_->camera_max_length_to_target_, 999.8f));
-        ImGui::DragFloat("Max length to target", &camera_ptr_->camera_max_length_to_target_, 0.2f, std::max(camera_ptr_->camera_min_length_to_target_, 1.2f), 1000.0f);
+        ImGui::DragFloat("Min length to target", &camera_ptr->camera_min_length_to_target_, 0.2f, 1.0f, std::min(camera_ptr->camera_max_length_to_target_, 999.8f));
+        ImGui::DragFloat("Max length to target", &camera_ptr->camera_max_length_to_target_, 0.2f, std::max(camera_ptr->camera_min_length_to_target_, 1.2f), 1000.0f);
 
-        camera_ptr_->UpdateMatrix();
+        camera_ptr->UpdateMatrix();
 
         // KEYBOARD MODE
 
@@ -81,7 +84,7 @@ struct Gui {
 
         ImGui::PushItemWidth(160);
         const char* keyboard_modes[] = { "ORBIT CAMERA", "FIRST PERSON CAMERA", "CAR MOVEMENT" };
-        int* keyboard_mode_ptr_raw = reinterpret_cast<int *>(keyboard_mode_ptr_.get());
+        int* keyboard_mode_ptr_raw = reinterpret_cast<int *>(context.keyboard_mode.value().get());
 
         ImGui::PushID(0);
         ImGui::ListBox("", keyboard_mode_ptr_raw, keyboard_modes, IM_ARRAYSIZE(keyboard_modes));
@@ -103,9 +106,6 @@ struct Gui {
 
     bool show_imgui_demo_window;
     ImVec4 clear_color;
-
-    std::shared_ptr<App::Camera> camera_ptr_;
-    std::shared_ptr<KeyboardMode> keyboard_mode_ptr_;
 };
 
 } // namespace App

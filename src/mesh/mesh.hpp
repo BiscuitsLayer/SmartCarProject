@@ -16,19 +16,31 @@ namespace App {
 
 class Mesh {
 public:
-    Mesh(GL::Program &program, std::string name, Transform transform_to_model, std::vector<GL::Vertex> vertices, std::vector<int> indices, std::vector<Texture> textures, BBox bbox)
-    : name_(name), transform_to_model_(transform_to_model), vertices_(vertices), indices_(indices), textures_(textures), bbox_(bbox) {       
+    Mesh(std::string default_shader_name, std::string bbox_shader_name, std::string name, Transform transform_to_model, std::vector<GL::Vertex> vertices, std::vector<int> indices, std::vector<Texture> textures, BBox bbox)
+    : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name), name_(name), transform_to_model_(transform_to_model), vertices_(vertices), indices_(indices), textures_(textures), bbox_(bbox) {       
         vbo_ = GL::VertexBuffer(vertices.data(), vertices.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
         ebo_ = GL::VertexBuffer(indices.data(), indices.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
 
-        vao_.BindAttribute(program.GetAttribute("aPos"), vbo_, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_POS_OFFSET);
-        vao_.BindAttribute(program.GetAttribute("aTexCoord"), vbo_, GL::Type::Float, APP_VEC2_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_TEX_OFFSET);
-        vao_.BindAttribute(program.GetAttribute("aNormal"), vbo_, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_NORMAL_OFFSET);
+        auto& context = App::Context::Get();
+        auto& gl = context.gl.value().get();
+        auto shader_handler = context.shader_handler.value();
+
+        auto program = shader_handler.at(default_shader_name_);
+        gl.UseProgram(*program);
+
+        vao_.BindAttribute(program->GetAttribute("aPos"), vbo_, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_POS_OFFSET);
+        vao_.BindAttribute(program->GetAttribute("aTexCoord"), vbo_, GL::Type::Float, APP_VEC2_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_TEX_OFFSET);
+        vao_.BindAttribute(program->GetAttribute("aNormal"), vbo_, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_NORMAL_OFFSET);
         vao_.BindElements(ebo_);
     }
 
-    void Draw(GL::Context &gl, GL::Program &program) {
-        gl.UseProgram(program);
+    void Draw() {
+        auto& context = App::Context::Get();
+        auto& gl = context.gl.value().get();
+        auto shader_handler = context.shader_handler.value();
+
+        auto program = shader_handler.at(default_shader_name_);
+        gl.UseProgram(*program);
 
         unsigned int diffuseNumber = 1;
         unsigned int specularNumber = 1;
@@ -49,24 +61,23 @@ public:
                 }
             }
             
-	        program.SetUniform(program.GetUniform(texture_name), textures_[i].texture_unit_);
+	        program->SetUniform(program->GetUniform(texture_name), textures_[i].texture_unit_);
             gl.BindTexture(textures_[i].texture_, textures_[i].texture_unit_);
             // std::cout << "Bind texture " << texture_name << " to unit " << textures_[i].texture_unit_ << std::endl;
         }
 
-        program.SetUniform(program.GetUniform("meshTransformToModel"), transform_to_model_);
-        program.SetUniform(program.GetUniform("meshSelfTransform"), self_transform_);
+        program->SetUniform(program->GetUniform("meshTransformToModel"), transform_to_model_);
+        program->SetUniform(program->GetUniform("meshSelfTransform"), self_transform_);
         gl.DrawElements(vao_, GL::Primitive::Triangles, 0, indices_.size(), GL::Type::UnsignedInt);
-    }
 
-    void Draw(GL::Context &gl, GL::Program &program, GL::Program &bbox_program) {
-        Draw(gl, program);
+        // BBOX Draw
 
-        gl.UseProgram(bbox_program);
+        auto bbox_program = shader_handler.at(bbox_shader_name_);
+        gl.UseProgram(*bbox_program);
 
-        bbox_program.SetUniform(bbox_program.GetUniform("meshTransformToModel"), transform_to_model_);
-        bbox_program.SetUniform(bbox_program.GetUniform("meshSelfTransform"), self_transform_);
-        bbox_.Draw(gl, bbox_program);
+        bbox_program->SetUniform(bbox_program->GetUniform("meshTransformToModel"), transform_to_model_);
+        bbox_program->SetUniform(bbox_program->GetUniform("meshSelfTransform"), self_transform_);
+        bbox_.Draw();
     }
 
 private:
@@ -82,6 +93,9 @@ private:
     GL::VertexArray  vao_;  // vertex array object
     GL::VertexBuffer vbo_;  // vertex buffer object
     GL::VertexBuffer ebo_;  // element buffer object
+
+    std::string default_shader_name_;
+    std::string bbox_shader_name_;
 
     friend class CarModel;
 };

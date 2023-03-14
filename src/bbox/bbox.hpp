@@ -13,7 +13,8 @@ namespace App {
 
 class BBox {
 public:
-    BBox(GL::Program &bbox_program, GL::Vec3 min, GL::Vec3 max): min_(min), max_(max) {
+    BBox(std::string bbox_shader_name, GL::Vec3 min, GL::Vec3 max)
+    : bbox_shader_name_(bbox_shader_name), min_(min), max_(max) {
         vertices_ = {
             GL::Vertex{GL::Vec3{min_.X, min_.Y, min_.Z}, GL::Vec2{}, GL::Vec3{}},
             GL::Vertex{GL::Vec3{max_.X, min_.Y, min_.Z}, GL::Vec2{}, GL::Vec3{}},  
@@ -37,12 +38,26 @@ public:
         vbo_ = GL::VertexBuffer(vertices_.data(), vertices_.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
         ebo_ = GL::VertexBuffer(indices_.data(), indices_.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
 
-        vao_.BindAttribute(bbox_program.GetAttribute("aPos"), vbo_, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_POS_OFFSET);
+        auto& context = App::Context::Get();
+        auto& gl = context.gl.value().get();
+        auto shader_handler = context.shader_handler.value();
+
+        auto bbox_program = shader_handler.at(bbox_shader_name_);
+        gl.UseProgram(*bbox_program);
+
+        vao_.BindAttribute(bbox_program->GetAttribute("aPos"), vbo_, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_POS_OFFSET);
         vao_.BindElements(ebo_);
     }
 
-    void Draw(GL::Context &gl, GL::Program &bbox_program) {
-        gl.DrawElements(vao_, GL::Primitive::Triangles, 0, indices_.size(), GL::Type::UnsignedInt);
+    void Draw() {
+        auto& context = App::Context::Get();
+        auto& gl = context.gl.value().get();
+        auto shader_handler = context.shader_handler.value();
+
+        auto bbox_program = shader_handler.at(bbox_shader_name_);
+        gl.UseProgram(*bbox_program);
+        
+        gl.DrawElements(vao_, GL::Primitive::Lines, 0, indices_.size(), GL::Type::UnsignedInt);
     }
 
 private:
@@ -55,6 +70,8 @@ private:
 
     std::vector<GL::Vertex> vertices_;
     std::vector<unsigned int> indices_;
+
+    std::string bbox_shader_name_;
 };
 
 } // namespace App

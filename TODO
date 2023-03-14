@@ -2,11 +2,14 @@ Engine Demo:
 
 [] Prepare cube and cube_ebo <- so they look cool
 and make different shaders/shader programs for them
-[] Move shader program into model
+[x] Move shader program into shader handler
 
 Workflow:
 
-[] Configs based on JSONs
+[] Move code to CPP files to fasten engine build
+[] Copy by value -> pass by const reference
+[] Model names and info in ImGui (+ fix models[0] hardcode for car model)
+[x] Configs based on JSONs
 [x] Deal with Assimp DLL linkage
 [x] Get rid of Assimp unit test linkage
 [x] OOGL make call from CMakeLists.txt
@@ -14,6 +17,8 @@ Workflow:
 Graphics:
 
 [] PBR for car model
+[] First person camera
+[] Fix lines in AABB
 [x] Wheels rotation
 
 Bugs:
@@ -24,5 +29,5 @@ Bugs:
 
 Optional:
 
-[] TinyGLTF loader (optional)
+[] Move to MSVC insted of MinGW
 [] Atlas for textures (optional)

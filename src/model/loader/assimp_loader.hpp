@@ -17,7 +17,8 @@ namespace App {
 
 class AssimpLoader {
 public:
-    AssimpLoader(GL::Program program, GL::Program bbox_program, std::string& path) {
+    AssimpLoader(std::string default_shader_name, std::string bbox_shader_name, std::string& path)
+    : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name) {
         directory_ = path.substr(0, path.find_last_of('/')) + '/';
 
         Assimp::Importer importer;
@@ -28,7 +29,7 @@ public:
         }
 
         aiMatrix4x4 transformation;
-        HandleNodeRecursive(program, bbox_program, scene->mRootNode, scene, transformation);
+        HandleNodeRecursive(scene->mRootNode, scene, transformation);
     }
 
     std::vector<Mesh> GetMeshes() const {
@@ -55,7 +56,7 @@ private:
         return ans;
     }  
 
-    void HandleMesh(GL::Program program, GL::Program bbox_program, aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation) {
+    void HandleMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation) {
         std::vector<GL::Vertex> vertices;
         std::vector<int> indices;
         std::vector<Texture> textures;
@@ -110,31 +111,32 @@ private:
             textures.insert(textures.end(), specular_textures.begin(), specular_textures.end());
         }
 
-        // GL::Vec3 bbox_min = GL::Vec3{mesh->mAABB.mMin.x, mesh->mAABB.mMin.y, mesh->mAABB.mMin.z};
-        // GL::Vec3 bbox_max = GL::Vec3{mesh->mAABB.mMax.x, mesh->mAABB.mMax.y, mesh->mAABB.mMax.z};
-        BBox bbox{bbox_program, bbox_min, bbox_max};
-
-        meshes_.push_back(Mesh{program, mesh->mName.C_Str(), Transform{transform_to_model}, vertices, indices, textures, bbox});
+        BBox bbox{bbox_shader_name_, bbox_min, bbox_max};
+        Mesh new_mesh{default_shader_name_, bbox_shader_name_, mesh->mName.C_Str(), Transform{transform_to_model}, vertices, indices, textures, bbox};
+        meshes_.push_back(new_mesh);
     }
     
-    void HandleNodeRecursive(GL::Program program, GL::Program bbox_program, aiNode* node, const aiScene* scene, aiMatrix4x4 transformation) {
+    void HandleNodeRecursive(aiNode* node, const aiScene* scene, aiMatrix4x4 transformation) {
         // accumulate from parent transformation
         transformation *= node->mTransformation;
 
         // process all the node's meshes (if any)
         for (unsigned int i = 0; i < node->mNumMeshes; ++i) {
             aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-            HandleMesh(program, bbox_program, mesh, scene, transformation);			
+            HandleMesh(mesh, scene, transformation);			
         }
         // then do the same for each of its children
         for (unsigned int i = 0; i < node->mNumChildren; ++i) {
-            HandleNodeRecursive(program, bbox_program, node->mChildren[i], scene, transformation);
+            HandleNodeRecursive(node->mChildren[i], scene, transformation);
         }
     }
 
     std::vector<Mesh> meshes_;
     std::map<std::string, Texture> paths_to_loaded_textures_;
     std::string directory_;
+
+    std::string default_shader_name_;
+    std::string bbox_shader_name_;
 };
 
 } // namespace App

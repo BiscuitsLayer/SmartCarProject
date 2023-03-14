@@ -7,11 +7,11 @@ namespace App {
 
 class Transform {
 public:
-    Transform(): transform_matrix_(GL::Mat4{}) {
-    }
+    Transform()
+    : transform_matrix_(GL::Mat4{}) {}
 
-    Transform(GL::Mat4 transform_matrix): transform_matrix_(transform_matrix) {
-    }
+    Transform(GL::Mat4 transform_matrix)
+    : transform_matrix_(transform_matrix) {}
 
     void SetScale(GL::Vec3 scale) {
         GL::Mat4 new_scale;

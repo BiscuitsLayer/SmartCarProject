@@ -5,6 +5,8 @@ project(SmartCarProject)
 ### Definitions ###
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_C_FLAGS "-g2")
+set(CMAKE_CXX_FLAGS "-g2")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_INCLUDE_PATH "${CMAKE_SOURCE_DIR}/src")
 

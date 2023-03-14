@@ -1,14 +1,54 @@
 #pragma once
 
+// STL
+#include <unordered_map>
+#include <memory>
+#include <optional>
+
+// OpenGL Wrapper
+#include <GL/OOGL.hpp>
+
 // Sources
 #include <constants/constants.hpp>
 
 namespace App {
 
+class Camera; // Forward declaration
+
+using ShaderHandler = std::unordered_map<std::string, std::shared_ptr<GL::Program>>;
+
 enum class KeyboardMode : int {
 	ORBIT_CAMERA = 0,
 	FIRST_PERSON_CAMERA,
 	CAR_MOVEMENT
+};
+
+/*
+    Singleton class to share 
+    application resources between files
+*/
+struct Context {
+public:
+    static Context& Get() {
+        static Context instance;
+        return instance;
+    }
+
+    Context(const Context&) = delete;
+    Context& operator=(Context&) = delete;
+
+	std::optional<std::reference_wrapper<GL::Context>> gl;
+    std::optional<ShaderHandler> shader_handler;
+    std::optional<std::shared_ptr<Camera>> camera;
+    std::optional<GL::Mat4> projection_matrix;
+    std::optional<std::shared_ptr<KeyboardMode>> keyboard_mode;
+
+private: 
+    Context() {}
+
+    // Unable to copy
+    // Context(const Context&);  
+    // Context& operator=(Context&);
 };
 
 std::string ReadFileData(std::string filename, bool debug_dump = true) {
@@ -28,24 +68,6 @@ std::string ReadFileData(std::string filename, bool debug_dump = true) {
 		std::cout << buffer << std::endl;
 	}
     return buffer;
-}
-
-void LimitMaxFps() {
-    if (APP_MAX_FPS_MODE_ON) {
-		static std::chrono::system_clock::time_point a = std::chrono::system_clock::now();
-		static std::chrono::system_clock::time_point b = std::chrono::system_clock::now();
-
-		const float max_elapsed_time = 1000.0f / APP_INIT_MAX_FPS;
-
-		a = std::chrono::system_clock::now();
-		std::chrono::duration<double, std::milli> work_time = a - b;
-		if (work_time.count() < max_elapsed_time) {
-			std::chrono::duration<double, std::milli> delta_ms(max_elapsed_time - work_time.count());
-			auto delta_ms_duration = std::chrono::duration_cast<std::chrono::milliseconds>(delta_ms);
-			std::this_thread::sleep_for(std::chrono::milliseconds(delta_ms_duration.count()));
-		}
-		b = std::chrono::system_clock::now();
-	}
 }
 
 } // namespace App

@@ -2,25 +2,25 @@
     "shaders": [
         {
             "name": "DEFAULT",
-            "folder": "assets/backpack/shader",
+            "folder": "../shader",
             "vertex": "backpack.vert",
             "fragment": "backpack.frag"
         },
         {
             "name": "SKYBOX",
-            "folder": "assets/skybox/shader",
+            "folder": "../shader",
             "vertex": "skybox.vert",
             "fragment": "skybox.frag"
         },
         {
             "name": "BBOX",
-            "folder": "shader",
+            "folder": "../shader",
             "vertex": "bbox.vert",
             "fragment": "bbox.frag"
         },
         {
             "name": "CUBE_EXAMPLE",
-            "folder": "assets/cube_example/shader",
+            "folder": "../assets/cube_example/shader",
             "vertex": "cube.vert",
             "fragment": "cube.frag"
         }
@@ -34,7 +34,7 @@
         "params": {
             "width": 800,
             "height": 600,
-            "title": "DemoApp",
+            "title": "SmartCarTest",
             "fullscreen": false
         }
     },
@@ -59,8 +59,9 @@
 
     "models": [
         {
+            "name": "SportCar",
             "type": "CAR",
-            "GLTF": "assets/car/scene.gltf",
+            "GLTF": "../assets/car/scene.gltf",
             "wheels": {
                 "mesh_names": [
                     "Object_0",
@@ -76,30 +77,61 @@
                 "move": 2.0,
                 "rotate": 4.0
             },
+            "rotation_center": [ 0.0, 0.0, 1.5 ],
             "shader": {
-                "standart": "DEFAULT",
+                "default": "DEFAULT",
                 "bbox": "BBOX"
             }
         },
         {
+            "name": "Garage",
             "type": "COMMON",
-            "GLTF": "assets/garage/scene.gltf",
+            "GLTF": "../assets/garage/scene.gltf",
+            "transform": {
+                "translation": [ 0.0, -0.5, 0.0 ]
+            },
             "shader": {
-                "standart": "DEFAULT",
+                "default": "DEFAULT",
                 "bbox": "BBOX"
             }
         },
         {
+            "name": "Cube",
             "type": "COMMON",
-            "GLTF": "assets/backpack/scene.gltf",
+            "GLTF": "../assets/gltf_cube/Cube.gltf",
+            "transform": {
+                "rotation": {
+                    "axis": [ 4.0, 2.0, 0.0 ],
+                    "angle": 30.0
+                },
+                "translation": [ -5.0, 5.0, -5.0 ]
+            },
             "shader": {
-                "standart": "DEFAULT",
+                "default": "DEFAULT",
                 "bbox": "BBOX"
             }
         },
         {
+            "name": "Backpack",
+            "type": "COMMON",
+            "GLTF": "../assets/backpack/scene.gltf",
+            "transform": {
+                "scale": [ 0.01, 0.01, 0.01 ],
+                "rotation": {
+                    "axis": [ 1.0, 0.0, 0.0 ],
+                    "angle": 45.0
+                },
+                "translation": [ 5.0, 5.0, 5.0 ]
+            },
+            "shader": {
+                "default": "DEFAULT",
+                "bbox": "BBOX"
+            }
+        },
+        {
+            "name": "Skybox",
             "type": "SKYBOX",
-            "folder": "assets/skybox/textures",
+            "folder": "../assets/skybox/textures",
             "filenames": [
                 "posx.jpg",
                 "negx.jpg",

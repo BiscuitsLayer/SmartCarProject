@@ -6,14 +6,15 @@
 // Sources
 #include <constants/constants.hpp>
 #include <transform/transform.hpp>
+#include <config/config_handler.hpp>
 
 namespace App {
 
 class Camera {
 public:
     Camera(GL::Vec3 camera_position, GL::Vec3 camera_target,
-    float camera_move_speed, float camera_rotate_speed,
-    float camera_min_length_to_target, float camera_max_length_to_target) 
+        float camera_move_speed, float camera_rotate_speed,
+        float camera_min_length_to_target, float camera_max_length_to_target) 
     : camera_position_(camera_position), camera_target_(camera_target), 
     camera_move_speed_(camera_move_speed), camera_rotate_speed_(camera_rotate_speed),
     camera_min_length_to_target_(camera_min_length_to_target), camera_max_length_to_target_(camera_max_length_to_target) {
@@ -24,10 +25,10 @@ public:
         UpdateMatrix();
     }
 
-    Camera()
-    : Camera(APP_CAMERA_POSITION, APP_CAMERA_TARGET, 
-    APP_CAMERA_MOVE_SPEED, APP_CAMERA_ROTATE_SPEED,
-    APP_CAMERA_MIN_LENGTH_TO_TARGET, APP_CAMERA_MAX_LENGTH_TO_TARGET) {}
+    Camera(Config::CameraConfig config)
+    : Camera(config.position, config.target,
+    config.speed.move, config.speed.rotate,
+    config.length_to_target.min, config.length_to_target.max) {}
 
     GL::Mat4 GetViewMatrix() const {
         return view_matrix_;
