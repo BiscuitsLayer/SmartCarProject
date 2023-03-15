@@ -27,6 +27,7 @@ public:
 
     void MoveFront(float delta_time) {
         movement_transform_.Translate(GL::Vec3(0.0f, 0.0f, car_move_speed_ * delta_time));
+        RotateWheels(delta_time);
     }
 
     void MoveFrontLeft(float delta_time) {
@@ -41,6 +42,7 @@ public:
 
     void MoveBack(float delta_time) {
         movement_transform_.Translate(GL::Vec3(0.0f, 0.0f, -1.0f * car_move_speed_ * delta_time));
+        RotateWheels(-1.0f * delta_time);
     }
 
     void MoveBackLeft(float delta_time) {
@@ -53,7 +55,13 @@ public:
         MoveBack(delta_time);
     }
 
+    virtual GL::Mat4 GetModelMatrix() override {
+        return static_cast<GL::Mat4>(transform_) * movement_transform_ * car_center_translation_;
+    }
+
+private:
     void RotateWheels(float delta_time) {
+        // TODO: FPS drop x2!!! to be fixed (init wheels -> set wheels transform -> just multiply self transform matrix)
         for (auto&& car_wheel_mesh_name : car_wheel_meshes_names_) {
             auto found = std::find_if(meshes_.begin(), meshes_.end(), [car_wheel_mesh_name](App::Mesh mesh) {
                 return mesh.name_ == car_wheel_mesh_name;
@@ -64,11 +72,6 @@ public:
         }
     }
 
-    virtual GL::Mat4 GetModelMatrix() override {
-        return static_cast<GL::Mat4>(transform_) * movement_transform_ * car_center_translation_;
-    }
-
-private:
     float car_move_speed_;
     float car_rotate_speed_;
     float car_wheels_rotate_speed_;

@@ -45,11 +45,11 @@ public:
 
 private: 
     Context() {}
-
-    // Unable to copy
-    // Context(const Context&);  
-    // Context& operator=(Context&);
 };
+
+GL::Vec3 GetTranslation(GL::Mat4 matrix) {
+    return GL::Vec3{matrix.m[12], matrix.m[13], matrix.m[14]};
+}
 
 std::string ReadFileData(std::string filename, bool debug_dump = true) {
     std::ifstream source{filename};

@@ -48,8 +48,15 @@ struct CameraConfig {
         int max;
     } length_to_target;
 
-    GL::Vec3 position;
-    GL::Vec3 target;
+    struct {
+        GL::Vec3 value;
+        bool fixed_behind_car;
+        GL::Vec3 translation_from_car;
+    } position;
+    struct {
+        GL::Vec3 value;
+        bool fixed_on_car;
+    } target;
     Speed speed;
 };
 
@@ -170,8 +177,15 @@ private:
         camera_config_.length_to_target.min = FindFloat(length_to_target, "min");
         camera_config_.length_to_target.max = FindFloat(length_to_target, "max");
         
-        camera_config_.position = FindVec3(camera, "position");
-        camera_config_.target = FindVec3(camera, "target");
+
+        auto position = FindObject(camera, "position");
+        camera_config_.position.value = FindVec3(position, "value");
+        camera_config_.position.fixed_behind_car = FindBoolean(position, "fixed_behind_car");
+        camera_config_.position.translation_from_car = FindVec3(position, "translation_from_car");
+
+        auto target = FindObject(camera, "target");
+        camera_config_.target.value = FindVec3(target, "value");
+        camera_config_.target.fixed_on_car = FindBoolean(target, "fixed_on_car");
 
         auto speed = FindObject(camera, "speed");
         camera_config_.speed.move = FindFloat(speed, "move");

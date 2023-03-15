@@ -25,6 +25,10 @@ public:
     Model(Config::CommonModelConfig config)
     : Model(config.shader.default_shader_name, config.shader.bbox_shader_name, config.gltf, config.transform) {}
 
+    // To make the class polymorphic, so we are able
+    // to use down-casting with shared_ptr
+    virtual ~Model() {}
+
     void SetScale(GL::Vec3 scale) {
         transform_.SetScale(scale);
     }

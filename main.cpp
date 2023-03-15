@@ -99,8 +99,6 @@ int main() try {
 	while (window.IsOpen()) {
 		auto delta_time = static_cast<float>(main_timer.Tick<App::Timer::Seconds>());
 
-		std::dynamic_pointer_cast<App::CarModel>(models[0])->RotateWheels(delta_time);
-
 		while (window.GetEvent(ev)) {
 			if (ev.Type == GL::Event::KeyDown) {
 				keyboard_status[ev.Key.Code] = true;
@@ -171,6 +169,8 @@ int main() try {
 
 		gl.Clear(GL::Buffer::Color | GL::Buffer::Depth);
 		gui.Prepare();
+
+		context.camera.value()->UpdateWithModel(models[0]->GetModelMatrix());
 
 		for (auto model : models) {
 			model->Draw();

@@ -49,8 +49,15 @@
             "min": 1.0,
             "max": 1000.0
         },
-        "position": [ 0.0, 2.0, -10.0 ],
-        "target": [ 0.0, 0.0, 0.0 ],
+        "position": {
+            "value": [ 0.0, 2.0, -10.0 ],
+            "fixed_behind_car": true,
+            "translation_from_car": [ 0.0, 3.0, -9.0 ]
+        },
+        "target": {
+            "value": [ 0.0, 0.0, 0.0 ],
+            "fixed_on_car": true
+        },
         "speed": {
             "move": 5.0,
             "rotate": 10.0
@@ -70,12 +77,12 @@
                     "Object_3"
                 ],
                 "speed": {
-                    "rotate": 50.0
+                    "rotate": 100.0
                 }
             },
             "speed": {
-                "move": 2.0,
-                "rotate": 4.0
+                "move": 3.0,
+                "rotate": 1.5
             },
             "rotation_center": [ 0.0, 0.0, 1.5 ],
             "shader": {

@@ -67,7 +67,9 @@ struct Gui {
         ImGui::SeparatorText("Camera parameters");
 
         ImGui::DragFloat3("Position", (float*)&camera_ptr->camera_position_, 0.1f, -100.0f, 100.0f);
+        ImGui::Checkbox("Position fixed behind car", &camera_ptr->camera_position_fixed_behind_car_);
         ImGui::DragFloat3("Target", (float*)&camera_ptr->camera_target_, 0.1f, -100.0f, 100.0f);
+        ImGui::Checkbox("Target fixed on car", &camera_ptr->camera_target_fixed_on_car_);
         ImGui::Text("Length to target: %.3f", camera_ptr->cur_length_to_target_);
 
         ImGui::SliderFloat("Move speed", &camera_ptr->camera_move_speed_, 1.0f, 50.0f);

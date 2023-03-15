@@ -17,7 +17,8 @@ Workflow:
 Graphics:
 
 [] PBR for car model
-[] First person camera
+[x] First person camera
+[] Free camera
 [] Fix lines in AABB
 [x] Wheels rotation
 
