@@ -16,6 +16,7 @@ Workflow:
 
 Graphics:
 
+[] Blending order sorted
 [] PBR for car model
 [x] First person camera
 [] Free camera
