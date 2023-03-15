@@ -8,7 +8,7 @@ namespace Net {
 class NeuralNet {
 public:
     NeuralNet(int input_dims, int output_dims)
-    : input_dims_(input_dims), output_dims_(output_dims) {
+        : input_dims_(input_dims), output_dims_(output_dims) {
         register_modele("fc1", fc1);
         register_modele("fc2", fc2);
         register_modele("out", out);

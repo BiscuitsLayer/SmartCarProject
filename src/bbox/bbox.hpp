@@ -14,12 +14,12 @@ namespace App {
 class BBox {
 public:
     BBox(std::string bbox_shader_name, GL::Vec3 min, GL::Vec3 max)
-    : bbox_shader_name_(bbox_shader_name), min_(min), max_(max) {
+        : bbox_shader_name_(bbox_shader_name), min_(min), max_(max) {
         vertices_ = {
             GL::Vertex{GL::Vec3{min_.X, min_.Y, min_.Z}, GL::Vec2{}, GL::Vec3{}},
-            GL::Vertex{GL::Vec3{max_.X, min_.Y, min_.Z}, GL::Vec2{}, GL::Vec3{}},  
-            GL::Vertex{GL::Vec3{max_.X, max_.Y, min_.Z}, GL::Vec2{}, GL::Vec3{}},   
-            GL::Vertex{GL::Vec3{min_.X, max_.Y, min_.Z}, GL::Vec2{}, GL::Vec3{}},   
+            GL::Vertex{GL::Vec3{max_.X, min_.Y, min_.Z}, GL::Vec2{}, GL::Vec3{}},
+            GL::Vertex{GL::Vec3{max_.X, max_.Y, min_.Z}, GL::Vec2{}, GL::Vec3{}},
+            GL::Vertex{GL::Vec3{min_.X, max_.Y, min_.Z}, GL::Vec2{}, GL::Vec3{}},
             GL::Vertex{GL::Vec3{min_.X, min_.Y, max_.Z}, GL::Vec2{}, GL::Vec3{}},
             GL::Vertex{GL::Vec3{max_.X, min_.Y, max_.Z}, GL::Vec2{}, GL::Vec3{}},
             GL::Vertex{GL::Vec3{max_.X, max_.Y, max_.Z}, GL::Vec2{}, GL::Vec3{}},
@@ -27,12 +27,12 @@ public:
         };
 
         indices_ = {
-	    	0, 1, 2, 2, 3, 0,
-	    	1, 5, 6, 6, 2, 1,
-	    	7, 6, 5, 5, 4, 7,
-	    	4, 0, 3, 3, 7, 4,
-	    	4, 5, 1, 1, 0, 4,
-	    	3, 2, 6, 6, 7, 3,
+            0, 1, 2, 2, 3, 0,
+            1, 5, 6, 6, 2, 1,
+            7, 6, 5, 5, 4, 7,
+            4, 0, 3, 3, 7, 4,
+            4, 5, 1, 1, 0, 4,
+            3, 2, 6, 6, 7, 3,
         };
 
         vbo_ = GL::VertexBuffer(vertices_.data(), vertices_.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
@@ -56,7 +56,7 @@ public:
 
         auto bbox_program = shader_handler.at(bbox_shader_name_);
         gl.UseProgram(*bbox_program);
-        
+
         gl.DrawElements(vao_, GL::Primitive::Lines, 0, indices_.size(), GL::Type::UnsignedInt);
     }
 

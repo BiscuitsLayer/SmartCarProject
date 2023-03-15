@@ -7,10 +7,10 @@ namespace App {
 
 class Timer {
 public:
-    using Seconds       = std::ratio<1>;
-    using Milliseconds  = std::ratio<1, 1'000>;
-    using Microseconds  = std::ratio<1, 1'000'000>;
-    using Nanoseconds   = std::ratio<1, 1'000'000'000>;
+    using Seconds = std::ratio<1>;
+    using Milliseconds = std::ratio<1, 1'000>;
+    using Microseconds = std::ratio<1, 1'000'000>;
+    using Nanoseconds = std::ratio<1, 1'000'000'000>;
 
     using Clock = std::chrono::steady_clock;
     using DefaultResolution = Seconds;
@@ -18,7 +18,7 @@ public:
     template <typename U, typename V>
     using Duration = std::chrono::duration<U, V>;
 
-    Timer() : start_time(Clock::now()), previous_tick(Clock::now()) {
+    Timer(): start_time(Clock::now()), previous_tick(Clock::now()) {
     }
 
     void Start() {

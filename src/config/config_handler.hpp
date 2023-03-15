@@ -32,7 +32,7 @@ struct WindowConfig {
         int width;
         int height;
         std::string title;
-        bool fullscreen;    
+        bool fullscreen;
     } params;
 };
 
@@ -75,11 +75,11 @@ struct BaseModelConfig {
     virtual ~BaseModelConfig() {}
 };
 
-struct CommonModelConfig : public BaseModelConfig {
+struct CommonModelConfig: public BaseModelConfig {
     std::string gltf;
 };
 
-struct CarModelConfig : public BaseModelConfig {
+struct CarModelConfig: public BaseModelConfig {
     std::string gltf;
     struct Wheels {
         std::vector<std::string> mesh_names;
@@ -89,7 +89,7 @@ struct CarModelConfig : public BaseModelConfig {
     GL::Vec3 rotation_center;
 };
 
-struct SkyboxModelConfig : public BaseModelConfig {
+struct SkyboxModelConfig: public BaseModelConfig {
     std::string folder;
     std::array<std::string, APP_CUBEMAP_TEXTURES_COUNT> filenames;
 };
@@ -127,7 +127,7 @@ public:
 
         for (auto model : models) {
             auto type = FindString(model, "type");
-            
+
             if (type == "CAR") {
                 SetCarModelConfig(model);
             } else if (type == "SKYBOX") {
@@ -176,7 +176,7 @@ private:
         auto length_to_target = FindObject(camera, "length_to_target");
         camera_config_.length_to_target.min = FindFloat(length_to_target, "min");
         camera_config_.length_to_target.max = FindFloat(length_to_target, "max");
-        
+
 
         auto position = FindObject(camera, "position");
         camera_config_.position.value = FindVec3(position, "value");
@@ -199,10 +199,10 @@ private:
 
             std::string vertex_path = folder + "/" + FindString(shader, "vertex");
             GL::Shader vertex_shader(GL::ShaderType::Vertex, App::ReadFileData(vertex_path, false));
-	
+
             std::string fragment_path = folder + "/" + FindString(shader, "fragment");
             GL::Shader fragment_shader(GL::ShaderType::Fragment, App::ReadFileData(fragment_path, false));
-	
+
             shader_handler_[name] = std::make_shared<GL::Program>(vertex_shader, fragment_shader);
         }
     }
@@ -401,8 +401,8 @@ private:
 
         GL::Vec3 result {
             vector.value()[0].get<float>(),
-            vector.value()[1].get<float>(),
-            vector.value()[2].get<float>()
+                vector.value()[1].get<float>(),
+                vector.value()[2].get<float>()
         };
         return result;
     }

@@ -17,14 +17,14 @@ class Camera; // Forward declaration
 
 using ShaderHandler = std::unordered_map<std::string, std::shared_ptr<GL::Program>>;
 
-enum class KeyboardMode : int {
-	ORBIT_CAMERA = 0,
-	FIRST_PERSON_CAMERA,
-	CAR_MOVEMENT
+enum class KeyboardMode: int {
+    ORBIT_CAMERA = 0,
+    FIRST_PERSON_CAMERA,
+    CAR_MOVEMENT
 };
 
 /*
-    Singleton class to share 
+    Singleton class to share
     application resources between files
 */
 struct Context {
@@ -37,13 +37,13 @@ public:
     Context(const Context&) = delete;
     Context& operator=(Context&) = delete;
 
-	std::optional<std::reference_wrapper<GL::Context>> gl;
+    std::optional<std::reference_wrapper<GL::Context>> gl;
     std::optional<ShaderHandler> shader_handler;
     std::optional<std::shared_ptr<Camera>> camera;
     std::optional<GL::Mat4> projection_matrix;
     std::optional<std::shared_ptr<KeyboardMode>> keyboard_mode;
 
-private: 
+private:
     Context() {}
 };
 
@@ -64,9 +64,9 @@ std::string ReadFileData(std::string filename, bool debug_dump = true) {
     std::string buffer(length, 0);
     source.read(buffer.data(), length);
 
-	if (debug_dump) {
-		std::cout << buffer << std::endl;
-	}
+    if (debug_dump) {
+        std::cout << buffer << std::endl;
+    }
     return buffer;
 }
 

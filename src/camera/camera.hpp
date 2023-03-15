@@ -15,11 +15,11 @@ public:
     Camera(GL::Vec3 camera_position, GL::Vec3 camera_target,
         float camera_move_speed, float camera_rotate_speed,
         float camera_min_length_to_target, float camera_max_length_to_target,
-        bool camera_target_fixed_on_car, bool camera_position_fixed_behind_car, GL::Vec3 camera_translation_from_car) 
-    : camera_position_(camera_position), camera_target_(camera_target), 
-    camera_move_speed_(camera_move_speed), camera_rotate_speed_(camera_rotate_speed),
-    camera_min_length_to_target_(camera_min_length_to_target), camera_max_length_to_target_(camera_max_length_to_target),
-    camera_target_fixed_on_car_(camera_target_fixed_on_car), camera_position_fixed_behind_car_(camera_position_fixed_behind_car) {
+        bool camera_target_fixed_on_car, bool camera_position_fixed_behind_car, GL::Vec3 camera_translation_from_car)
+        : camera_position_(camera_position), camera_target_(camera_target),
+        camera_move_speed_(camera_move_speed), camera_rotate_speed_(camera_rotate_speed),
+        camera_min_length_to_target_(camera_min_length_to_target), camera_max_length_to_target_(camera_max_length_to_target),
+        camera_target_fixed_on_car_(camera_target_fixed_on_car), camera_position_fixed_behind_car_(camera_position_fixed_behind_car) {
         camera_translation_from_car_.SetTranslation(camera_translation_from_car);
 
         cur_length_to_target_ = (camera_position_ - camera_target_).Length();
@@ -30,9 +30,9 @@ public:
     }
 
     Camera(Config::CameraConfig config)
-    : Camera(config.position.value, config.target.value, config.speed.move, config.speed.rotate,
-    config.length_to_target.min, config.length_to_target.max, config.target.fixed_on_car, config.position.fixed_behind_car,
-    config.position.translation_from_car) {}
+        : Camera(config.position.value, config.target.value, config.speed.move, config.speed.rotate,
+            config.length_to_target.min, config.length_to_target.max, config.target.fixed_on_car, config.position.fixed_behind_car,
+            config.position.translation_from_car) {}
 
     // To make the class polymorphic, so we are able
     // to use down-casting with shared_ptr
@@ -81,7 +81,7 @@ public:
             GL::Vec3 new_target = GetTranslation(target_model_matrix);
             camera_target_ = new_target;
         }
-        
+
         if (camera_position_fixed_behind_car_) {
             GL::Vec3 new_position = GetTranslation(target_model_matrix * camera_translation_from_car_);
             camera_position_ = new_position;
@@ -122,7 +122,7 @@ protected:
 
     float camera_move_speed_;
     float camera_rotate_speed_;
-    
+
     GL::Vec3 world_space_up_;
 
     GL::Vec3 camera_right_;

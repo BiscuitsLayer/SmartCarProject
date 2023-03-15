@@ -14,24 +14,24 @@ namespace App {
 
 class Cube {
 public:
-    Cube(GL::Program &program) {
+    Cube(GL::Program& program) {
         LoadGeometry(program);
         LoadTextures();
     }
 
-    void LoadGeometry(GL::Program &program) {
+    void LoadGeometry(GL::Program& program) {
         vbo_ = GL::VertexBuffer(vertices_.data(), vertices_.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
-  
+
         vao_.BindAttribute(program.GetAttribute("aPos"), vbo_, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_POS_OFFSET);
         vao_.BindAttribute(program.GetAttribute("aTexCoord"), vbo_, GL::Type::Float, APP_VEC2_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_TEX_OFFSET);
     }
 
     void LoadTextures() {
-	    textures_.push_back(Texture{"../assets/cube_example/textures/container.jpg", Texture::Type::DIFFUSE, APP_WOODEN_TEXTURE_UNIT});
-	    textures_.push_back(Texture{"../assets/cube_example/textures/awesomeface.jpg", Texture::Type::DIFFUSE, APP_AWESOME_TEXTURE_UNIT});
+        textures_.push_back(Texture{ "../assets/cube_example/textures/container.jpg", Texture::Type::DIFFUSE, APP_WOODEN_TEXTURE_UNIT });
+        textures_.push_back(Texture{ "../assets/cube_example/textures/awesomeface.jpg", Texture::Type::DIFFUSE, APP_AWESOME_TEXTURE_UNIT });
     }
 
-    void Draw(GL::Context &gl, GL::Program &program) {
+    void Draw(GL::Context& gl, GL::Program& program) {
         // to be changed
         unsigned int diffuseNumber = 1;
         unsigned int specularNumber = 1;
@@ -56,7 +56,7 @@ public:
             gl.BindTexture(textures_[i].texture_, textures_[i].texture_unit_);
         }
 
-		gl.DrawArrays(vao_, GL::Primitive::Triangles, 0, vertices_.size());
+        gl.DrawArrays(vao_, GL::Primitive::Triangles, 0, vertices_.size());
     }
 
 private:
@@ -67,11 +67,11 @@ private:
 
     std::vector<GL::Vertex> vertices_ = {
         GL::Vertex{GL::Vec3{-0.5f, -0.5f, -0.5f}, GL::Vec2{0.0f, 0.0f}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{0.5f, -0.5f, -0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},  
-        GL::Vertex{GL::Vec3{0.5f,  0.5f, -0.5f}, GL::Vec2{1.0f, 1.0f}, GL::Vec3{}},  
-        GL::Vertex{GL::Vec3{0.5f,  0.5f, -0.5f}, GL::Vec2{1.0f, 1.0f}, GL::Vec3{}},  
-        GL::Vertex{GL::Vec3{-0.5f,  0.5f, -0.5f}, GL::Vec2{0.0f, 1.0f}, GL::Vec3{}},  
-        GL::Vertex{GL::Vec3{-0.5f, -0.5f, -0.5f}, GL::Vec2{0.0f, 0.0f}, GL::Vec3{}},  
+        GL::Vertex{GL::Vec3{0.5f, -0.5f, -0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f,  0.5f, -0.5f}, GL::Vec2{1.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f,  0.5f, -0.5f}, GL::Vec2{1.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f,  0.5f, -0.5f}, GL::Vec2{0.0f, 1.0f}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f, -0.5f, -0.5f}, GL::Vec2{0.0f, 0.0f}, GL::Vec3{}},
 
         GL::Vertex{GL::Vec3{-0.5f, -0.5f,  0.5f}, GL::Vec2{0.0f, 0.0f}, GL::Vec3{}},
         GL::Vertex{GL::Vec3{0.5f, -0.5f,  0.5f}, GL::Vec2{1.0f, 0.0f}, GL::Vec3{}},

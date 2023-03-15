@@ -17,7 +17,7 @@ namespace App {
 class Mesh {
 public:
     Mesh(std::string default_shader_name, std::string bbox_shader_name, std::string name, Transform transform_to_model, std::vector<GL::Vertex> vertices, std::vector<int> indices, std::vector<Texture> textures, BBox bbox)
-    : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name), name_(name), transform_to_model_(transform_to_model), vertices_(vertices), indices_(indices), textures_(textures), bbox_(bbox) {       
+        : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name), name_(name), transform_to_model_(transform_to_model), vertices_(vertices), indices_(indices), textures_(textures), bbox_(bbox) {
         vbo_ = GL::VertexBuffer(vertices.data(), vertices.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
         ebo_ = GL::VertexBuffer(indices.data(), indices.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
 
@@ -60,8 +60,8 @@ public:
                     break;
                 }
             }
-            
-	        program->SetUniform(program->GetUniform(texture_name), textures_[i].texture_unit_);
+
+            program->SetUniform(program->GetUniform(texture_name), textures_[i].texture_unit_);
             gl.BindTexture(textures_[i].texture_, textures_[i].texture_unit_);
             // std::cout << "Bind texture " << texture_name << " to unit " << textures_[i].texture_unit_ << std::endl;
         }

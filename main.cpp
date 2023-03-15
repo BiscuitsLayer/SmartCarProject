@@ -51,7 +51,7 @@ int main() try {
 	auto camera_config = config_handler.GetCameraConfig();
 
 	context.projection_matrix = GL::Mat4::Perspective(
-		GL::Rad(camera_config.projection.FOV), 
+		GL::Rad(camera_config.projection.FOV),
 		static_cast<float>(window_config.params.width) / static_cast<float>(window_config.params.height),
 		camera_config.projection.near_plane, camera_config.projection.far_plane
 	);
@@ -70,7 +70,7 @@ int main() try {
 	context.shader_handler = config_handler.GetShaderHandler();
 
 	config_handler.ParseModelConfigs();
-	auto model_configs = config_handler.GetModelConfigs(); 
+	auto model_configs = config_handler.GetModelConfigs();
 
 	std::vector<std::shared_ptr<App::Model>> models;
 
@@ -78,16 +78,18 @@ int main() try {
 		if (model_config->type == "CAR") {
 			auto car_model_config = std::dynamic_pointer_cast<App::Config::CarModelConfig>(model_config);
 			auto car_model = std::make_shared<App::CarModel>(*car_model_config);
-            models.push_back(car_model);
-        } else if (model_config->type == "SKYBOX") {
+			models.push_back(car_model);
+		}
+		else if (model_config->type == "SKYBOX") {
 			auto skybox_model_config = std::dynamic_pointer_cast<App::Config::SkyboxModelConfig>(model_config);
-            auto skybox_model = std::make_shared<App::Skybox>(*skybox_model_config);
-            models.push_back(skybox_model);
-        } else { // model_config->type == "COMMON"
+			auto skybox_model = std::make_shared<App::Skybox>(*skybox_model_config);
+			models.push_back(skybox_model);
+		}
+		else { // model_config->type == "COMMON"
 			auto common_model_config = std::dynamic_pointer_cast<App::Config::CommonModelConfig>(model_config);
-            auto model = std::make_shared<App::Model>(*common_model_config);
-            models.push_back(model);
-        }
+			auto model = std::make_shared<App::Model>(*common_model_config);
+			models.push_back(model);
+		}
 	}
 
 	App::Gui gui(window_config);
@@ -102,7 +104,8 @@ int main() try {
 		while (window.GetEvent(ev)) {
 			if (ev.Type == GL::Event::KeyDown) {
 				keyboard_status[ev.Key.Code] = true;
-			} else if (ev.Type == GL::Event::KeyUp) {
+			}
+			else if (ev.Type == GL::Event::KeyUp) {
 				keyboard_status[ev.Key.Code] = false;
 			}
 		}
@@ -142,7 +145,8 @@ int main() try {
 				case App::KeyboardMode::CAR_MOVEMENT: {
 					if (keyboard_status[GL::Key::W]) {
 						std::dynamic_pointer_cast<App::CarModel>(models[0])->MoveFrontLeft(delta_time);
-					} else if (keyboard_status[GL::Key::S]) {
+					}
+					else if (keyboard_status[GL::Key::S]) {
 						std::dynamic_pointer_cast<App::CarModel>(models[0])->MoveBackLeft(delta_time);
 					}
 					break;
@@ -159,7 +163,8 @@ int main() try {
 				case App::KeyboardMode::CAR_MOVEMENT: {
 					if (keyboard_status[GL::Key::W]) {
 						std::dynamic_pointer_cast<App::CarModel>(models[0])->MoveFrontRight(delta_time);
-					} else if (keyboard_status[GL::Key::S]) {
+					}
+					else if (keyboard_status[GL::Key::S]) {
 						std::dynamic_pointer_cast<App::CarModel>(models[0])->MoveBackRight(delta_time);
 					}
 					break;
@@ -183,8 +188,8 @@ int main() try {
 
 	gui.Cleanup();
 	return 0;
-} 
+}
 catch (std::exception& e) {
-    std::cerr << e.what() << std::endl;
+	std::cerr << e.what() << std::endl;
 	return 0;
 }

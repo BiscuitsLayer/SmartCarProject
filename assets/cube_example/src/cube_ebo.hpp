@@ -13,12 +13,12 @@ namespace App {
 
 class CubeEbo {
 public:
-    CubeEbo(GL::Program &program) {
+    CubeEbo(GL::Program& program) {
         LoadGeometry(program);
         LoadTextures();
     }
 
-    void LoadGeometry(GL::Program &program) {
+    void LoadGeometry(GL::Program& program) {
         vbo_ = GL::VertexBuffer(vertices_.data(), vertices_.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
         cbo_ = GL::VertexBuffer(colors_.data(), colors_.size() * APP_VEC3_BYTESIZE, GL::BufferUsage::StaticDraw);
         ebo_ = GL::VertexBuffer(indices_.data(), indices_.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
@@ -30,7 +30,7 @@ public:
 
     void LoadTextures() { /* empty */ }
 
-    void Draw(GL::Context &gl, GL::Program &program) {
+    void Draw(GL::Context& gl, GL::Program& program) {
         gl.DrawElements(vao_, GL::Primitive::Triangles, 0, indices_.size(), GL::Type::UnsignedInt);
     }
 
@@ -54,9 +54,9 @@ private:
 
     std::vector<GL::Vertex> vertices_ = {
         GL::Vertex{GL::Vec3{-0.5f, -0.5f, -0.5f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{0.5f, -0.5f, -0.5f}, GL::Vec2{}, GL::Vec3{}},  
-        GL::Vertex{GL::Vec3{0.5f,  0.5f, -0.5f}, GL::Vec2{}, GL::Vec3{}},   
-        GL::Vertex{GL::Vec3{-0.5f,  0.5f, -0.5f}, GL::Vec2{}, GL::Vec3{}},   
+        GL::Vertex{GL::Vec3{0.5f, -0.5f, -0.5f}, GL::Vec2{}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{0.5f,  0.5f, -0.5f}, GL::Vec2{}, GL::Vec3{}},
+        GL::Vertex{GL::Vec3{-0.5f,  0.5f, -0.5f}, GL::Vec2{}, GL::Vec3{}},
         GL::Vertex{GL::Vec3{-0.5f, -0.5f,  0.5f}, GL::Vec2{}, GL::Vec3{}},
         GL::Vertex{GL::Vec3{0.5f, -0.5f,  0.5f}, GL::Vec2{}, GL::Vec3{}},
         GL::Vertex{GL::Vec3{0.5f,  0.5f,  0.5f}, GL::Vec2{}, GL::Vec3{}},
@@ -64,12 +64,12 @@ private:
     };
 
     std::vector<unsigned int> indices_ = {
-		0, 1, 2, 2, 3, 0,
-		1, 5, 6, 6, 2, 1,
-		7, 6, 5, 5, 4, 7,
-		4, 0, 3, 3, 7, 4,
-		4, 5, 1, 1, 0, 4,
-		3, 2, 6, 6, 7, 3,
+        0, 1, 2, 2, 3, 0,
+        1, 5, 6, 6, 2, 1,
+        7, 6, 5, 5, 4, 7,
+        4, 0, 3, 3, 7, 4,
+        4, 5, 1, 1, 0, 4,
+        3, 2, 6, 6, 7, 3,
     };
 };
 

@@ -8,10 +8,10 @@ namespace App {
 class Transform {
 public:
     Transform()
-    : transform_matrix_(GL::Mat4{}) {}
+        : transform_matrix_(GL::Mat4{}) {}
 
     Transform(GL::Mat4 transform_matrix)
-    : transform_matrix_(transform_matrix) {}
+        : transform_matrix_(transform_matrix) {}
 
     void SetScale(GL::Vec3 scale) {
         GL::Mat4 new_scale;
@@ -48,7 +48,7 @@ public:
     void SetTranslation(GL::Vec3 translation) {
         GL::Mat4 new_translate;
         new_translate.Translate(translation);
-        
+
         translation_matrix_ = new_translate;
         UpdateMatrix();
     }
@@ -88,12 +88,12 @@ GL::Mat4 GetModelViewProjectionMatrix(GL::Mat4 model, GL::Mat4 view, GL::Mat4 pr
 GL::Mat4 GetViewNoTranslationProjectionMatrix(GL::Mat4 view, GL::Mat4 projection) {
     // remove translation from the view matrix
     view = GL::Mat4(
-		view.m[0], view.m[4],  view.m[8], 0,
-		view.m[1], view.m[5],  view.m[9], 0,
-		view.m[2], view.m[6], view.m[10], 0,
-		view.m[3], view.m[7], view.m[11], view.m[15]
-	);
-    
+        view.m[0], view.m[4], view.m[8], 0,
+        view.m[1], view.m[5], view.m[9], 0,
+        view.m[2], view.m[6], view.m[10], 0,
+        view.m[3], view.m[7], view.m[11], view.m[15]
+    );
+
     return projection * view;
 }
 

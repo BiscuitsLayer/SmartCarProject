@@ -50,8 +50,8 @@ struct Gui {
         // DEMO WINDOW TOOLS
 
         if (show_imgui_demo_window) {
-			ImGui::ShowDemoWindow(&show_imgui_demo_window);
-		}
+            ImGui::ShowDemoWindow(&show_imgui_demo_window);
+        }
 
         ImGui::Begin("Parameters");                          // Create a window called "Hello, world!" and append into it.
 
@@ -86,7 +86,7 @@ struct Gui {
 
         ImGui::PushItemWidth(160);
         const char* keyboard_modes[] = { "ORBIT CAMERA", "FIRST PERSON CAMERA", "CAR MOVEMENT" };
-        int* keyboard_mode_ptr_raw = reinterpret_cast<int *>(context.keyboard_mode.value().get());
+        int* keyboard_mode_ptr_raw = reinterpret_cast<int*>(context.keyboard_mode.value().get());
 
         ImGui::PushID(0);
         ImGui::ListBox("", keyboard_mode_ptr_raw, keyboard_modes, IM_ARRAYSIZE(keyboard_modes));
@@ -101,9 +101,9 @@ struct Gui {
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         ImGui::End();
 
-		ImGui::EndFrame();
+        ImGui::EndFrame();
         ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
     bool show_imgui_demo_window;
