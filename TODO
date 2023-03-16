@@ -16,11 +16,13 @@ Workflow:
 
 Graphics:
 
+[x] Movement acceleration
+[] Collision
 [] Blending order sorted
 [] PBR for car model
-[x] First person camera
 [] Free camera
 [] Fix lines in AABB
+[x] First person camera
 [x] Wheels rotation
 
 Bugs:

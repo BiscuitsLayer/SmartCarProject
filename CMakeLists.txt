@@ -26,10 +26,9 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 
 ### OOGL ###
 # Build with Makefile
-add_custom_command(TARGET LibSmartCar
+execute_process(
 	COMMAND make
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/include/OOGL
-	COMMAND_EXPAND_LISTS
 )
 # Provide directories
 set(OOGL_DIR "include/OOGL")

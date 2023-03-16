@@ -86,10 +86,9 @@ struct Gui {
 
         ImGui::PushItemWidth(160);
         const char* keyboard_modes[] = { "ORBIT CAMERA", "FIRST PERSON CAMERA", "CAR MOVEMENT" };
-        int* keyboard_mode_ptr_raw = reinterpret_cast<int*>(context.keyboard_mode.value().get());
 
         ImGui::PushID(0);
-        ImGui::ListBox("", keyboard_mode_ptr_raw, keyboard_modes, IM_ARRAYSIZE(keyboard_modes));
+        ImGui::ListBox("", (int *)&context.keyboard_mode.value(), keyboard_modes, IM_ARRAYSIZE(keyboard_modes));
         ImGui::PopID();
 
         ImGui::PopItemWidth();

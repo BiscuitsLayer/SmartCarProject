@@ -23,6 +23,8 @@ enum class KeyboardMode: int {
     CAR_MOVEMENT
 };
 
+using KeyboardStatus = std::array<bool, APP_KEYBOARD_KEYS_COUNT>;
+
 /*
     Singleton class to share
     application resources between files
@@ -41,7 +43,8 @@ public:
     std::optional<ShaderHandler> shader_handler;
     std::optional<std::shared_ptr<Camera>> camera;
     std::optional<GL::Mat4> projection_matrix;
-    std::optional<std::shared_ptr<KeyboardMode>> keyboard_mode;
+    std::optional<KeyboardMode> keyboard_mode;
+    std::optional<KeyboardStatus> keyboard_status;
 
 private:
     Context() {}

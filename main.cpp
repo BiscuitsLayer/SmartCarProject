@@ -37,10 +37,9 @@
 
 int main() try {
 	auto& context = App::Context::Get();
-	context.keyboard_mode = std::make_shared<App::KeyboardMode>(App::KeyboardMode::CAR_MOVEMENT);
-
-	std::array<bool, APP_KEYBOARD_KEYS_COUNT> keyboard_status;
-	keyboard_status.fill(false);
+	context.keyboard_mode = App::KeyboardMode::CAR_MOVEMENT;
+	context.keyboard_status = App::KeyboardStatus{};
+	context.keyboard_status.value().fill(false);
 
 	App::ConfigHandler config_handler{"../config.json"};
 
@@ -103,74 +102,14 @@ int main() try {
 
 		while (window.GetEvent(ev)) {
 			if (ev.Type == GL::Event::KeyDown) {
-				keyboard_status[ev.Key.Code] = true;
+				context.keyboard_status.value()[ev.Key.Code] = true;
 			}
 			else if (ev.Type == GL::Event::KeyUp) {
-				keyboard_status[ev.Key.Code] = false;
+				context.keyboard_status.value()[ev.Key.Code] = false;
 			}
 		}
 
-		if (keyboard_status[GL::Key::W]) {
-			switch (*context.keyboard_mode.value()) {
-				case App::KeyboardMode::ORBIT_CAMERA: {
-					context.camera.value()->MoveFront(delta_time);
-					break;
-				}
-				case App::KeyboardMode::CAR_MOVEMENT: {
-					std::dynamic_pointer_cast<App::CarModel>(models[0])->MoveFront(delta_time);
-					break;
-				}
-			}
-		}
-
-		if (keyboard_status[GL::Key::S]) {
-			switch (*context.keyboard_mode.value()) {
-				case App::KeyboardMode::ORBIT_CAMERA: {
-					context.camera.value()->MoveBack(delta_time);
-					break;
-				}
-				case App::KeyboardMode::CAR_MOVEMENT: {
-					std::dynamic_pointer_cast<App::CarModel>(models[0])->MoveBack(delta_time);
-					break;
-				}
-			}
-		}
-
-		if (keyboard_status[GL::Key::A]) {
-			switch (*context.keyboard_mode.value()) {
-				case App::KeyboardMode::ORBIT_CAMERA: {
-					context.camera.value()->MoveLeft(delta_time);
-					break;
-				}
-				case App::KeyboardMode::CAR_MOVEMENT: {
-					if (keyboard_status[GL::Key::W]) {
-						std::dynamic_pointer_cast<App::CarModel>(models[0])->MoveFrontLeft(delta_time);
-					}
-					else if (keyboard_status[GL::Key::S]) {
-						std::dynamic_pointer_cast<App::CarModel>(models[0])->MoveBackLeft(delta_time);
-					}
-					break;
-				}
-			}
-		}
-
-		if (keyboard_status[GL::Key::D]) {
-			switch (*context.keyboard_mode.value()) {
-				case App::KeyboardMode::ORBIT_CAMERA: {
-					context.camera.value()->MoveRight(delta_time);
-					break;
-				}
-				case App::KeyboardMode::CAR_MOVEMENT: {
-					if (keyboard_status[GL::Key::W]) {
-						std::dynamic_pointer_cast<App::CarModel>(models[0])->MoveFrontRight(delta_time);
-					}
-					else if (keyboard_status[GL::Key::S]) {
-						std::dynamic_pointer_cast<App::CarModel>(models[0])->MoveBackRight(delta_time);
-					}
-					break;
-				}
-			}
-		}
+		std::dynamic_pointer_cast<App::CarModel>(models[0])->Move(delta_time);
 
 		gl.Clear(GL::Buffer::Color | GL::Buffer::Depth);
 		gui.Prepare();

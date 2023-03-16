@@ -36,3 +36,7 @@ const std::string APP_TEXTURE_SPECULAR_BASE_NAME = "textureSpecular";
 
 // Texture indexing
 static int APP_TEXTURE_NEXT_FREE_UNIT = 0;
+
+// Car
+const float APP_CAR_ACCEL = 5.0f;
+const float APP_CAR_SPEED_EPS = 0.05f;
