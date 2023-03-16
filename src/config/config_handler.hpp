@@ -104,6 +104,9 @@ public:
             data_ = nullptr;
             throw std::runtime_error("Error reading JSON file: " + filename);
         }
+
+        auto case_index = FindInteger(data_, "case");
+        case_selected_ = FindArray(data_, "cases")[case_index];
     }
 
     void ParseWindowConfig() {
@@ -112,7 +115,7 @@ public:
     }
 
     void ParseCameraConfig() {
-        auto camera = FindObject(data_, "camera");
+        auto camera = FindObject(case_selected_, "camera");
         SetCameraConfig(camera);
     }
 
@@ -122,7 +125,7 @@ public:
     }
 
     void ParseModelConfigs() {
-        auto models = FindArray(data_, "models");
+        auto models = FindArray(case_selected_, "models");
         model_configs_.reserve(models.size());
 
         for (auto model : models) {
@@ -350,6 +353,18 @@ private:
         return number->get<float>();
     }
 
+    int FindInteger(std::shared_ptr<json> parent, std::string number_name, bool can_skip = false, int default_value = {}) {
+        auto number = parent->find(number_name);
+        if (number == parent->end() || !number->is_number_integer()) {
+            if (!can_skip) {
+                throw std::runtime_error("Incorrect JSON format: Cannot find integer " + number_name);
+            } else {
+                return default_value;
+            }
+        }
+        return number->get<int>();
+    }
+
     int FindInteger(json_object parent, std::string number_name, bool can_skip = false, int default_value = {}) {
         auto number = parent->find(number_name);
         if (number == parent->end() || !number->is_number_integer()) {
@@ -426,6 +441,7 @@ private:
     }
 
     std::shared_ptr<json> data_;
+    json_object case_selected_;
 
     Config::WindowConfig window_config_;
     Config::CameraConfig camera_config_;
