@@ -17,7 +17,7 @@ namespace App {
 class Mesh {
 public:
     Mesh(std::string default_shader_name, std::string bbox_shader_name, std::string name, Transform transform_to_model, std::vector<GL::Vertex> vertices, std::vector<int> indices, std::vector<Texture> textures, BBox bbox)
-        : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name), name_(name), transform_to_model_(transform_to_model), vertices_(vertices), indices_(indices), textures_(textures), bbox_(bbox) {
+        : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name), name_(name), transform_to_model_(transform_to_model), vertices_(vertices), indices_(indices), textures_(textures), draw_bbox_(false), bbox_(bbox) {
         vbo_ = GL::VertexBuffer(vertices.data(), vertices.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
         ebo_ = GL::VertexBuffer(indices.data(), indices.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
 
@@ -32,6 +32,10 @@ public:
         vao_.BindAttribute(program->GetAttribute("aTexCoord"), vbo_, GL::Type::Float, APP_VEC2_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_TEX_OFFSET);
         vao_.BindAttribute(program->GetAttribute("aNormal"), vbo_, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_NORMAL_OFFSET);
         vao_.BindElements(ebo_);
+    }
+
+    void SetDrawBBox(bool value) {
+        draw_bbox_ = value;
     }
 
     void Draw() {
@@ -70,20 +74,25 @@ public:
         program->SetUniform(program->GetUniform("meshSelfTransform"), self_transform_);
         gl.DrawElements(vao_, GL::Primitive::Triangles, 0, indices_.size(), GL::Type::UnsignedInt);
 
-        // BBOX Draw
+        if (draw_bbox_) {
+            auto bbox_program = shader_handler.at(bbox_shader_name_);
+            gl.UseProgram(*bbox_program);
 
-        auto bbox_program = shader_handler.at(bbox_shader_name_);
-        gl.UseProgram(*bbox_program);
+            bbox_program->SetUniform(bbox_program->GetUniform("meshTransformToModel"), transform_to_model_);
+            bbox_.Draw();
+        }
+    }
 
-        bbox_program->SetUniform(bbox_program->GetUniform("meshTransformToModel"), transform_to_model_);
-        bbox_program->SetUniform(bbox_program->GetUniform("meshSelfTransform"), self_transform_);
-        bbox_.Draw();
+    BBox GetBBox() const {
+        return bbox_;
     }
 
 private:
     std::string name_;
     Transform transform_to_model_;
     Transform self_transform_;
+
+    bool draw_bbox_;
     BBox bbox_;
 
     std::vector<GL::Vertex> vertices_;

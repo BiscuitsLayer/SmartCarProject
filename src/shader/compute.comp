@@ -1,0 +1,44 @@
+#version 430
+
+// Define the size of the local work group 
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+// WARNING: std430 will pad your struct of vec3 out to the size of a vec4
+struct BBox {
+    vec3 min;
+    float alignment1;
+    vec3 max;
+    float alignment2;
+};
+
+layout (std430, binding = 0) readonly buffer ObstaclesBlock {
+    BBox obstacle_bboxes[];
+};
+
+layout (std430, binding = 1) readonly buffer CarPartsBlock {
+    BBox car_parts_bboxes[];
+};
+
+layout(std430, binding = 2) writeonly buffer IntersetionResultsBlock {
+    float intersection_results[];
+};
+
+// lhs -----.-------.-------
+// rhs ------.-----.--------
+
+bool Intersect(BBox lhs, BBox rhs) {
+    return (lhs.min.x <= rhs.max.x) && (lhs.max.x >= rhs.min.x)
+    && (lhs.min.y <= rhs.max.y) && (lhs.max.y >= rhs.min.y)
+    && (lhs.min.z <= rhs.max.z) && (lhs.max.z >= rhs.min.z);
+}
+
+void main() {
+    uint obstacle_id = gl_GlobalInvocationID.x;
+    uint car_part_id = gl_GlobalInvocationID.y;
+
+    uint obstacles_size = gl_NumWorkGroups.x;
+    uint car_parts_size = gl_NumWorkGroups.y;
+
+    bool result = Intersect(obstacle_bboxes[obstacle_id], car_parts_bboxes[car_part_id]);
+    intersection_results[obstacle_id * car_parts_size + car_part_id] = result ? 1 : 0;
+}

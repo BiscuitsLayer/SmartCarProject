@@ -77,6 +77,17 @@ public:
         }
     }
 
+    virtual std::vector<BBox> CollectBBoxes() const {
+        std::vector<BBox> result;
+        result.reserve(meshes_.size());
+        
+        for (auto&& mesh : meshes_) {
+            result.push_back(mesh.GetBBox());
+        }
+
+        return result;
+    }
+
 protected:
     std::vector<Mesh> meshes_;
     Transform transform_;

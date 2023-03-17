@@ -19,13 +19,14 @@ public:
         car_rotate_max_speed_(car_rotate_max_speed),
         car_wheels_rotate_speed_(car_wheels_rotate_speed),
         car_center_translation_(GL::Mat4{}.Translate(car_center_translation)),
-        accelerator_(Accelerator{car_move_max_speed, APP_CAR_ACCEL}) {        
+        accelerator_(Accelerator{ car_move_max_speed, APP_CAR_ACCEL }) {
         for (auto&& car_wheel_mesh_name : car_wheel_mesh_names) {
             auto found = std::find_if(meshes_.begin(), meshes_.end(), [car_wheel_mesh_name](App::Mesh mesh) {
                 return mesh.name_ == car_wheel_mesh_name;
                 });
             if (found != meshes_.end()) {
                 car_wheel_meshes_indicies_.push_back(found - meshes_.begin());
+                found->SetDrawBBox(true);
             }
         }
     }
@@ -35,8 +36,6 @@ public:
             config.gltf, config.wheels.mesh_names, config.speed.move, config.speed.rotate,
             config.wheels.speed.rotate, config.rotation_center, config.transform) {}
 
-
-
     virtual GL::Mat4 GetModelMatrix() override {
         return static_cast<GL::Mat4>(transform_) * movement_transform_ * car_center_translation_;
     }
@@ -44,56 +43,56 @@ public:
     void Move(float delta_time) {
         auto& context = App::Context::Get();
         if (context.keyboard_status.value()[GL::Key::W]) {
-			switch (context.keyboard_mode.value()) {
-				case App::KeyboardMode::ORBIT_CAMERA: {
-					context.camera.value()->MoveFront(delta_time);
-					break;
-				}
-				case App::KeyboardMode::CAR_MOVEMENT: {
+            switch (context.keyboard_mode.value()) {
+                case App::KeyboardMode::ORBIT_CAMERA: {
+                    context.camera.value()->MoveFront(delta_time);
+                    break;
+                }
+                case App::KeyboardMode::CAR_MOVEMENT: {
                     accelerator_.IncreaseSpeed(delta_time, true);
-					break;
-				}
-			}
-		}
+                    break;
+                }
+            }
+        }
 
-		if (context.keyboard_status.value()[GL::Key::S]) {
-			switch (context.keyboard_mode.value()) {
-				case App::KeyboardMode::ORBIT_CAMERA: {
-					context.camera.value()->MoveBack(delta_time);
-					break;
-				}
-				case App::KeyboardMode::CAR_MOVEMENT: {
+        if (context.keyboard_status.value()[GL::Key::S]) {
+            switch (context.keyboard_mode.value()) {
+                case App::KeyboardMode::ORBIT_CAMERA: {
+                    context.camera.value()->MoveBack(delta_time);
+                    break;
+                }
+                case App::KeyboardMode::CAR_MOVEMENT: {
                     accelerator_.IncreaseSpeed(delta_time, false);
-					break;
-				}
-			}
-		}
+                    break;
+                }
+            }
+        }
 
-		if (context.keyboard_status.value()[GL::Key::A]) {
-			switch (context.keyboard_mode.value()) {
-				case App::KeyboardMode::ORBIT_CAMERA: {
-					context.camera.value()->MoveLeft(delta_time);
-					break;
-				}
-				case App::KeyboardMode::CAR_MOVEMENT: {
-					RotateLeft(delta_time, accelerator_.GetSpeed() > 0.0);
-					break;
-				}
-			}
-		}
+        if (context.keyboard_status.value()[GL::Key::A]) {
+            switch (context.keyboard_mode.value()) {
+                case App::KeyboardMode::ORBIT_CAMERA: {
+                    context.camera.value()->MoveLeft(delta_time);
+                    break;
+                }
+                case App::KeyboardMode::CAR_MOVEMENT: {
+                    RotateLeft(delta_time, accelerator_.GetSpeed() > 0.0);
+                    break;
+                }
+            }
+        }
 
-		if (context.keyboard_status.value()[GL::Key::D]) {
-			switch (context.keyboard_mode.value()) {
-				case App::KeyboardMode::ORBIT_CAMERA: {
-					context.camera.value()->MoveRight(delta_time);
-					break;
-				}
-				case App::KeyboardMode::CAR_MOVEMENT: {
-					RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
-					break;
-				}
-			}
-		}
+        if (context.keyboard_status.value()[GL::Key::D]) {
+            switch (context.keyboard_mode.value()) {
+                case App::KeyboardMode::ORBIT_CAMERA: {
+                    context.camera.value()->MoveRight(delta_time);
+                    break;
+                }
+                case App::KeyboardMode::CAR_MOVEMENT: {
+                    RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
+                    break;
+                }
+            }
+        }
 
         MoveForward(delta_time);
 
@@ -106,6 +105,7 @@ private:
     void RotateWheels(float delta_time) {
         for (auto index : car_wheel_meshes_indicies_) {
             meshes_[index].self_transform_.UpdateRotation(car_wheels_rotate_speed_ * delta_time, GL::Vec3(1.0f, 0.0f, 0.0f));
+            meshes_[index].bbox_.UpdateVertices(meshes_[index].self_transform_);
         }
     }
 

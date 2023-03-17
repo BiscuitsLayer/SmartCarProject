@@ -16,6 +16,7 @@ Workflow:
 
 Graphics:
 
+[] Fix STATIC_DRAW mode in bbox Draw function
 [x] Movement acceleration
 [] Collision
 [] Blending order sorted

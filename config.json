@@ -29,7 +29,7 @@
     "window": {
         "max_fps": {
             "value": 90.0,
-            "mode": true
+            "mode": false
         },
         "params": {
             "width": 800,
@@ -283,6 +283,22 @@
                     "transform": {
                         "translation": [
                             3.0,
+                            0.5,
+                            2.0
+                        ]
+                    },
+                    "shader": {
+                        "default": "DEFAULT",
+                        "bbox": "BBOX"
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "type": "COMMON",
+                    "GLTF": "../assets/gltf_cube/Cube.gltf",
+                    "transform": {
+                        "translation": [
+                            10.0,
                             0.5,
                             2.0
                         ]

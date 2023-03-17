@@ -29,6 +29,9 @@
 #include <car/car.hpp>
 #include <skybox/skybox.hpp>
 
+// Testing
+#include <shader/compute.hpp>
+
 // Coordinate space matrices
 // model: local space -> world space
 // view: world space -> camera space
@@ -59,6 +62,10 @@ int main() try {
 	GL::Context& gl = window.GetContext();
 	context.gl = window.GetContext();
 
+	App::ComputeShader compute_shader;
+	//compute_shader.Run();
+	//return 0;
+
 	gl.Enable(GL::Capability::DepthTest);
 	gl.Enable(GL::Capability::Blend);
 	gl.BlendFunc(GL::BlendingFactor::SourceAlpha, GL::BlendingFactor::OneMinusSourceAlpha);
@@ -78,13 +85,11 @@ int main() try {
 			auto car_model_config = std::dynamic_pointer_cast<App::Config::CarModelConfig>(model_config);
 			auto car_model = std::make_shared<App::CarModel>(*car_model_config);
 			models.push_back(car_model);
-		}
-		else if (model_config->type == "SKYBOX") {
+		} else if (model_config->type == "SKYBOX") {
 			auto skybox_model_config = std::dynamic_pointer_cast<App::Config::SkyboxModelConfig>(model_config);
 			auto skybox_model = std::make_shared<App::Skybox>(*skybox_model_config);
 			models.push_back(skybox_model);
-		}
-		else { // model_config->type == "COMMON"
+		} else { // model_config->type == "COMMON"
 			auto common_model_config = std::dynamic_pointer_cast<App::Config::CommonModelConfig>(model_config);
 			auto model = std::make_shared<App::Model>(*common_model_config);
 			models.push_back(model);
@@ -103,9 +108,12 @@ int main() try {
 		while (window.GetEvent(ev)) {
 			if (ev.Type == GL::Event::KeyDown) {
 				context.keyboard_status.value()[ev.Key.Code] = true;
-			}
-			else if (ev.Type == GL::Event::KeyUp) {
+			} else if (ev.Type == GL::Event::KeyUp) {
 				context.keyboard_status.value()[ev.Key.Code] = false;
+			}
+
+			if (context.keyboard_status.value()[GL::Key::Escape]) {
+				window.Close();
 			}
 		}
 
