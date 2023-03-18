@@ -66,7 +66,6 @@ struct BaseModelConfig {
     struct Shader {
         std::string default_shader_name;
         std::string bbox_shader_name;
-        std::string skybox_shader_name;
     } shader;
     Transform transform;
 
@@ -259,7 +258,7 @@ private:
         }
 
         auto shader = FindObject(skybox_object, "shader");
-        skybox_model_config.shader.skybox_shader_name = FindString(shader, "skybox");
+        skybox_model_config.shader.default_shader_name = FindString(shader, "default");
 
         model_configs_.push_back(std::make_shared<Config::SkyboxModelConfig>(skybox_model_config));
     }

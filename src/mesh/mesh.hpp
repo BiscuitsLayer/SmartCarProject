@@ -83,8 +83,8 @@ public:
         }
     }
 
-    BBox GetBBox() const {
-        return bbox_;
+    std::pair<GL::Vec3, GL::Vec3> GetMinMax() const {
+        return bbox_.GetMinMax();
     }
 
 private:

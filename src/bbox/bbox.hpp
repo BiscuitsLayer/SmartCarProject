@@ -14,16 +14,16 @@ namespace App {
 class BBox {
 public:
     BBox(std::string bbox_shader_name, GL::Vec3 min, GL::Vec3 max)
-        : bbox_shader_name_(bbox_shader_name), min_(min), max_(max) {
+        : bbox_shader_name_(bbox_shader_name), init_min_(min), init_max_(max) {
         vertices_ = {
-            GL::Vertex{GL::Vec3{min_.X, min_.Y, min_.Z}, GL::Vec2{}, GL::Vec3{}},
-            GL::Vertex{GL::Vec3{max_.X, min_.Y, min_.Z}, GL::Vec2{}, GL::Vec3{}},
-            GL::Vertex{GL::Vec3{max_.X, max_.Y, min_.Z}, GL::Vec2{}, GL::Vec3{}},
-            GL::Vertex{GL::Vec3{min_.X, max_.Y, min_.Z}, GL::Vec2{}, GL::Vec3{}},
-            GL::Vertex{GL::Vec3{min_.X, min_.Y, max_.Z}, GL::Vec2{}, GL::Vec3{}},
-            GL::Vertex{GL::Vec3{max_.X, min_.Y, max_.Z}, GL::Vec2{}, GL::Vec3{}},
-            GL::Vertex{GL::Vec3{max_.X, max_.Y, max_.Z}, GL::Vec2{}, GL::Vec3{}},
-            GL::Vertex{GL::Vec3{min_.X, max_.Y, max_.Z}, GL::Vec2{}, GL::Vec3{}},
+            GL::Vertex{GL::Vec3{init_min_.X, init_min_.Y, init_min_.Z}, GL::Vec2{}, GL::Vec3{}},
+            GL::Vertex{GL::Vec3{init_max_.X, init_min_.Y, init_min_.Z}, GL::Vec2{}, GL::Vec3{}},
+            GL::Vertex{GL::Vec3{init_max_.X, init_max_.Y, init_min_.Z}, GL::Vec2{}, GL::Vec3{}},
+            GL::Vertex{GL::Vec3{init_min_.X, init_max_.Y, init_min_.Z}, GL::Vec2{}, GL::Vec3{}},
+            GL::Vertex{GL::Vec3{init_min_.X, init_min_.Y, init_max_.Z}, GL::Vec2{}, GL::Vec3{}},
+            GL::Vertex{GL::Vec3{init_max_.X, init_min_.Y, init_max_.Z}, GL::Vec2{}, GL::Vec3{}},
+            GL::Vertex{GL::Vec3{init_max_.X, init_max_.Y, init_max_.Z}, GL::Vec2{}, GL::Vec3{}},
+            GL::Vertex{GL::Vec3{init_min_.X, init_max_.Y, init_max_.Z}, GL::Vec2{}, GL::Vec3{}},
         };
 
         indices_ = {
@@ -49,6 +49,9 @@ public:
             new_bbox_min = GL::Vec3{ std::min(new_bbox_min.X, new_vertex.X), std::min(new_bbox_min.Y, new_vertex.Y), std::min(new_bbox_min.Z, new_vertex.Z) };
             new_bbox_max = GL::Vec3{ std::max(new_bbox_max.X, new_vertex.X), std::max(new_bbox_max.Y, new_vertex.Y), std::max(new_bbox_max.Z, new_vertex.Z) };
         }
+
+        cur_min_ = new_bbox_min;
+        cur_max_ = new_bbox_max;
 
         std::vector<GL::Vertex> new_vertices_ = {
             GL::Vertex{GL::Vec3{new_bbox_min.X, new_bbox_min.Y, new_bbox_min.Z}, GL::Vec2{}, GL::Vec3{}},
@@ -84,9 +87,16 @@ public:
         gl.DrawElements(vao_, GL::Primitive::Lines, 0, indices_.size(), GL::Type::UnsignedInt);
     }
 
+    std::pair<GL::Vec3, GL::Vec3> GetMinMax() const {
+        return std::make_pair(cur_min_, cur_max_);
+    }
+
 private:
-    GL::Vec3 min_;
-    GL::Vec3 max_;
+    GL::Vec3 init_min_;
+    GL::Vec3 init_max_;
+
+    GL::Vec3 cur_min_;
+    GL::Vec3 cur_max_;
 
     GL::VertexArray  vao_;  // vertex array object
     GL::VertexBuffer vbo_;  // vertex buffer object

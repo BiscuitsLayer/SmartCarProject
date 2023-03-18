@@ -77,14 +77,13 @@ public:
         }
     }
 
-    virtual std::vector<BBox> CollectBBoxes() const {
-        std::vector<BBox> result;
+    virtual std::vector<std::pair<GL::Vec3, GL::Vec3>> CollectMinMax() const {
+        std::vector<std::pair<GL::Vec3, GL::Vec3>> result;
         result.reserve(meshes_.size());
         
         for (auto&& mesh : meshes_) {
-            result.push_back(mesh.GetBBox());
+            result.push_back(mesh.GetMinMax());
         }
-
         return result;
     }
 

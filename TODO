@@ -6,6 +6,7 @@ and make different shaders/shader programs for them
 
 Workflow:
 
+[] Const methods
 [] Move code to CPP files to fasten engine build
 [] Copy by value -> pass by const reference
 [] Model names and info in ImGui (+ fix models[0] hardcode for car model)

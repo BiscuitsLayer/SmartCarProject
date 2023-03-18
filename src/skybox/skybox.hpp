@@ -25,15 +25,15 @@ class Skybox: public Model {
      *  -Z (back)
      */
 public:
-    Skybox(std::string skybox_shader_name, std::string folder, std::array<std::string, APP_CUBEMAP_TEXTURES_COUNT> filenames)
-        : Model({}, {}, {}, App::Transform{}), skybox_shader_name_(skybox_shader_name), filenames_(filenames) {
+    Skybox(std::string shader_name, std::string folder, std::array<std::string, APP_CUBEMAP_TEXTURES_COUNT> filenames)
+        : Model({}, {}, {}, App::Transform{}), shader_name_(shader_name), filenames_(filenames) {
         vbo_ = GL::VertexBuffer(vertices_.data(), vertices_.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
 
         auto& context = App::Context::Get();
         auto& gl = context.gl.value().get();
         auto shader_handler = context.shader_handler.value();
 
-        auto skybox_program = shader_handler.at(skybox_shader_name_);
+        auto skybox_program = shader_handler.at(shader_name_);
         gl.UseProgram(*skybox_program);
 
         vao_.BindAttribute(skybox_program->GetAttribute("aPos"), vbo_, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_POS_OFFSET);
@@ -43,7 +43,7 @@ public:
     }
 
     Skybox(Config::SkyboxModelConfig config)
-        : Skybox(config.shader.skybox_shader_name, config.folder, config.filenames) {}
+        : Skybox(config.shader.default_shader_name, config.folder, config.filenames) {}
 
     virtual void Draw() override {
         auto& context = App::Context::Get();
@@ -52,7 +52,7 @@ public:
 
         GL::Mat4 vp = App::GetViewNoTranslationProjectionMatrix(context.camera.value()->GetViewMatrix(), context.projection_matrix.value());
 
-        auto skybox_program = shader_handler.at(skybox_shader_name_);
+        auto skybox_program = shader_handler.at(shader_name_);
         gl.UseProgram(*skybox_program);
         skybox_program->SetUniform(skybox_program->GetUniform("VP"), vp);
 
@@ -119,7 +119,7 @@ private:
 
     std::array<std::string, APP_CUBEMAP_TEXTURES_COUNT> filenames_;
 
-    std::string skybox_shader_name_;
+    std::string shader_name_;
 };
 
 } // namespace App

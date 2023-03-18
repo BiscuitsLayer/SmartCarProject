@@ -29,9 +29,6 @@
 #include <car/car.hpp>
 #include <skybox/skybox.hpp>
 
-// Testing
-#include <shader/compute.hpp>
-
 // Coordinate space matrices
 // model: local space -> world space
 // view: world space -> camera space
@@ -61,10 +58,6 @@ int main() try {
 	App::CustomWindow window(window_config);
 	GL::Context& gl = window.GetContext();
 	context.gl = window.GetContext();
-
-	App::ComputeShader compute_shader;
-	//compute_shader.Run();
-	//return 0;
 
 	gl.Enable(GL::Capability::DepthTest);
 	gl.Enable(GL::Capability::Blend);

@@ -188,7 +188,7 @@
                         "negz.jpg"
                     ],
                     "shader": {
-                        "skybox": "SKYBOX"
+                        "default": "SKYBOX"
                     }
                 }
             ]
@@ -321,7 +321,7 @@
                         "negz.jpg"
                     ],
                     "shader": {
-                        "skybox": "SKYBOX"
+                        "default": "SKYBOX"
                     }
                 }
             ]

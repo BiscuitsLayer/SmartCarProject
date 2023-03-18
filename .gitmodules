@@ -2,10 +2,6 @@
 	path = include/OOGL
 	url = https://github.com/BiscuitsLayer/OOGL.git
 
-[submodule "include/raytracing-opengl"]
-	path = include/raytracing-opengl
-	url = https://github.com/engilas/raytracing-opengl.git
-	
 [submodule "include/imgui"]
 	path = include/imgui
 	url = https://github.com/ocornut/imgui.git
