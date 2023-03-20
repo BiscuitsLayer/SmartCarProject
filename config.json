@@ -24,12 +24,17 @@
             "folder": "../assets/cube_example/shader",
             "vertex": "cube.vert",
             "fragment": "cube.frag"
+        },
+        {
+            "name": "INTERSECTION",
+            "folder": "../shader",
+            "compute": "intersection.comp"
         }
     ],
     "window": {
         "max_fps": {
             "value": 90.0,
-            "mode": false
+            "enabled": false
         },
         "params": {
             "width": 800,
@@ -37,6 +42,12 @@
             "title": "SmartCarTest",
             "fullscreen": false
         }
+    },
+    "intersector": {
+        "shader": {
+            "default": "INTERSECTION"
+        },
+        "enabled": true
     },
     "cases": [
         {

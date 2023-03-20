@@ -17,7 +17,7 @@ namespace App {
 class Mesh {
 public:
     Mesh(std::string default_shader_name, std::string bbox_shader_name, std::string name, Transform transform_to_model, std::vector<GL::Vertex> vertices, std::vector<int> indices, std::vector<Texture> textures, BBox bbox)
-        : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name), name_(name), transform_to_model_(transform_to_model), vertices_(vertices), indices_(indices), textures_(textures), draw_bbox_(false), bbox_(bbox) {
+        : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name), name_(name), transform_to_model_(transform_to_model), vertices_(vertices), indices_(indices), textures_(textures), draw_bbox_(true), bbox_(bbox) {
         vbo_ = GL::VertexBuffer(vertices.data(), vertices.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
         ebo_ = GL::VertexBuffer(indices.data(), indices.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
 
@@ -83,8 +83,10 @@ public:
         }
     }
 
-    std::pair<GL::Vec3, GL::Vec3> GetMinMax() const {
-        return bbox_.GetMinMax();
+    MemoryAlignedBBox GetMABB() {
+        auto mabb = bbox_.GetMABB();
+        mabb.mesh_to_model = static_cast<GL::Mat4>(transform_to_model_);
+        return mabb;
     }
 
 private:
@@ -107,6 +109,7 @@ private:
     std::string bbox_shader_name_;
 
     friend class CarModel;
+    friend class Gui;
 };
 
 } // namespace App

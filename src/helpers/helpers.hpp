@@ -14,6 +14,7 @@
 namespace App {
 
 class Camera; // Forward declaration
+class Model; // Forward declaration
 
 using ShaderHandler = std::unordered_map<std::string, std::shared_ptr<GL::Program>>;
 
@@ -24,6 +25,17 @@ enum class KeyboardMode: int {
 };
 
 using KeyboardStatus = std::array<bool, APP_KEYBOARD_KEYS_COUNT>;
+
+struct MemoryAlignedBBox {
+    MemoryAlignedBBox(GL::Vec3 new_min, GL::Vec3 new_max, GL::Mat4 new_model, GL::Mat4 new_mesh_to_model)
+        : min_point(GL::Vec4(new_min.X, new_min.Y, new_min.Z, 1.0)), max_point(GL::Vec4(new_max.X, new_max.Y, new_max.Z, 1.0)),
+        model(new_model), mesh_to_model(new_mesh_to_model) {}
+
+    GL::Vec4 min_point;
+    GL::Vec4 max_point;
+    GL::Mat4 model;
+    GL::Mat4 mesh_to_model;
+};
 
 /*
     Singleton class to share
@@ -41,10 +53,11 @@ public:
 
     std::optional<std::reference_wrapper<GL::Context>> gl;
     std::optional<ShaderHandler> shader_handler;
-    std::optional<std::shared_ptr<Camera>> camera;
+    std::shared_ptr<Camera> camera;
     std::optional<GL::Mat4> projection_matrix;
     std::optional<KeyboardMode> keyboard_mode;
     std::optional<KeyboardStatus> keyboard_status;
+    std::vector<std::shared_ptr<Model>> models;
 
 private:
     Context() {}

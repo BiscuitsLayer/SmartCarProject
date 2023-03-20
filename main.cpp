@@ -22,6 +22,7 @@
 #include <timer/timer.hpp>
 #include <window/window.hpp>
 #include <config/config_handler.hpp>
+#include <intersector/intersector.hpp>
 
 // Model
 // #include <cube_example/src/cube.hpp>
@@ -45,6 +46,11 @@ int main() try {
 
 	config_handler.ParseWindowConfig();
 	auto window_config = config_handler.GetWindowConfig();
+
+	config_handler.ParseIntersectorConfig();
+	auto intersector_config = config_handler.GetIntersectorConfig();
+
+	App::Intersector intersector(intersector_config);
 
 	config_handler.ParseCameraConfig();
 	auto camera_config = config_handler.GetCameraConfig();
@@ -71,21 +77,19 @@ int main() try {
 	config_handler.ParseModelConfigs();
 	auto model_configs = config_handler.GetModelConfigs();
 
-	std::vector<std::shared_ptr<App::Model>> models;
-
 	for (auto model_config : model_configs) {
 		if (model_config->type == "CAR") {
 			auto car_model_config = std::dynamic_pointer_cast<App::Config::CarModelConfig>(model_config);
 			auto car_model = std::make_shared<App::CarModel>(*car_model_config);
-			models.push_back(car_model);
+			context.models.push_back(car_model);
 		} else if (model_config->type == "SKYBOX") {
 			auto skybox_model_config = std::dynamic_pointer_cast<App::Config::SkyboxModelConfig>(model_config);
 			auto skybox_model = std::make_shared<App::Skybox>(*skybox_model_config);
-			models.push_back(skybox_model);
+			context.models.push_back(skybox_model);
 		} else { // model_config->type == "COMMON"
 			auto common_model_config = std::dynamic_pointer_cast<App::Config::CommonModelConfig>(model_config);
 			auto model = std::make_shared<App::Model>(*common_model_config);
-			models.push_back(model);
+			context.models.push_back(model);
 		}
 	}
 
@@ -110,14 +114,23 @@ int main() try {
 			}
 		}
 
-		std::dynamic_pointer_cast<App::CarModel>(models[0])->Move(delta_time);
+		std::dynamic_pointer_cast<App::CarModel>(context.models[0])->Move(delta_time);
 
 		gl.Clear(GL::Buffer::Color | GL::Buffer::Depth);
 		gui.Prepare();
 
-		context.camera.value()->UpdateWithModel(models[0]->GetModelMatrix());
+		context.camera->UpdateWithModel(context.models[0]->GetModelMatrix());
 
-		for (auto model : models) {
+		intersector.ClearObstacles();
+		intersector.ClearCarParts();
+
+		intersector.AddObstacles(context.models[2]->CollectMABB());
+		intersector.AddObstacles(context.models[3]->CollectMABB());
+		intersector.AddCarParts(context.models[0]->CollectMABB());
+		
+		intersector.Execute();
+
+		for (auto model : context.models) {
 			model->Draw();
 		}
 		gui.Draw();

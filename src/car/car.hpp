@@ -12,27 +12,27 @@ namespace App {
 
 class CarModel: public Model {
 public:
-    CarModel(std::string default_shader_name, std::string bbox_shader_name, std::string gltf, std::vector<std::string> car_wheel_mesh_names,
+    CarModel(std::string car_name, std::string default_shader_name, std::string bbox_shader_name, std::string gltf, std::vector<std::string> car_wheel_mesh_names,
         float car_move_max_speed, float car_rotate_max_speed, float car_wheels_rotate_speed, GL::Vec3 car_center_translation, Transform transform)
-        : Model(default_shader_name, bbox_shader_name, gltf, transform),
+        : Model(car_name, default_shader_name, bbox_shader_name, gltf, transform),
         car_move_max_speed_(car_move_max_speed),
         car_rotate_max_speed_(car_rotate_max_speed),
         car_wheels_rotate_speed_(car_wheels_rotate_speed),
         car_center_translation_(GL::Mat4{}.Translate(car_center_translation)),
-        accelerator_(Accelerator{ car_move_max_speed, APP_CAR_ACCEL }) {
+        accelerator_(Accelerator{car_move_max_speed, APP_CAR_ACCEL}) {
         for (auto&& car_wheel_mesh_name : car_wheel_mesh_names) {
             auto found = std::find_if(meshes_.begin(), meshes_.end(), [car_wheel_mesh_name](App::Mesh mesh) {
                 return mesh.name_ == car_wheel_mesh_name;
                 });
             if (found != meshes_.end()) {
                 car_wheel_meshes_indicies_.push_back(found - meshes_.begin());
-                found->SetDrawBBox(true);
+                // found->SetDrawBBox(true);
             }
         }
     }
 
     CarModel(Config::CarModelConfig config)
-        : CarModel(config.shader.default_shader_name, config.shader.bbox_shader_name,
+        : CarModel(config.name, config.shader.default_shader_name, config.shader.bbox_shader_name,
             config.gltf, config.wheels.mesh_names, config.speed.move, config.speed.rotate,
             config.wheels.speed.rotate, config.rotation_center, config.transform) {}
 
@@ -45,7 +45,7 @@ public:
         if (context.keyboard_status.value()[GL::Key::W]) {
             switch (context.keyboard_mode.value()) {
                 case App::KeyboardMode::ORBIT_CAMERA: {
-                    context.camera.value()->MoveFront(delta_time);
+                    context.camera->MoveFront(delta_time);
                     break;
                 }
                 case App::KeyboardMode::CAR_MOVEMENT: {
@@ -58,7 +58,7 @@ public:
         if (context.keyboard_status.value()[GL::Key::S]) {
             switch (context.keyboard_mode.value()) {
                 case App::KeyboardMode::ORBIT_CAMERA: {
-                    context.camera.value()->MoveBack(delta_time);
+                    context.camera->MoveBack(delta_time);
                     break;
                 }
                 case App::KeyboardMode::CAR_MOVEMENT: {
@@ -71,7 +71,7 @@ public:
         if (context.keyboard_status.value()[GL::Key::A]) {
             switch (context.keyboard_mode.value()) {
                 case App::KeyboardMode::ORBIT_CAMERA: {
-                    context.camera.value()->MoveLeft(delta_time);
+                    context.camera->MoveLeft(delta_time);
                     break;
                 }
                 case App::KeyboardMode::CAR_MOVEMENT: {
@@ -84,7 +84,7 @@ public:
         if (context.keyboard_status.value()[GL::Key::D]) {
             switch (context.keyboard_mode.value()) {
                 case App::KeyboardMode::ORBIT_CAMERA: {
-                    context.camera.value()->MoveRight(delta_time);
+                    context.camera->MoveRight(delta_time);
                     break;
                 }
                 case App::KeyboardMode::CAR_MOVEMENT: {
@@ -98,6 +98,12 @@ public:
 
         if (!context.keyboard_status.value()[GL::Key::W] && !context.keyboard_status.value()[GL::Key::S]) {
             accelerator_.DecreaseSpeed(delta_time);
+        }
+    }
+
+    void SetDrawWheelsBBoxes(bool value) {
+        for (auto index : car_wheel_meshes_indicies_) {
+            meshes_[index].SetDrawBBox(value);
         }
     }
 

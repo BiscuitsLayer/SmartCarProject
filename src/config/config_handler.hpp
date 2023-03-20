@@ -22,10 +22,16 @@ struct Speed {
     float rotate;
 };
 
+struct Shader {
+    std::string default_shader_name;
+    std::string bbox_shader_name;
+    std::string compute_shader_name;
+};
+
 struct WindowConfig {
     struct MaxFps {
         int value;
-        bool mode;
+        bool enabled;
     } max_fps;
 
     struct Params {
@@ -34,6 +40,11 @@ struct WindowConfig {
         std::string title;
         bool fullscreen;
     } params;
+};
+
+struct IntersectorConfig {
+    Shader shader;
+    bool enabled;
 };
 
 struct CameraConfig {
@@ -63,10 +74,7 @@ struct CameraConfig {
 struct BaseModelConfig {
     std::string name;
     std::string type;
-    struct Shader {
-        std::string default_shader_name;
-        std::string bbox_shader_name;
-    } shader;
+    Shader shader;
     Transform transform;
 
     // To make the class polymorphic, so we are able
@@ -113,6 +121,11 @@ public:
         SetWindowConfig(window);
     }
 
+    void ParseIntersectorConfig() {
+        auto intersector = FindObject(data_, "intersector");
+        SetIntersectorConfig(intersector);
+    }
+
     void ParseCameraConfig() {
         auto camera = FindObject(case_selected_, "camera");
         SetCameraConfig(camera);
@@ -144,6 +157,10 @@ public:
         return window_config_;
     }
 
+    Config::IntersectorConfig GetIntersectorConfig() const {
+        return intersector_config_;
+    }
+
     Config::CameraConfig GetCameraConfig() const {
         return camera_config_;
     }
@@ -160,13 +177,19 @@ private:
     void SetWindowConfig(json_object window) {
         auto max_fps = FindObject(window, "max_fps");
         window_config_.max_fps.value = FindFloat(max_fps, "value");
-        window_config_.max_fps.mode = FindBoolean(max_fps, "mode");
+        window_config_.max_fps.enabled = FindBoolean(max_fps, "enabled");
 
         auto params = FindObject(window, "params");
         window_config_.params.width = FindInteger(params, "width");
         window_config_.params.height = FindInteger(params, "height");
         window_config_.params.title = FindString(params, "title");
         window_config_.params.fullscreen = FindBoolean(params, "fullscreen");
+    };
+
+    void SetIntersectorConfig(json_object intersector) {
+        auto shader = FindObject(intersector, "shader");
+        intersector_config_.shader.compute_shader_name = FindString(shader, "default");
+        intersector_config_.enabled = FindBoolean(intersector, "enabled");
     };
 
     void SetCameraConfig(json_object camera) {
@@ -199,13 +222,24 @@ private:
             std::string name = FindString(shader, "name");
             std::string folder = FindString(shader, "folder");
 
-            std::string vertex_path = folder + "/" + FindString(shader, "vertex");
-            GL::Shader vertex_shader(GL::ShaderType::Vertex, App::ReadFileData(vertex_path, false));
+            std::string vertex = FindString(shader, "vertex", true);
+            if (!vertex.empty()) {
+                std::string vertex_path = folder + "/" + vertex;
+                GL::Shader vertex_shader(GL::ShaderType::Vertex, App::ReadFileData(vertex_path, false));
 
-            std::string fragment_path = folder + "/" + FindString(shader, "fragment");
-            GL::Shader fragment_shader(GL::ShaderType::Fragment, App::ReadFileData(fragment_path, false));
+                std::string fragment_path = folder + "/" + FindString(shader, "fragment", true);
+                GL::Shader fragment_shader(GL::ShaderType::Fragment, App::ReadFileData(fragment_path, false));
 
-            shader_handler_[name] = std::make_shared<GL::Program>(vertex_shader, fragment_shader);
+                shader_handler_[name] = std::make_shared<GL::Program>(vertex_shader, fragment_shader);
+            }
+
+            std::string compute = FindString(shader, "compute", true);
+            if (!compute.empty()) {
+                std::string compute_path = folder + "/" + compute;
+                GL::Shader compute_shader(GL::ShaderType::Compute, App::ReadFileData(compute_path, false));
+
+                shader_handler_[name] = std::make_shared<GL::Program>(compute_shader);
+            }
         }
     }
 
@@ -443,6 +477,7 @@ private:
     json_object case_selected_;
 
     Config::WindowConfig window_config_;
+    Config::IntersectorConfig intersector_config_;
     Config::CameraConfig camera_config_;
     ShaderHandler shader_handler_;
     std::vector<std::shared_ptr<Config::BaseModelConfig>> model_configs_;

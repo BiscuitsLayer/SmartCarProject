@@ -8,6 +8,7 @@
 
 // Sources
 #include <constants/constants.hpp>
+#include <helpers/helpers.hpp>
 
 namespace App {
 
@@ -37,6 +38,8 @@ public:
 
         ebo_ = GL::VertexBuffer(indices_.data(), indices_.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
         vao_.BindElements(ebo_);
+
+        UpdateVertices(Transform{});
     }
 
     void UpdateVertices(Transform mesh_self_transform) {
@@ -46,8 +49,8 @@ public:
         for (auto&& vertex : vertices_) {
             GL::Vec3 new_vertex = static_cast<GL::Mat4>(mesh_self_transform) * vertex.Pos;
 
-            new_bbox_min = GL::Vec3{ std::min(new_bbox_min.X, new_vertex.X), std::min(new_bbox_min.Y, new_vertex.Y), std::min(new_bbox_min.Z, new_vertex.Z) };
-            new_bbox_max = GL::Vec3{ std::max(new_bbox_max.X, new_vertex.X), std::max(new_bbox_max.Y, new_vertex.Y), std::max(new_bbox_max.Z, new_vertex.Z) };
+            new_bbox_min = GL::Vec3{std::min(new_bbox_min.X, new_vertex.X), std::min(new_bbox_min.Y, new_vertex.Y), std::min(new_bbox_min.Z, new_vertex.Z)};
+            new_bbox_max = GL::Vec3{std::max(new_bbox_max.X, new_vertex.X), std::max(new_bbox_max.Y, new_vertex.Y), std::max(new_bbox_max.Z, new_vertex.Z)};
         }
 
         cur_min_ = new_bbox_min;
@@ -87,8 +90,8 @@ public:
         gl.DrawElements(vao_, GL::Primitive::Lines, 0, indices_.size(), GL::Type::UnsignedInt);
     }
 
-    std::pair<GL::Vec3, GL::Vec3> GetMinMax() const {
-        return std::make_pair(cur_min_, cur_max_);
+    MemoryAlignedBBox GetMABB() {
+        return MemoryAlignedBBox{cur_min_, cur_max_, GL::Mat4{}, GL::Mat4{}};
     }
 
 private:

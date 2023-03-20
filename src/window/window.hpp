@@ -69,7 +69,7 @@ LRESULT CALLBACK WindowEventHandlerWithImGui(HWND hwnd, UINT msg, WPARAM wParam,
 }
 
 void LimitMaxFps(App::Config::WindowConfig window_config) {
-	if (window_config.max_fps.mode) {
+	if (window_config.max_fps.enabled) {
 		static std::chrono::system_clock::time_point a = std::chrono::system_clock::now();
 		static std::chrono::system_clock::time_point b = std::chrono::system_clock::now();
 

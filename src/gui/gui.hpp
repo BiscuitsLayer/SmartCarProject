@@ -7,13 +7,14 @@
 #include <imgui.h>
 
 // Sources
+#include <car/car.hpp>
+#include <model/model.hpp>
 #include <helpers/helpers.hpp>
 #include <config/config_handler.hpp>
 
 namespace App {
 
 struct Gui {
-
     Gui(App::Config::WindowConfig window_config) {
         auto raw_window_handle = FindWindowA("OOGL_WINDOW", window_config.params.title.c_str());
 
@@ -60,9 +61,70 @@ struct Gui {
 
         ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
+        // MODELS
+
+        ImGui::SeparatorText("Models");
+
+        for (int model_idx = 0; model_idx < context.models.size(); ++model_idx) {
+            ImGui::PushID(model_idx);
+            if (ImGui::TreeNode(context.models[model_idx]->name_.c_str())) {
+                ImGui::Text("All BBoxes");
+                ImGui::SameLine();
+                if (ImGui::SmallButton("Enable")) {
+                    context.models[model_idx]->SetDrawBBoxes(true);
+                }
+                ImGui::SameLine();
+                if (ImGui::SmallButton("Disable")) {
+                    context.models[model_idx]->SetDrawBBoxes(false);
+                }
+
+                if (model_idx == 0) {
+                    auto car_model_ptr = std::dynamic_pointer_cast<App::CarModel>(context.models[model_idx]);
+
+                    // WARNING: be careful with ImGui ID system: without PushID
+                    // both "All BBoxes" enable and disable buttons and
+                    // "Wheels BBoxes" enable and disable buttons will have
+                    // the same ID and therefore won't work properly
+                    ImGui::PushID("wheels");
+
+                    ImGui::Text("Wheels BBoxes");
+                    ImGui::SameLine();
+                    if (ImGui::SmallButton("Enable")) {
+                        car_model_ptr->SetDrawWheelsBBoxes(true);
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::SmallButton("Disable")) {
+                        car_model_ptr->SetDrawWheelsBBoxes(false);
+                    }
+
+                    ImGui::PopID();
+
+                }
+
+                // Meshes list
+                if (ImGui::TreeNode("Meshes")) {
+                    for (int mesh_idx = 0; mesh_idx < context.models[model_idx]->meshes_.size(); ++mesh_idx) {
+                        ImGui::PushID(mesh_idx);
+
+                        auto& mesh = context.models[model_idx]->meshes_[mesh_idx];
+                        
+                        ImGui::Text(mesh.name_.c_str());
+                        ImGui::SameLine();
+                        ImGui::Checkbox("BBox", &mesh.draw_bbox_);
+
+                        ImGui::PopID();
+                    }
+                    ImGui::TreePop();
+                }
+
+                ImGui::TreePop();
+            }
+            ImGui::PopID();
+        }
+
         // CAMERA PARAMETERS
 
-        auto camera_ptr = context.camera.value();
+        auto camera_ptr = context.camera;
 
         ImGui::SeparatorText("Camera parameters");
 
