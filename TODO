@@ -5,11 +5,12 @@ and make different shaders/shader programs for them
 [x] Move shader program into shader handler
 
 Workflow:
-
+[x] include_directories -> target_include_durectories in cmake
 [] Const methods
-[] Move code to CPP files to fasten engine build
 [] Copy by value -> pass by const reference
-[] Model names and info in ImGui (+ fix models[0] hardcode for car model)
+[x] Move code to CPP files to fasten engine build
+[x] Model names and info in ImGui
+[] Combine models in obstacle set, car, env
 [x] Configs based on JSONs
 [x] Deal with Assimp DLL linkage
 [x] Get rid of Assimp unit test linkage

@@ -5,24 +5,22 @@ project(SmartCarProject)
 ### Definitions ###
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_C_FLAGS "-g2")
-set(CMAKE_CXX_FLAGS "-g2")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_INCLUDE_PATH "${CMAKE_SOURCE_DIR}/src")
 
-### Library SmartCar ###
-# Build new library
-file(GLOB SRC "src/*.cpp")
+### Library SmartCar (creation part) ###
+# Add a new library
+file(GLOB SRC "src/*/*.cpp")
 add_library(LibSmartCar STATIC ${SRC})
 # Provide includes
-include_directories(src)
-include_directories(assets)
+target_include_directories(LibSmartCar PUBLIC src)
+target_include_directories(LibSmartCar PUBLIC assets)
 
 ### OpenGL ###
 # Add package
 find_package(OpenGL REQUIRED)
 # Provide includes
-include_directories(${OPENGL_INCLUDE_DIRS})
+target_include_directories(LibSmartCar PUBLIC ${OPENGL_INCLUDE_DIRS})
 
 ### OOGL ###
 # Build with Makefile
@@ -35,7 +33,7 @@ set(OOGL_DIR "include/OOGL")
 set(OOGL_INCLUDE_DIR ${OOGL_DIR}/include)
 set(OOGL_LIBRARY ${CMAKE_SOURCE_DIR}/${OOGL_DIR}/lib/OOGL.a)
 # Provide includes
-include_directories(${OOGL_INCLUDE_DIR})
+target_include_directories(LibSmartCar PUBLIC ${OOGL_INCLUDE_DIR})
 
 ### Assimp ###
 # No unit tests
@@ -51,7 +49,7 @@ set(ASSIMP_INCLUDE_DIRS "${ASSIMP_DIR}/include" "build/${ASSIMP_DIR}/include")
 # Add package
 add_subdirectory(${ASSIMP_DIR})
 # Provide includes
-include_directories(${ASSIMP_INCLUDE_DIRS})
+target_include_directories(LibSmartCar PUBLIC ${ASSIMP_INCLUDE_DIRS})
 
 ### ImGui ###
 # Provide directories
@@ -60,21 +58,27 @@ set(IMGUI_BACKENDS_DIR "${IMGUI_DIR}/backends")
 # Build new library
 file(GLOB SRC_IMGUI "${IMGUI_DIR}/*.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_win32.cpp")
 add_library(MyImGuiSubset STATIC ${SRC_IMGUI})
+target_include_directories(MyImGuiSubset PUBLIC ${IMGUI_DIR} ${IMGUI_BACKENDS_DIR})
 target_link_libraries(MyImGuiSubset PUBLIC dwmapi)
 # Provide includes
-include_directories(${IMGUI_DIR} ${IMGUI_BACKENDS_DIR})
+target_include_directories(LibSmartCar PUBLIC ${IMGUI_DIR} ${IMGUI_BACKENDS_DIR})
 
 ### JSON ###
 # Provide directories
 set(JSON_DIR "include/json")
+set(JSON_INCLUDE_DIRS "${JSON_DIR}/include")
 # Add package
 add_subdirectory(${JSON_DIR})
+target_include_directories(LibSmartCar PUBLIC ${JSON_INCLUDE_DIRS})
+
+### Library SmartCar (build and link part) ###
+target_link_libraries(LibSmartCar ${OOGL_LIBRARY} ${OPENGL_LIBRARIES} MyImGuiSubset assimp nlohmann_json::nlohmann_json)
 
 ### Main ###
 # Build main target
 file(GLOB SRC_MAIN "main.cpp")
 add_executable(SmartCarMain ${SRC_MAIN})
-target_link_libraries(SmartCarMain ${OOGL_LIBRARY} ${OPENGL_LIBRARIES} MyImGuiSubset LibSmartCar assimp nlohmann_json::nlohmann_json)
+target_link_libraries(SmartCarMain LibSmartCar)
 
 ### Move DLLs ###
 add_custom_command(TARGET SmartCarMain POST_BUILD

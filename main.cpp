@@ -1,18 +1,3 @@
-// STL
-#include <iostream>
-#include <fstream>
-#include <cmath>
-#include <chrono>
-#include <thread>
-
-// OpenGL Wrapper
-#include <GL/OOGL.hpp>
-
-// ImGui
-#include <imgui_impl_win32.h>
-#include <imgui_impl_opengl3.h>
-#include <imgui_internal.h>
-
 // Sources
 #include <constants/constants.hpp>
 #include <helpers/helpers.hpp>
@@ -25,9 +10,8 @@
 #include <intersector/intersector.hpp>
 
 // Model
-// #include <cube_example/src/cube.hpp>
 #include <model/model.hpp>
-#include <car/car.hpp>
+#include <car_model/car_model.hpp>
 #include <skybox/skybox.hpp>
 
 // Coordinate space matrices

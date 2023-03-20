@@ -18,20 +18,10 @@ public:
     template <typename U, typename V>
     using Duration = std::chrono::duration<U, V>;
 
-    Timer(): start_time(Clock::now()), previous_tick(Clock::now()) {
-    }
+    Timer();
 
-    void Start() {
-        if (!running) {
-            running = true;
-            start_time = Clock::now();
-        }
-    }
-
-    void Lap() {
-        lapping = true;
-        lap_time = Clock::now();
-    }
+    void Start();
+    void Lap();
 
     template <typename T = DefaultResolution>
     double Stop() {
@@ -48,9 +38,7 @@ public:
         return duration.count();
     }
 
-    bool IsRunning() const {
-        return running;
-    }
+    bool IsRunning() const;
 
     template <typename T = DefaultResolution>
     double Elapsed() {

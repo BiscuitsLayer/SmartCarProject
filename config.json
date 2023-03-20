@@ -97,7 +97,9 @@
                             "Object_0",
                             "Object_1",
                             "Object_2",
-                            "Object_3"
+                            "Object_3",
+                            "Object_24",
+                            "Object_25"
                         ],
                         "speed": {
                             "rotate": 100.0
@@ -251,7 +253,9 @@
                             "Object_0",
                             "Object_1",
                             "Object_2",
-                            "Object_3"
+                            "Object_3",
+                            "Object_24",
+                            "Object_25"
                         ],
                         "speed": {
                             "rotate": 100.0
