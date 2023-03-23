@@ -6,7 +6,7 @@
 #include <torch/torch.h>
 #pragma warning(pop)
 
-// Sources
+// LibSmartCar
 #include <network.hpp>
 
 const int NET_INPUT_SIZE = 50;

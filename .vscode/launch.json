@@ -1,13 +1,24 @@
 {
     "configurations": [
+        {
+            "name": "(MSVC) Launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build_msvc/Debug/SmartCarMain.exe",
+            "args": ["${workspaceFolder}/config.json"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build_msvc",
+            "environment": [],
+            "console": "externalTerminal"
+        },
     {
-        "name": "(gdb) Launch",
+        "name": "(GCC) Launch",
         "type": "cppdbg",
         "request": "launch",
-        "program": "${workspaceFolder}/build/SmartCarMain.exe",
-        "args": [],
+        "program": "${workspaceFolder}/build_gcc/SmartCarMain.exe",
+        "args": ["${workspaceFolder}/config.json"],
         "stopAtEntry": false,
-        "cwd": "${workspaceFolder}/build",
+        "cwd": "${workspaceFolder}/build_gcc",
         "environment": [],
         "externalConsole": false,
         "MIMode": "gdb",

@@ -7,13 +7,13 @@ Skybox::Skybox(std::string model_name, std::string shader_name, std::string fold
     vbo_ = GL::VertexBuffer(vertices_.data(), vertices_.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
 
     auto& context = App::Context::Get();
-    auto& gl = context.gl.value().get();
+    auto& gl = context.gl->get();
     auto shader_handler = context.shader_handler.value();
 
     auto skybox_program = shader_handler.at(shader_name_);
     gl.UseProgram(*skybox_program);
 
-    vao_.BindAttribute(skybox_program->GetAttribute("aPos"), vbo_, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_POS_OFFSET);
+    vao_.BindAttribute(skybox_program->GetAttribute("aPos"), vbo_, GL::Type::Float, APP_GL_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_POS_OFFSET);
 
     Texture cubemap = Texture::Cubemap(folder, filenames_);
     textures_.push_back(cubemap);
@@ -24,7 +24,7 @@ Skybox::Skybox(Config::SkyboxModelConfig config)
 
 void Skybox::Draw() {
     auto& context = App::Context::Get();
-    auto& gl = context.gl.value().get();
+    auto& gl = context.gl->get();
     auto shader_handler = context.shader_handler.value();
 
     GL::Mat4 vp = App::GetViewNoTranslationProjectionMatrix(context.camera->GetViewMatrix(), context.projection_matrix.value());

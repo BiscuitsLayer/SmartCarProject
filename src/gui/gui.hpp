@@ -1,10 +1,18 @@
 #pragma once
 
+// STL
+#include <algorithm>
+
 // ImGui
-// #include <imgui_internal.h>
 #include <imgui.h>
 
-// Sources
+// Constants
+#include <constants/constants.hpp>
+
+// Forward declarations
+#include <gui/gui_fwd.hpp>
+
+// LibSmartCar
 #include <car_model/car_model.hpp>
 #include <model/model.hpp>
 #include <helpers/helpers.hpp>
@@ -12,14 +20,17 @@
 
 namespace App {
 
-struct Gui {
-    Gui(App::Config::WindowConfig window_config);
+class Gui {
+public:
+    Gui(const App::Config::WindowConfig& window_config);
 
-    void Cleanup();
-    void Prepare();
+    void Cleanup() const;
+    void Prepare() const;
+
+    // This function changes context variables, so it is not const
     void Draw();
 
-    ImVec4 clear_color;
+private:
     bool show_imgui_demo_window;
 };
 

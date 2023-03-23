@@ -2,32 +2,35 @@
 
 namespace App {
 
-CarModel::CarModel(std::string car_name, std::string default_shader_name, std::string bbox_shader_name, std::string gltf, std::vector<std::string> car_wheel_mesh_names,
-    float car_move_max_speed, float car_rotate_max_speed, float car_wheels_rotate_speed, GL::Vec3 car_center_translation, Transform transform)
-    : Model(car_name, default_shader_name, bbox_shader_name, gltf, transform),
-    car_move_max_speed_(car_move_max_speed),
-    car_rotate_max_speed_(car_rotate_max_speed),
-    car_wheels_rotate_speed_(car_wheels_rotate_speed),
-    car_center_translation_(GL::Mat4{}.Translate(car_center_translation)),
-    accelerator_(Accelerator{ car_move_max_speed, APP_CAR_ACCEL }) {
-    for (auto&& car_wheel_mesh_name : car_wheel_mesh_names) {
-        auto found = std::find_if(meshes_.begin(), meshes_.end(), [car_wheel_mesh_name](App::Mesh mesh) {
-            return mesh.name_ == car_wheel_mesh_name;
-            });
+CarModel::CarModel(const std::string& name, const std::string& default_shader_name,
+    const std::string& bbox_shader_name, const std::string& gltf,
+    const std::vector<std::string>& wheel_meshes_names, const float move_max_speed,
+    const float acceleration, const float rotate_max_speed, const float wheels_rotate_speed,
+    const GL::Vec3& center_translation, const Transform& transform)
+    : Model(name, default_shader_name, bbox_shader_name, gltf, transform),
+    move_max_speed_(move_max_speed),
+    rotate_max_speed_(rotate_max_speed),
+    wheels_rotate_speed_(wheels_rotate_speed),
+    center_translation_(GL::Mat4{}.Translate(center_translation)),
+    accelerator_(Accelerator{move_max_speed, acceleration}) {
+    wheel_meshes_indicies_.reserve(wheel_meshes_names.size());
+    for (auto&& wheel_mesh_name : wheel_meshes_names) {
+        auto found = std::find_if(meshes_.begin(), meshes_.end(), [wheel_mesh_name](const App::Mesh& mesh) {
+            return mesh.name_ == wheel_mesh_name;
+        });
         if (found != meshes_.end()) {
-            car_wheel_meshes_indicies_.push_back(found - meshes_.begin());
-            // found->SetDrawBBox(true);
+            wheel_meshes_indicies_.push_back(found - meshes_.begin());
         }
     }
 }
 
-CarModel::CarModel(Config::CarModelConfig config)
+CarModel::CarModel(const Config::CarModelConfig& config)
     : CarModel(config.name, config.shader.default_shader_name, config.shader.bbox_shader_name,
-        config.gltf, config.wheels.mesh_names, config.speed.move, config.speed.rotate,
+        config.gltf, config.wheels.mesh_names, config.speed.move, config.acceleration, config.speed.rotate,
         config.wheels.speed.rotate, config.rotation_center, config.transform) {}
 
-GL::Mat4 CarModel::GetModelMatrix() {
-    return static_cast<GL::Mat4>(transform_) * movement_transform_ * car_center_translation_;
+const GL::Mat4 CarModel::GetModelMatrix() const {
+    return static_cast<GL::Mat4>(transform_) * movement_transform_ * center_translation_;
 }
 
 void CarModel::Move(float delta_time) {
@@ -89,17 +92,19 @@ void CarModel::Move(float delta_time) {
     if (!context.keyboard_status.value()[GL::Key::W] && !context.keyboard_status.value()[GL::Key::S]) {
         accelerator_.DecreaseSpeed(delta_time);
     }
+
+    context.camera->UpdateWithModel(GetModelMatrix());
 }
 
 void CarModel::SetDrawWheelsBBoxes(bool value) {
-    for (auto index : car_wheel_meshes_indicies_) {
+    for (auto&& index : wheel_meshes_indicies_) {
         meshes_[index].SetDrawBBox(value);
     }
 }
 
 void CarModel::RotateWheels(float delta_time) {
-    for (auto index : car_wheel_meshes_indicies_) {
-        meshes_[index].self_transform_.UpdateRotation(car_wheels_rotate_speed_ * delta_time, GL::Vec3(1.0f, 0.0f, 0.0f));
+    for (auto index : wheel_meshes_indicies_) {
+        meshes_[index].self_transform_.UpdateRotation(wheels_rotate_speed_ * delta_time, APP_CAR_WHEELS_ROTATION_AXIS);
         meshes_[index].bbox_.UpdateVertices(meshes_[index].self_transform_);
     }
 }
@@ -111,15 +116,15 @@ void CarModel::MoveForward(float delta_time) {
 
 void CarModel::RotateLeft(float delta_time, bool move_front) {
     if (accelerator_.GetSpeed() != 0.0) {
-        float car_rotate_speed = car_rotate_max_speed_ * accelerator_.GetSpeed() / car_move_max_speed_;
-        movement_transform_.Rotate(GL::Vec3(0.0f, 1.0f, 0.0f), car_rotate_speed * delta_time);
+        float rotate_speed = rotate_max_speed_ * accelerator_.GetSpeed() / move_max_speed_;
+        movement_transform_.Rotate(GL::Vec3(0.0f, 1.0f, 0.0f), rotate_speed * delta_time);
     }
 }
 
 void CarModel::RotateRight(float delta_time, bool move_front) {
     if (accelerator_.GetSpeed() != 0.0) {
-        float car_rotate_speed = car_rotate_max_speed_ * accelerator_.GetSpeed() / car_move_max_speed_;
-        movement_transform_.Rotate(GL::Vec3(0.0f, 1.0f, 0.0f), -1.0f * car_rotate_speed * delta_time);
+        float rotate_speed = rotate_max_speed_ * accelerator_.GetSpeed() / move_max_speed_;
+        movement_transform_.Rotate(GL::Vec3(0.0f, 1.0f, 0.0f), -1.0f * rotate_speed * delta_time);
     }
 }
 

@@ -4,6 +4,12 @@
 #include <GL/OOGL.hpp>
 #include <GL/Math/Mat4.hpp>
 
+// Constants
+#include <constants/constants.hpp>
+
+// Forward declarations
+#include <transform/transform_fwd.hpp>
+
 namespace App {
 
 class Transform {
@@ -20,7 +26,7 @@ public:
     void SetTranslation(GL::Vec3 translation);
     void UpdateTranslation(GL::Vec3 additional_translation);
 
-    operator GL::Mat4();
+    operator const GL::Mat4() const;
 
 private:
     void UpdateMatrix();

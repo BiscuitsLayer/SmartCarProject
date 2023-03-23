@@ -1,1 +1,5 @@
 build/
+
+# Different compiler builds (for debugging)
+build_gcc/
+build_msvc/

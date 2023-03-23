@@ -3,6 +3,12 @@
 // STL
 #include <chrono>
 
+// Constants
+#include <constants/constants.hpp>
+
+// Forward declarations
+#include <timer/timer_fwd.hpp>
+
 namespace App {
 
 class Timer {

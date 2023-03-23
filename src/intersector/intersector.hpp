@@ -3,7 +3,13 @@
 // OpenGL Wrapper
 #include <GL/OOGL.hpp>
 
-// Sources
+// Constants
+#include <constants/constants.hpp>
+
+// Forward declarations
+#include <intersector/intersector_fwd.hpp>
+
+// LibSmartCar
 #include <helpers/helpers.hpp>
 #include <config/config_handler.hpp>
 
@@ -11,22 +17,23 @@ namespace App {
 
 class Intersector {
 public:
-    Intersector(std::string intersect_shader_name);
-    Intersector(Config::IntersectorConfig config);
+    Intersector(const std::string& intersect_shader_name);
+    Intersector(const Config::IntersectorConfig& config);
 
     void ClearObstacles();
-    void AddObstacles(std::vector<MemoryAlignedBBox> new_obstacle_bboxes);
+    void AddObstacles(const std::vector<MemoryAlignedBBox>& new_obstacle_bboxes);
 
     void ClearCarParts();
-    void AddCarParts(std::vector<MemoryAlignedBBox> new_car_parts_bboxes);
+    void AddCarParts(const std::vector<MemoryAlignedBBox>& new_car_parts_bboxes);
 
-    void Execute();
+    // TODO: should not be const, because returns intersection values
+    void Execute() const;
 
 private:
     std::vector<MemoryAlignedBBox> obstacle_bboxes_;
     std::vector<MemoryAlignedBBox> car_parts_bboxes_;
 
-    std::string intersect_shader_name_;
+    const std::string intersect_shader_name_;
 };
 
 } // namespace App

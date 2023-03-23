@@ -10,26 +10,21 @@
 // OpenGL Wrapper
 #include <GL/OOGL.hpp>
 
-// Sources
+// Constants
 #include <constants/constants.hpp>
+
+// Forward declarations
+#include <helpers/helpers_fwd.hpp>
+
+// Complete types
+#include <camera/camera.hpp>
+#include <model/model.hpp>
 
 namespace App {
 
-class Camera; // Forward declaration
-class Model; // Forward declaration
-
-using ShaderHandler = std::unordered_map<std::string, std::shared_ptr<GL::Program>>;
-
-enum class KeyboardMode: int {
-    ORBIT_CAMERA = 0,
-    FIRST_PERSON_CAMERA,
-    CAR_MOVEMENT
-};
-
-using KeyboardStatus = std::array<bool, APP_KEYBOARD_KEYS_COUNT>;
-
 struct MemoryAlignedBBox {
-    MemoryAlignedBBox(GL::Vec3 new_min, GL::Vec3 new_max, GL::Mat4 new_model, GL::Mat4 new_mesh_to_model);
+    MemoryAlignedBBox(const GL::Vec3& new_min, const GL::Vec3& new_max,
+        const GL::Mat4& new_model, const GL::Mat4& new_mesh_to_model);
 
     GL::Vec4 min_point;
     GL::Vec4 max_point;
@@ -50,7 +45,7 @@ public:
 
     std::optional<std::reference_wrapper<GL::Context>> gl;
     std::optional<ShaderHandler> shader_handler;
-    std::shared_ptr<Camera> camera;
+    std::optional<Camera> camera;
     std::optional<GL::Mat4> projection_matrix;
     std::optional<KeyboardMode> keyboard_mode;
     std::optional<KeyboardStatus> keyboard_status;
@@ -60,8 +55,8 @@ private:
     Context() {}
 };
 
-GL::Vec3 GetTranslation(GL::Mat4 matrix);
+GL::Vec3 GetTranslation(const GL::Mat4& matrix);
 
-std::string ReadFileData(std::string filename, bool debug_dump = true);
+std::string ReadFileData(const std::string& filename, bool debug_dump = true);
 
 } // namespace App

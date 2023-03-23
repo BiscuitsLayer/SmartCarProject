@@ -32,7 +32,7 @@ std::vector<Texture> AssimpLoader::HandleMaterial(aiMaterial* mat, aiTextureType
         if (found != paths_to_loaded_textures_.end()) {
             ans.push_back(found->second);
         } else {
-            Texture new_texture{ full_path, app_texture_type };
+            Texture new_texture{full_path, app_texture_type};
             paths_to_loaded_textures_.insert(std::make_pair(full_path, new_texture));
             ans.push_back(new_texture);
         }
@@ -59,17 +59,17 @@ void AssimpLoader::HandleMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 tr
     for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
         GL::Vertex vertex;
         // process vertex positions, normals and texture coordinates
-        vertex.Pos = GL::Vec3{ mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
+        vertex.Pos = GL::Vec3{mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
 
-        bbox_min = GL::Vec3{ std::min(bbox_min.X, vertex.Pos.X), std::min(bbox_min.Y, vertex.Pos.Y), std::min(bbox_min.Z, vertex.Pos.Z) };
-        bbox_max = GL::Vec3{ std::max(bbox_max.X, vertex.Pos.X), std::max(bbox_max.Y, vertex.Pos.Y), std::max(bbox_max.Z, vertex.Pos.Z) };
+        bbox_min = GL::Vec3{(std::min)(bbox_min.X, vertex.Pos.X), (std::min)(bbox_min.Y, vertex.Pos.Y), (std::min)(bbox_min.Z, vertex.Pos.Z)};
+        bbox_max = GL::Vec3{(std::max)(bbox_max.X, vertex.Pos.X), (std::max)(bbox_max.Y, vertex.Pos.Y), (std::max)(bbox_max.Z, vertex.Pos.Z)};
 
         if (mesh->HasTextureCoords(0)) {
-            vertex.Tex = GL::Vec2{ mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
+            vertex.Tex = GL::Vec2{mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
         } else {
-            vertex.Tex = GL::Vec2{ 0.0f, 0.0f };
+            vertex.Tex = GL::Vec2{0.0f, 0.0f};
         }
-        vertex.Normal = GL::Vec3{ mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
+        vertex.Normal = GL::Vec3{mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
         vertices.push_back(vertex);
     }
 
@@ -95,8 +95,8 @@ void AssimpLoader::HandleMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 tr
         textures.insert(textures.end(), specular_textures.begin(), specular_textures.end());
     }
 
-    BBox bbox{ bbox_shader_name_, bbox_min, bbox_max };
-    Mesh new_mesh{ default_shader_name_, bbox_shader_name_, mesh->mName.C_Str(), Transform{transform_to_model}, vertices, indices, textures, bbox };
+    BBox bbox{bbox_shader_name_, bbox_min, bbox_max};
+    Mesh new_mesh{default_shader_name_, bbox_shader_name_, mesh->mName.C_Str(), Transform{transform_to_model}, vertices, indices, textures, bbox};
     meshes_.push_back(new_mesh);
 }
 

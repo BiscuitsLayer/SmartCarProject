@@ -8,15 +8,15 @@ Mesh::Mesh(std::string default_shader_name, std::string bbox_shader_name, std::s
     ebo_ = GL::VertexBuffer(indices.data(), indices.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
 
     auto& context = App::Context::Get();
-    auto& gl = context.gl.value().get();
+    auto& gl = context.gl->get();
     auto shader_handler = context.shader_handler.value();
 
     auto program = shader_handler.at(default_shader_name_);
     gl.UseProgram(*program);
 
-    vao_.BindAttribute(program->GetAttribute("aPos"), vbo_, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_POS_OFFSET);
-    vao_.BindAttribute(program->GetAttribute("aTexCoord"), vbo_, GL::Type::Float, APP_VEC2_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_TEX_OFFSET);
-    vao_.BindAttribute(program->GetAttribute("aNormal"), vbo_, GL::Type::Float, APP_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_NORMAL_OFFSET);
+    vao_.BindAttribute(program->GetAttribute("aPos"), vbo_, GL::Type::Float, APP_GL_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_POS_OFFSET);
+    vao_.BindAttribute(program->GetAttribute("aTexCoord"), vbo_, GL::Type::Float, APP_GL_VEC2_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_TEX_OFFSET);
+    vao_.BindAttribute(program->GetAttribute("aNormal"), vbo_, GL::Type::Float, APP_GL_VEC3_COMPONENTS_COUNT, APP_GL_VERTEX_BYTESIZE, APP_GL_VERTEX_NORMAL_OFFSET);
     vao_.BindElements(ebo_);
 }
 
@@ -26,7 +26,7 @@ void Mesh::SetDrawBBox(bool value) {
 
 void Mesh::Draw() {
     auto& context = App::Context::Get();
-    auto& gl = context.gl.value().get();
+    auto& gl = context.gl->get();
     auto shader_handler = context.shader_handler.value();
 
     auto program = shader_handler.at(default_shader_name_);

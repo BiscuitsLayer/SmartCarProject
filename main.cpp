@@ -1,5 +1,7 @@
-// Sources
+// Constants
 #include <constants/constants.hpp>
+
+// LibSmartCar
 #include <helpers/helpers.hpp>
 #include <transform/transform.hpp>
 #include <camera/camera.hpp>
@@ -20,13 +22,16 @@
 // projection: specified range of space in camera space (seen by camera) -> [-1.0, 1.0] (NDC), 
 // clip coordinates out of range
 
-int main() try {
+int main(int argc, char **argv) try {
 	auto& context = App::Context::Get();
 	context.keyboard_mode = App::KeyboardMode::CAR_MOVEMENT;
 	context.keyboard_status = App::KeyboardStatus{};
-	context.keyboard_status.value().fill(false);
+	context.keyboard_status->fill(false);
 
-	App::ConfigHandler config_handler{"../config.json"};
+	if (argc != 2) {
+		throw std::runtime_error("Wrong number of arguments!\nUsage: ./SmartCarMain.exe <config file path>");
+	}
+	App::ConfigHandler config_handler{argv[1]};
 
 	config_handler.ParseWindowConfig();
 	auto window_config = config_handler.GetWindowConfig();
@@ -53,7 +58,7 @@ int main() try {
 	gl.Enable(GL::Capability::Blend);
 	gl.BlendFunc(GL::BlendingFactor::SourceAlpha, GL::BlendingFactor::OneMinusSourceAlpha);
 
-	context.camera = std::make_shared<App::Camera>(camera_config);
+	context.camera = App::Camera(camera_config);
 
 	config_handler.ParseShaders();
 	context.shader_handler = config_handler.GetShaderHandler();
@@ -102,8 +107,6 @@ int main() try {
 
 		gl.Clear(GL::Buffer::Color | GL::Buffer::Depth);
 		gui.Prepare();
-
-		context.camera->UpdateWithModel(context.models[0]->GetModelMatrix());
 
 		intersector.ClearObstacles();
 		intersector.ClearCarParts();

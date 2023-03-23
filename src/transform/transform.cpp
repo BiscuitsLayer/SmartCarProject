@@ -56,7 +56,7 @@ void Transform::UpdateTranslation(GL::Vec3 additional_translation) {
     UpdateMatrix();
 }
 
-Transform::operator GL::Mat4() {
+Transform::operator const GL::Mat4() const {
     return transform_matrix_;
 }
 

@@ -7,7 +7,13 @@
 // OpenGL Wrapper
 #include <GL/OOGL.hpp>
 
-// Sources
+// Constants
+#include <constants/constants.hpp>
+
+// Forward declarations
+#include <skybox/skybox_fwd.hpp>
+
+// LibSmartCar
 #include <model/model.hpp>
 #include <texture/texture.hpp>
 

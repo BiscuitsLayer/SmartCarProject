@@ -4,7 +4,13 @@
 #include <string>
 #include <vector>
 
-// Sources
+// Constants
+#include <constants/constants.hpp>
+
+// Forward declarations
+#include <model/model_fwd.hpp>
+
+// LibSmartCar
 #include <camera/camera.hpp>
 #include <mesh/mesh.hpp>
 #include <config/config_handler.hpp>
@@ -31,7 +37,7 @@ public:
     void SetTranslation(GL::Vec3 translation);
     void UpdateTranslation(GL::Vec3 additional_translation);
 
-    virtual GL::Mat4 GetModelMatrix();
+    virtual const GL::Mat4 GetModelMatrix() const;
 
     void SetDrawBBoxes(bool value);
     virtual void Draw();

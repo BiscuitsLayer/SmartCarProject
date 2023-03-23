@@ -3,8 +3,14 @@
 // STL
 #include <string>
 
-// Source
-#include <helpers/helpers.hpp>
+// Constants
+#include <constants/constants.hpp>
+
+// Forward declarations
+#include <texture/texture_fwd.hpp>
+
+// Incomplete type resolve
+#include <helpers/helpers_fwd.hpp>
 
 namespace App {
 

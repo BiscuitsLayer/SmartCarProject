@@ -1,5 +1,8 @@
 #include "texture.hpp"
 
+// Incomplete type resolve
+#include <helpers/helpers.hpp>
+
 namespace App {
 
 Texture::Texture(GL::Texture texture, Type type, int texture_unit)

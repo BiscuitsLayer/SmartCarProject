@@ -5,17 +5,20 @@
 #include <exception>
 #include <cmath>
 
-// Sources
+// Constants
 #include <constants/constants.hpp>
+
+// Forward declarations
+#include <accelerator/accelerator_fwd.hpp>
 
 namespace App {
 
 class Accelerator {
 public:
-    Accelerator(const float& max_speed, const float& acceleration);
+    Accelerator(const float max_speed, const float acceleration);
 
-    void IncreaseSpeed(const float& delta_time, const bool& move_front);
-    void DecreaseSpeed(const float& delta_time);
+    void IncreaseSpeed(const float delta_time, const bool move_front);
+    void DecreaseSpeed(const float delta_time);
     const float GetSpeed() const;
 
 private:

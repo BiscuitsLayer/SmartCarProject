@@ -1,25 +1,28 @@
 #include "camera.hpp"
 
+// Incomplete type resolve
+#include <config/config_handler.hpp>
+
 namespace App {
 
-Camera::Camera(GL::Vec3 camera_position, GL::Vec3 camera_target,
-    float camera_move_speed, float camera_rotate_speed,
-    float camera_min_length_to_target, float camera_max_length_to_target,
-    bool camera_target_fixed_on_car, bool camera_position_fixed_behind_car, GL::Vec3 camera_translation_from_car)
-    : camera_position_(camera_position), camera_target_(camera_target),
-    camera_move_speed_(camera_move_speed), camera_rotate_speed_(camera_rotate_speed),
-    camera_min_length_to_target_(camera_min_length_to_target), camera_max_length_to_target_(camera_max_length_to_target),
-    camera_target_fixed_on_car_(camera_target_fixed_on_car), camera_position_fixed_behind_car_(camera_position_fixed_behind_car) {
-    camera_translation_from_car_.SetTranslation(camera_translation_from_car);
+Camera::Camera(const GL::Vec3& position, const GL::Vec3& target, const float move_speed, const float rotate_speed,
+    const float min_length_to_target, const float max_length_to_target, const bool is_target_fixed_on_car,
+    const bool is_position_fixed_behind_car, const GL::Vec3& translation_from_car)
+    : position_(position), target_(target), move_speed_(move_speed), rotate_speed_(rotate_speed),
+    min_length_to_target_(min_length_to_target), max_length_to_target_(max_length_to_target),
+    is_target_fixed_on_car_(is_target_fixed_on_car), is_position_fixed_behind_car_(is_position_fixed_behind_car),
+    world_space_up_(APP_CAMERA_WORLD_SPACE_UP) {
+    translation_from_car_.SetTranslation(translation_from_car);
+    cur_length_to_target_ = (position_ - target_).Length();
 
-    cur_length_to_target_ = (camera_position_ - camera_target_).Length();
-    if ((cur_length_to_target_ < camera_min_length_to_target_) || (cur_length_to_target_ > camera_max_length_to_target_)) {
+    if ((cur_length_to_target_ < min_length_to_target_) || (cur_length_to_target_ > max_length_to_target_)) {
         throw std::runtime_error("Camera error: current length to target is not between MIN and MAX values");
     }
+
     UpdateMatrix();
 }
 
-Camera::Camera(Config::CameraConfig config)
+Camera::Camera(const Config::CameraConfig& config)
     : Camera(config.position.value, config.target.value, config.speed.move, config.speed.rotate,
         config.length_to_target.min, config.length_to_target.max, config.target.fixed_on_car, config.position.fixed_behind_car,
         config.position.translation_from_car) {}
@@ -29,73 +32,78 @@ GL::Mat4 Camera::GetViewMatrix() const {
 }
 
 void Camera::MoveFront(float delta_time) {
-    cur_length_to_target_ = (camera_position_ - camera_target_).Length();
-    if (cur_length_to_target_ < camera_min_length_to_target_) {
+    cur_length_to_target_ = (position_ - target_).Length();
+
+    if (cur_length_to_target_ < min_length_to_target_) {
         return;
     }
-    float delta_coord = camera_move_speed_ * delta_time;
-    camera_position_ += (-1.0f * reversed_camera_direction_) * delta_coord;
+
+    float delta_coord = move_speed_ * delta_time;
+    position_ += (-1.0f * reversed_direction_) * delta_coord;
     UpdateMatrix();
 }
 
 void Camera::MoveBack(float delta_time) {
-    cur_length_to_target_ = (camera_position_ - camera_target_).Length();
-    if (cur_length_to_target_ > camera_max_length_to_target_) {
+    cur_length_to_target_ = (position_ - target_).Length();
+
+    if (cur_length_to_target_ > max_length_to_target_) {
         return;
     }
-    float delta_coord = camera_move_speed_ * delta_time;
-    camera_position_ -= (-1.0f * reversed_camera_direction_) * delta_coord;
+
+    float delta_coord = move_speed_ * delta_time;
+    position_ -= (-1.0f * reversed_direction_) * delta_coord;
     UpdateMatrix();
 }
 
 void Camera::MoveLeft(float delta_time) {
-    float delta_coord = camera_rotate_speed_ * delta_time;
-    camera_position_ -= camera_right_ * delta_coord;
+    float delta_coord = rotate_speed_ * delta_time;
+    position_ -= right_ * delta_coord;
     UpdateMatrix();
     AlignStepFront(delta_coord);
 }
 
 void Camera::MoveRight(float delta_time) {
-    float delta_coord = camera_rotate_speed_ * delta_time;
-    camera_position_ += camera_right_ * delta_coord;
+    float delta_coord = rotate_speed_ * delta_time;
+    position_ += right_ * delta_coord;
     UpdateMatrix();
     AlignStepFront(delta_coord);
 }
 
-void Camera::UpdateWithModel(GL::Mat4 target_model_matrix) {
-    if (camera_target_fixed_on_car_) {
+void Camera::UpdateWithModel(const GL::Mat4& target_model_matrix) {
+    if (is_target_fixed_on_car_) {
         GL::Vec3 new_target = GetTranslation(target_model_matrix);
-        camera_target_ = new_target;
+        target_ = new_target;
     }
 
-    if (camera_position_fixed_behind_car_) {
-        GL::Vec3 new_position = GetTranslation(target_model_matrix * camera_translation_from_car_);
-        camera_position_ = new_position;
+    if (is_position_fixed_behind_car_) {
+        GL::Vec3 new_position = GetTranslation(target_model_matrix * translation_from_car_);
+        position_ = new_position;
     }
 }
 
 void Camera::UpdateMatrix() {
-    cur_length_to_target_ = (camera_position_ - camera_target_).Length();
-    reversed_camera_direction_ = (camera_position_ - camera_target_).Normal();
+    cur_length_to_target_ = (position_ - target_).Length();
+    reversed_direction_ = (position_ - target_).Normal();
 
-    world_space_up_ = APP_CAMERA_WORLD_SPACE_UP;
-    camera_right_ = world_space_up_.Cross(reversed_camera_direction_);
+    right_ = world_space_up_.Cross(reversed_direction_);
 
-    if (camera_right_.Length() < APP_VECTOR_LENGTH_EPS) {
-        world_space_up_ = GL::Vec3(1.0f, 0.0f, 0.0f);
-        camera_right_ = world_space_up_.Cross(reversed_camera_direction_);
+    if (right_.Length() < APP_VECTOR_LENGTH_EPS) {
+        world_space_up_ = APP_CAMERA_RESERVE_WORLD_SPACE_UP;
+        right_ = world_space_up_.Cross(reversed_direction_);
     }
 
-    camera_right_ = camera_right_.Normal();
-    camera_up_ = reversed_camera_direction_.Cross(camera_right_);
-    view_matrix_ = GL::Mat4::LookAt(camera_position_, camera_target_, world_space_up_);
+    right_ = right_.Normal();
+    up_ = reversed_direction_.Cross(right_);
+    view_matrix_ = GL::Mat4::LookAt(position_, target_, world_space_up_);
 }
 
 void Camera::AlignStepFront(float delta_coord) {
-    cur_length_to_target_ = (camera_position_ - camera_target_).Length();
+    cur_length_to_target_ = (position_ - target_).Length();
+
     if (cur_length_to_target_ > APP_VECTOR_LENGTH_EPS) {
+        // Taylor's series approximation
         float align_step_front = (delta_coord * delta_coord) / (2 * cur_length_to_target_);
-        camera_position_ += (-1.0f * reversed_camera_direction_) * align_step_front;
+        position_ += (-1.0f * reversed_direction_) * align_step_front;
         UpdateMatrix();
     }
 }

@@ -3,6 +3,7 @@
 // STL
 #include <map>
 #include <exception>
+#include <algorithm>
 
 // Assimp
 #include <assimp/Importer.hpp>
@@ -10,7 +11,13 @@
 #include <assimp/postprocess.h>
 #include <assimp/cimport.h>
 
-// Sources
+// Constants
+#include <constants/constants.hpp>
+
+// Forward declarations
+#include <loader/loader_fwd.hpp>
+
+// LibSmartCar
 #include <bbox/bbox.hpp>
 #include <mesh/mesh.hpp>
 #include <texture/texture.hpp>

@@ -9,7 +9,13 @@
 using json = nlohmann::json;
 using json_object = nlohmann::detail::iter_impl<json>;
 
-// Sources
+// Constants
+#include <constants/constants.hpp>
+
+// Forward declarations
+#include <config/config_handler_fwd.hpp>
+
+// LibSmartCar
 #include <helpers/helpers.hpp>
 #include <transform/transform.hpp>
 
@@ -59,12 +65,12 @@ struct CameraConfig {
         int max;
     } length_to_target;
 
-    struct {
+    struct Position {
         GL::Vec3 value;
         bool fixed_behind_car;
         GL::Vec3 translation_from_car;
     } position;
-    struct {
+    struct Target {
         GL::Vec3 value;
         bool fixed_on_car;
     } target;
@@ -93,6 +99,7 @@ struct CarModelConfig: public BaseModelConfig {
         Speed speed;
     } wheels;
     Speed speed;
+    float acceleration;
     GL::Vec3 rotation_center;
 };
 
@@ -105,7 +112,7 @@ struct SkyboxModelConfig: public BaseModelConfig {
 
 class ConfigHandler {
 public:
-    ConfigHandler(std::string filename);
+    ConfigHandler(const std::string& filename);
 
     void ParseWindowConfig();
     void ParseIntersectorConfig();
@@ -120,40 +127,40 @@ public:
     std::vector<std::shared_ptr<Config::BaseModelConfig>> GetModelConfigs() const;
 
 private:
-    void SetWindowConfig(json_object window);
-    void SetIntersectorConfig(json_object intersector);
-    void SetCameraConfig(json_object camera);
-    void SetShaderHandler(std::vector<json_object> shaders);
+    void SetWindowConfig(const json_object& window);
+    void SetIntersectorConfig(const json_object& intersector);
+    void SetCameraConfig(const json_object& camera);
+    void SetShaderHandler(const std::vector<json_object>& shaders);
 
-    void SetCarModelConfig(json_object car_object);
-    void SetSkyboxModelConfig(json_object skybox_object);
-    void SetCommonModelConfig(json_object common_object);
+    void SetCarModelConfig(const json_object& car_object);
+    void SetSkyboxModelConfig(const json_object& skybox_object);
+    void SetCommonModelConfig(const json_object& common_object);
 
-    json_object FindObject(std::shared_ptr<json> parent, std::string object_name, bool can_skip = false);
-    json_object FindObject(json_object parent, std::string object_name, bool can_skip = false);
+    const json_object FindObject(std::shared_ptr<json> parent, const std::string& object_name, bool can_skip = false) const;
+    const json_object FindObject(const json_object& parent, const std::string& object_name, bool can_skip = false) const;
 
-    std::vector<json_object> FindArray(std::shared_ptr<json> parent, std::string array_name, bool can_skip = false, std::vector<json_object> default_value = {});
-    std::vector<json_object> FindArray(json_object parent, std::string array_name, bool can_skip = false, std::vector<json_object> default_value = {});
+    const std::vector<json_object> FindArray(std::shared_ptr<json> parent, const std::string& array_name, bool can_skip = false, std::vector<json_object> default_value = {}) const;
+    const std::vector<json_object> FindArray(const json_object& parent, const std::string& array_name, bool can_skip = false, std::vector<json_object> default_value = {}) const;
 
-    float FindFloat(std::shared_ptr<json> parent, std::string number_name, bool can_skip = false, float default_value = {});
-    float FindFloat(json_object parent, std::string number_name, bool can_skip = false, float default_value = {});
+    const float FindFloat(std::shared_ptr<json> parent, const std::string& number_name, bool can_skip = false, float default_value = {}) const;
+    const float FindFloat(const json_object& parent, const std::string& number_name, bool can_skip = false, float default_value = {}) const;
 
-    int FindInteger(std::shared_ptr<json> parent, std::string number_name, bool can_skip = false, int default_value = {});
-    int FindInteger(json_object parent, std::string number_name, bool can_skip = false, int default_value = {});
+    const int FindInteger(std::shared_ptr<json> parent, const std::string& number_name, bool can_skip = false, int default_value = {}) const;
+    const int FindInteger(const json_object& parent, const std::string& number_name, bool can_skip = false, int default_value = {}) const;
 
-    bool FindBoolean(std::shared_ptr<json> parent, std::string boolean_name, bool can_skip = false, bool default_value = {});
-    bool FindBoolean(json_object parent, std::string boolean_name, bool can_skip = false, bool default_value = {});
+    const bool FindBoolean(std::shared_ptr<json> parent, const std::string& boolean_name, bool can_skip = false, bool default_value = {}) const;
+    const bool FindBoolean(const json_object& parent, const std::string& boolean_name, bool can_skip = false, bool default_value = {}) const;
 
-    std::string FindString(std::shared_ptr<json> parent, std::string string_name, bool can_skip = false, std::string default_value = {});
-    std::string FindString(json_object parent, std::string string_name, bool can_skip = false, std::string default_value = {});
+    const std::string FindString(std::shared_ptr<json> parent, const std::string& string_name, bool can_skip = false, std::string default_value = {}) const;
+    const std::string FindString(const json_object& parent, const std::string& string_name, bool can_skip = false, std::string default_value = {}) const;
 
-    GL::Vec3 FindVec3(std::shared_ptr<json> parent, std::string vector_name, bool can_skip = false, GL::Vec3 default_value = {});
-    GL::Vec3 FindVec3(json_object parent, std::string vector_name, bool can_skip = false, GL::Vec3 default_value = {});
+    const GL::Vec3 FindVec3(std::shared_ptr<json> parent, const std::string& vector_name, bool can_skip = false, GL::Vec3 default_value = {}) const;
+    const GL::Vec3 FindVec3(const json_object& parent, const std::string& vector_name, bool can_skip = false, GL::Vec3 default_value = {}) const;
 
-    Transform FindTransform(std::shared_ptr<json> parent, bool can_skip = false, Transform default_value = {});
-    Transform FindTransform(json_object parent, bool can_skip = false, Transform default_value = {});
+    const Transform FindTransform(std::shared_ptr<json> parent, bool can_skip = false, Transform default_value = {}) const;
+    const Transform FindTransform(const json_object& parent, bool can_skip = false, Transform default_value = {}) const;
 
-    std::shared_ptr<json> data_;
+    const std::shared_ptr<json> data_;
     json_object case_selected_;
 
     Config::WindowConfig window_config_;

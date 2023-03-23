@@ -11,6 +11,12 @@ function Invoke-Call {
     }
 }
 
+# Compute total number of cores to set for cmake --build
+$totalLogicalCores = (
+    (Get-CimInstance -ClassName Win32_Processor).NumberOfLogicalProcessors 
+    | Measure-Object -Sum
+).Sum
+
 # Pull changes from remote repository
 Invoke-Call -ScriptBlock { git pull } -ErrorAction Stop
 
@@ -20,11 +26,11 @@ Push-Location
 # Build smartcar
 New-Item ./build -ItemType Directory -ErrorAction Ignore
 Set-Location build -ErrorAction Stop
-Invoke-Call -ScriptBlock { cmake .. -G "MinGW Makefiles" } -ErrorAction Stop
-Invoke-Call -ScriptBlock { make -j8 } -ErrorAction Stop
+Invoke-Call -ScriptBlock { cmake .. } -ErrorAction Stop
+Invoke-Call -ScriptBlock { cmake --build . --parallel $(($totalLogicalCores / 2)) } -ErrorAction Stop
 
 # Run smartcar
-Invoke-Call -ScriptBlock { ./SmartCarMain.exe } -ErrorAction Stop
+Invoke-Call -ScriptBlock { ./SmartCarMain.exe ../config.json } -ErrorAction Stop
 
 # Return to initial location
 Pop-Location -ErrorAction Stop

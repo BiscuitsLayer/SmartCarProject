@@ -8,7 +8,7 @@
 
 namespace App {
 
-Gui::Gui(App::Config::WindowConfig window_config) {
+Gui::Gui(const App::Config::WindowConfig& window_config) {
     auto raw_window_handle = FindWindowA("OOGL_WINDOW", window_config.params.title.c_str());
 
     IMGUI_CHECKVERSION();
@@ -16,23 +16,23 @@ Gui::Gui(App::Config::WindowConfig window_config) {
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
     ImGui::StyleColorsClassic();
+    // TODO: select ImGui style button
     //ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();
 
     ImGui_ImplWin32_Init(raw_window_handle);
     ImGui_ImplOpenGL3_Init();
 
-    clear_color = ImVec4(1.000F, 1.000F, 1.000F, 1.0F);
     show_imgui_demo_window = false;
 }
 
-void Gui::Cleanup() {
+void Gui::Cleanup() const {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
 }
 
-void Gui::Prepare() {
+void Gui::Prepare() const {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
@@ -47,12 +47,8 @@ void Gui::Draw() {
         ImGui::ShowDemoWindow(&show_imgui_demo_window);
     }
 
-    ImGui::Begin("Parameters");                          // Create a window called "Hello, world!" and append into it.
-
-    ImGui::Text("Sample text");               // Display some text (you can use a format strings too)
-    ImGui::Checkbox("Demo Window", &show_imgui_demo_window);      // Edit bools storing our window open/close state
-
-    ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+    ImGui::Begin("Parameters");
+    ImGui::Checkbox("Demo Window", &show_imgui_demo_window);
 
     // MODELS
 
@@ -116,23 +112,21 @@ void Gui::Draw() {
 
     // CAMERA PARAMETERS
 
-    auto camera_ptr = context.camera;
-
     ImGui::SeparatorText("Camera parameters");
 
-    ImGui::DragFloat3("Position", (float*)&camera_ptr->camera_position_, 0.1f, -100.0f, 100.0f);
-    ImGui::Checkbox("Position fixed behind car", &camera_ptr->camera_position_fixed_behind_car_);
-    ImGui::DragFloat3("Target", (float*)&camera_ptr->camera_target_, 0.1f, -100.0f, 100.0f);
-    ImGui::Checkbox("Target fixed on car", &camera_ptr->camera_target_fixed_on_car_);
-    ImGui::Text("Length to target: %.3f", camera_ptr->cur_length_to_target_);
+    ImGui::DragFloat3("Position", (float*)&context.camera->position_, 0.1f, -100.0f, 100.0f);
+    ImGui::Checkbox("Position fixed behind car", &context.camera->is_position_fixed_behind_car_);
+    ImGui::DragFloat3("Target", (float*)&context.camera->target_, 0.1f, -100.0f, 100.0f);
+    ImGui::Checkbox("Target fixed on car", &context.camera->is_target_fixed_on_car_);
+    ImGui::Text("Length to target: %.3f", context.camera->cur_length_to_target_);
 
-    ImGui::SliderFloat("Move speed", &camera_ptr->camera_move_speed_, 1.0f, 50.0f);
-    ImGui::SliderFloat("Rotate speed", &camera_ptr->camera_rotate_speed_, 1.0f, 50.0f);
+    ImGui::SliderFloat("Move speed", &context.camera->move_speed_, 1.0f, 50.0f);
+    ImGui::SliderFloat("Rotate speed", &context.camera->rotate_speed_, 1.0f, 50.0f);
 
-    ImGui::DragFloat("Min length to target", &camera_ptr->camera_min_length_to_target_, 0.2f, 1.0f, std::min(camera_ptr->camera_max_length_to_target_, 999.8f));
-    ImGui::DragFloat("Max length to target", &camera_ptr->camera_max_length_to_target_, 0.2f, std::max(camera_ptr->camera_min_length_to_target_, 1.2f), 1000.0f);
+    ImGui::DragFloat("Min length to target", &context.camera->min_length_to_target_, 0.2f, 1.0f, (std::min)(context.camera->max_length_to_target_, 999.8f));
+    ImGui::DragFloat("Max length to target", &context.camera->max_length_to_target_, 0.2f, (std::max)(context.camera->min_length_to_target_, 1.2f), 1000.0f);
 
-    camera_ptr->UpdateMatrix();
+    context.camera->UpdateMatrix();
 
     // KEYBOARD MODE
 

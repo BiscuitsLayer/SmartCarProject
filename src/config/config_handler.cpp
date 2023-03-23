@@ -2,10 +2,9 @@
 
 namespace App {
 
-ConfigHandler::ConfigHandler(std::string filename) {
-    data_ = std::make_shared<json>(json::parse(ReadFileData(filename, false)));
+ConfigHandler::ConfigHandler(const std::string& filename)
+    : data_(std::make_shared<json>(json::parse(ReadFileData(filename, false)))) {
     if (data_ == nullptr || data_->is_discarded()) {
-        data_ = nullptr;
         throw std::runtime_error("Error reading JSON file: " + filename);
     }
 
@@ -70,7 +69,7 @@ std::vector<std::shared_ptr<Config::BaseModelConfig>> ConfigHandler::GetModelCon
     return model_configs_;
 }
 
-void ConfigHandler::SetWindowConfig(json_object window) {
+void ConfigHandler::SetWindowConfig(const json_object& window) {
     auto max_fps = FindObject(window, "max_fps");
     window_config_.max_fps.value = FindFloat(max_fps, "value");
     window_config_.max_fps.enabled = FindBoolean(max_fps, "enabled");
@@ -82,13 +81,13 @@ void ConfigHandler::SetWindowConfig(json_object window) {
     window_config_.params.fullscreen = FindBoolean(params, "fullscreen");
 };
 
-void ConfigHandler::SetIntersectorConfig(json_object intersector) {
+void ConfigHandler::SetIntersectorConfig(const json_object& intersector) {
     auto shader = FindObject(intersector, "shader");
     intersector_config_.shader.compute_shader_name = FindString(shader, "default");
     intersector_config_.enabled = FindBoolean(intersector, "enabled");
 };
 
-void ConfigHandler::SetCameraConfig(json_object camera) {
+void ConfigHandler::SetCameraConfig(const json_object& camera) {
     auto projection = FindObject(camera, "projection");
     camera_config_.projection.FOV = FindFloat(projection, "FOV");
     camera_config_.projection.near_plane = FindFloat(projection, "near");
@@ -113,25 +112,25 @@ void ConfigHandler::SetCameraConfig(json_object camera) {
     camera_config_.speed.rotate = FindFloat(speed, "rotate");
 };
 
-void ConfigHandler::SetShaderHandler(std::vector<json_object> shaders) {
+void ConfigHandler::SetShaderHandler(const std::vector<json_object>& shaders) {
     for (auto shader : shaders) {
-        std::string name = FindString(shader, "name");
-        std::string folder = FindString(shader, "folder");
+        const std::string& name = FindString(shader, "name");
+        const std::string& folder = FindString(shader, "folder");
 
-        std::string vertex = FindString(shader, "vertex", true);
+        const std::string& vertex = FindString(shader, "vertex", true);
         if (!vertex.empty()) {
-            std::string vertex_path = folder + "/" + vertex;
+            const std::string& vertex_path = folder + "/" + vertex;
             GL::Shader vertex_shader(GL::ShaderType::Vertex, App::ReadFileData(vertex_path, false));
 
-            std::string fragment_path = folder + "/" + FindString(shader, "fragment", true);
+            const std::string& fragment_path = folder + "/" + FindString(shader, "fragment", true);
             GL::Shader fragment_shader(GL::ShaderType::Fragment, App::ReadFileData(fragment_path, false));
 
             shader_handler_[name] = std::make_shared<GL::Program>(vertex_shader, fragment_shader);
         }
 
-        std::string compute = FindString(shader, "compute", true);
+        const std::string& compute = FindString(shader, "compute", true);
         if (!compute.empty()) {
-            std::string compute_path = folder + "/" + compute;
+            const std::string& compute_path = folder + "/" + compute;
             GL::Shader compute_shader(GL::ShaderType::Compute, App::ReadFileData(compute_path, false));
 
             shader_handler_[name] = std::make_shared<GL::Program>(compute_shader);
@@ -139,7 +138,7 @@ void ConfigHandler::SetShaderHandler(std::vector<json_object> shaders) {
     }
 }
 
-void ConfigHandler::SetCarModelConfig(json_object car_object) {
+void ConfigHandler::SetCarModelConfig(const json_object& car_object) {
     Config::CarModelConfig car_model_config;
 
     car_model_config.name = FindString(car_object, "name");
@@ -160,6 +159,7 @@ void ConfigHandler::SetCarModelConfig(json_object car_object) {
     car_model_config.speed.move = FindFloat(speed, "move");
     car_model_config.speed.rotate = FindFloat(speed, "rotate");
 
+    car_model_config.acceleration = FindFloat(car_object, "acceleration");
     car_model_config.rotation_center = FindVec3(car_object, "rotation_center");
 
     auto shader = FindObject(car_object, "shader");
@@ -169,7 +169,7 @@ void ConfigHandler::SetCarModelConfig(json_object car_object) {
     model_configs_.push_back(std::make_shared<Config::CarModelConfig>(car_model_config));
 }
 
-void ConfigHandler::SetSkyboxModelConfig(json_object skybox_object) {
+void ConfigHandler::SetSkyboxModelConfig(const json_object& skybox_object) {
     Config::SkyboxModelConfig skybox_model_config;
 
     skybox_model_config.name = FindString(skybox_object, "name");
@@ -193,7 +193,7 @@ void ConfigHandler::SetSkyboxModelConfig(json_object skybox_object) {
     model_configs_.push_back(std::make_shared<Config::SkyboxModelConfig>(skybox_model_config));
 }
 
-void ConfigHandler::SetCommonModelConfig(json_object common_object) {
+void ConfigHandler::SetCommonModelConfig(const json_object& common_object) {
     Config::CommonModelConfig common_model_config;
 
     common_model_config.name = FindString(common_object, "name");
@@ -208,7 +208,7 @@ void ConfigHandler::SetCommonModelConfig(json_object common_object) {
     model_configs_.push_back(std::make_shared<Config::CommonModelConfig>(common_model_config));
 }
 
-json_object ConfigHandler::FindObject(std::shared_ptr<json> parent, std::string object_name, bool can_skip) {
+const json_object ConfigHandler::FindObject(std::shared_ptr<json> parent, const std::string& object_name, bool can_skip) const {
     auto object = parent->find(object_name);
     if (object == parent->end() || !object->is_object()) {
         if (!can_skip) {
@@ -220,7 +220,7 @@ json_object ConfigHandler::FindObject(std::shared_ptr<json> parent, std::string 
     return object;
 }
 
-json_object ConfigHandler::FindObject(json_object parent, std::string object_name, bool can_skip) {
+const json_object ConfigHandler::FindObject(const json_object& parent, const std::string& object_name, bool can_skip) const {
     auto object = parent->find(object_name);
     if (object == parent->end() || !object->is_object()) {
         if (!can_skip) {
@@ -232,7 +232,7 @@ json_object ConfigHandler::FindObject(json_object parent, std::string object_nam
     return object;
 }
 
-std::vector<json_object> ConfigHandler::FindArray(std::shared_ptr<json> parent, std::string array_name, bool can_skip, std::vector<json_object> default_value) {
+const std::vector<json_object> ConfigHandler::FindArray(std::shared_ptr<json> parent, const std::string& array_name, bool can_skip, std::vector<json_object> default_value) const {
     auto array = parent->find(array_name);
     if (array == parent->end() || !array->is_array()) {
         if (!can_skip) {
@@ -251,7 +251,7 @@ std::vector<json_object> ConfigHandler::FindArray(std::shared_ptr<json> parent, 
     return result;
 }
 
-std::vector<json_object> ConfigHandler::FindArray(json_object parent, std::string array_name, bool can_skip, std::vector<json_object> default_value) {
+const std::vector<json_object> ConfigHandler::FindArray(const json_object& parent, const std::string& array_name, bool can_skip, std::vector<json_object> default_value) const {
     auto array = parent->find(array_name);
     if (array == parent->end() || !array->is_array()) {
         if (!can_skip) {
@@ -270,7 +270,7 @@ std::vector<json_object> ConfigHandler::FindArray(json_object parent, std::strin
     return result;
 }
 
-float ConfigHandler::FindFloat(std::shared_ptr<json> parent, std::string number_name, bool can_skip, float default_value) {
+const float ConfigHandler::FindFloat(std::shared_ptr<json> parent, const std::string& number_name, bool can_skip, float default_value) const {
     auto number = parent->find(number_name);
     if (number == parent->end() || !number->is_number_float()) {
         if (!can_skip) {
@@ -282,7 +282,7 @@ float ConfigHandler::FindFloat(std::shared_ptr<json> parent, std::string number_
     return number->get<float>();
 }
 
-float ConfigHandler::FindFloat(json_object parent, std::string number_name, bool can_skip, float default_value) {
+const float ConfigHandler::FindFloat(const json_object& parent, const std::string& number_name, bool can_skip, float default_value) const {
     auto number = parent->find(number_name);
     if (number == parent->end() || !number->is_number_float()) {
         if (!can_skip) {
@@ -294,7 +294,7 @@ float ConfigHandler::FindFloat(json_object parent, std::string number_name, bool
     return number->get<float>();
 }
 
-int ConfigHandler::FindInteger(std::shared_ptr<json> parent, std::string number_name, bool can_skip, int default_value) {
+const int ConfigHandler::FindInteger(std::shared_ptr<json> parent, const std::string& number_name, bool can_skip, int default_value) const {
     auto number = parent->find(number_name);
     if (number == parent->end() || !number->is_number_integer()) {
         if (!can_skip) {
@@ -306,7 +306,7 @@ int ConfigHandler::FindInteger(std::shared_ptr<json> parent, std::string number_
     return number->get<int>();
 }
 
-int ConfigHandler::FindInteger(json_object parent, std::string number_name, bool can_skip, int default_value) {
+const int ConfigHandler::FindInteger(const json_object& parent, const std::string& number_name, bool can_skip, int default_value) const {
     auto number = parent->find(number_name);
     if (number == parent->end() || !number->is_number_integer()) {
         if (!can_skip) {
@@ -318,7 +318,7 @@ int ConfigHandler::FindInteger(json_object parent, std::string number_name, bool
     return number->get<int>();
 }
 
-bool ConfigHandler::FindBoolean(std::shared_ptr<json> parent, std::string boolean_name, bool can_skip, bool default_value) {
+const bool ConfigHandler::FindBoolean(std::shared_ptr<json> parent, const std::string& boolean_name, bool can_skip, bool default_value) const {
     auto boolean = parent->find(boolean_name);
     if (boolean == parent->end() || !boolean->is_boolean()) {
         if (!can_skip) {
@@ -330,7 +330,7 @@ bool ConfigHandler::FindBoolean(std::shared_ptr<json> parent, std::string boolea
     return boolean->get<bool>();
 }
 
-bool ConfigHandler::FindBoolean(json_object parent, std::string boolean_name, bool can_skip, bool default_value) {
+const bool ConfigHandler::FindBoolean(const json_object& parent, const std::string& boolean_name, bool can_skip, bool default_value) const {
     auto boolean = parent->find(boolean_name);
     if (boolean == parent->end() || !boolean->is_boolean()) {
         if (!can_skip) {
@@ -342,7 +342,7 @@ bool ConfigHandler::FindBoolean(json_object parent, std::string boolean_name, bo
     return boolean->get<bool>();
 }
 
-std::string ConfigHandler::FindString(std::shared_ptr<json> parent, std::string string_name, bool can_skip, std::string default_value) {
+const std::string ConfigHandler::FindString(std::shared_ptr<json> parent, const std::string& string_name, bool can_skip, const std::string default_value) const {
     auto str = parent->find(string_name);
     if (str == parent->end() || !str->is_string()) {
         if (!can_skip) {
@@ -354,7 +354,7 @@ std::string ConfigHandler::FindString(std::shared_ptr<json> parent, std::string 
     return *str;
 }
 
-std::string ConfigHandler::FindString(json_object parent, std::string string_name, bool can_skip, std::string default_value) {
+const std::string ConfigHandler::FindString(const json_object& parent, const std::string& string_name, bool can_skip, const std::string default_value) const {
     auto str = parent->find(string_name);
     if (str == parent->end() || !str->is_string()) {
         if (!can_skip) {
@@ -366,7 +366,7 @@ std::string ConfigHandler::FindString(json_object parent, std::string string_nam
     return *str;
 }
 
-GL::Vec3 ConfigHandler::FindVec3(std::shared_ptr<json> parent, std::string vector_name, bool can_skip, GL::Vec3 default_value) {
+const GL::Vec3 ConfigHandler::FindVec3(std::shared_ptr<json> parent, const std::string& vector_name, bool can_skip, GL::Vec3 default_value) const {
     auto vector = parent->find(vector_name);
     if (vector == parent->end() || !vector->is_array()) {
         if (!can_skip) {
@@ -375,7 +375,7 @@ GL::Vec3 ConfigHandler::FindVec3(std::shared_ptr<json> parent, std::string vecto
             return default_value;
         }
     }
-    if (vector->size() != APP_VEC3_COMPONENTS_COUNT) {
+    if (vector->size() != APP_GL_VEC3_COMPONENTS_COUNT) {
         throw std::runtime_error("Incorrect JSON format: Wrong number of Vec3 components " + vector_name);
     }
 
@@ -387,7 +387,7 @@ GL::Vec3 ConfigHandler::FindVec3(std::shared_ptr<json> parent, std::string vecto
     return result;
 }
 
-GL::Vec3 ConfigHandler::FindVec3(json_object parent, std::string vector_name, bool can_skip, GL::Vec3 default_value) {
+const GL::Vec3 ConfigHandler::FindVec3(const json_object& parent, const std::string& vector_name, bool can_skip, GL::Vec3 default_value) const {
     auto vector = parent->find(vector_name);
     if (vector == parent->end() || !vector->is_array()) {
         if (!can_skip) {
@@ -396,7 +396,7 @@ GL::Vec3 ConfigHandler::FindVec3(json_object parent, std::string vector_name, bo
             return default_value;
         }
     }
-    if (vector->size() != APP_VEC3_COMPONENTS_COUNT) {
+    if (vector->size() != APP_GL_VEC3_COMPONENTS_COUNT) {
         throw std::runtime_error("Incorrect JSON format: Wrong number of Vec3 components " + vector_name);
     }
 
@@ -408,7 +408,7 @@ GL::Vec3 ConfigHandler::FindVec3(json_object parent, std::string vector_name, bo
     return result;
 }
 
-Transform ConfigHandler::FindTransform(std::shared_ptr<json> parent, bool can_skip, Transform default_value) {
+const Transform ConfigHandler::FindTransform(std::shared_ptr<json> parent, bool can_skip, Transform default_value) const {
     Transform result{};
 
     auto transform = FindObject(parent, "transform", can_skip);
@@ -426,7 +426,7 @@ Transform ConfigHandler::FindTransform(std::shared_ptr<json> parent, bool can_sk
     return result;
 }
 
-Transform ConfigHandler::FindTransform(json_object parent, bool can_skip, Transform default_value) {
+const Transform ConfigHandler::FindTransform(const json_object& parent, bool can_skip, Transform default_value) const {
     Transform result{};
 
     auto transform = FindObject(parent, "transform", can_skip);

@@ -3,7 +3,13 @@
 // STL
 #include <algorithm>
 
-// Sources
+// Constants
+#include <constants/constants.hpp>
+
+// Forward declarations
+#include <car_model/car_model_fwd.hpp>
+
+// LibSmartCar
 #include <camera/camera.hpp>
 #include <model/model.hpp>
 #include <transform/transform.hpp>
@@ -13,11 +19,14 @@ namespace App {
 
 class CarModel: public Model {
 public:
-    CarModel(std::string car_name, std::string default_shader_name, std::string bbox_shader_name, std::string gltf, std::vector<std::string> car_wheel_mesh_names,
-        float car_move_max_speed, float car_rotate_max_speed, float car_wheels_rotate_speed, GL::Vec3 car_center_translation, Transform transform);
-    CarModel(Config::CarModelConfig config);
+    CarModel(const std::string& name, const std::string& default_shader_name,
+        const std::string& bbox_shader_name, const std::string& gltf,
+        const std::vector<std::string>& wheel_meshes_names, const float move_max_speed,
+        const float acceleration, const float rotate_max_speed, const float wheels_rotate_speed,
+        const GL::Vec3& center_translation, const Transform& transform);
+    CarModel(const Config::CarModelConfig& config);
 
-    virtual GL::Mat4 GetModelMatrix() override;
+    virtual const GL::Mat4 GetModelMatrix() const override;
     void Move(float delta_time);
     void SetDrawWheelsBBoxes(bool value);
 
@@ -27,14 +36,14 @@ private:
     void RotateLeft(float delta_time, bool move_front);
     void RotateRight(float delta_time, bool move_front);
 
-    float car_move_max_speed_;
-    float car_rotate_max_speed_;
-    float car_wheels_rotate_speed_;
+    // Should be also kept there to compute rotation speed
+    float move_max_speed_;
+    float rotate_max_speed_;
+    float wheels_rotate_speed_;
+    std::vector<size_t> wheel_meshes_indicies_;
 
-    GL::Mat4 car_center_translation_;
+    const GL::Mat4 center_translation_;
     GL::Mat4 movement_transform_;
-
-    std::vector<size_t> car_wheel_meshes_indicies_;
 
     Accelerator accelerator_;
 

@@ -20,12 +20,6 @@
             "fragment": "bbox.frag"
         },
         {
-            "name": "CUBE_EXAMPLE",
-            "folder": "../assets/cube_example/shader",
-            "vertex": "cube.vert",
-            "fragment": "cube.frag"
-        },
-        {
             "name": "INTERSECTION",
             "folder": "../shader",
             "compute": "intersection.comp"
@@ -109,6 +103,7 @@
                         "move": 3.0,
                         "rotate": 1.5
                     },
+                    "acceleration": 5.0,
                     "rotation_center": [
                         0.0,
                         0.0,
@@ -265,6 +260,7 @@
                         "move": 3.0,
                         "rotate": 1.5
                     },
+                    "acceleration": 5.0,
                     "rotation_center": [
                         0.0,
                         0.0,

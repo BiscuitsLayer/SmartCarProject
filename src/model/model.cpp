@@ -6,7 +6,7 @@ Model::Model(std::string model_name, std::string default_shader_name, std::strin
     : name_(model_name), default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name),
     transform_(transform) {
     if (!gltf.empty()) {
-        auto loader = AssimpLoader{ default_shader_name, bbox_shader_name, gltf };
+        auto loader = AssimpLoader{default_shader_name, bbox_shader_name, gltf};
         meshes_ = loader.GetMeshes();
     }
 }
@@ -38,7 +38,7 @@ void Model::UpdateTranslation(GL::Vec3 additional_translation) {
     transform_.UpdateTranslation(additional_translation);
 }
 
-GL::Mat4 Model::GetModelMatrix() {
+const GL::Mat4 Model::GetModelMatrix() const {
     return transform_;
 }
 
@@ -50,7 +50,7 @@ void Model::SetDrawBBoxes(bool value) {
 
 void Model::Draw() {
     auto& context = App::Context::Get();
-    auto& gl = context.gl.value().get();
+    auto& gl = context.gl->get();
     auto shader_handler = context.shader_handler.value();
 
     GL::Mat4 mvp = App::GetModelViewProjectionMatrix(GetModelMatrix(), context.camera->GetViewMatrix(), context.projection_matrix.value());

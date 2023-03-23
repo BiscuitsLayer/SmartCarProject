@@ -1,13 +1,15 @@
-Engine Demo:
-
-[] Prepare cube and cube_ebo <- so they look cool
-and make different shaders/shader programs for them
-[x] Move shader program into shader handler
+=== Development list for project ===
 
 Workflow:
+[x] target_link_libraries fix
 [x] include_directories -> target_include_durectories in cmake
+
+IN PROGRESS:
+[] Forward declarations
 [] Const methods
 [] Copy by value -> pass by const reference
+[] All variables in classes must be initialized in ctors
+
 [x] Move code to CPP files to fasten engine build
 [x] Model names and info in ImGui
 [] Combine models in obstacle set, car, env
@@ -18,7 +20,7 @@ Workflow:
 
 Graphics:
 
-[] Fix STATIC_DRAW mode in bbox Draw function
+[x] Fix STATIC_DRAW mode in bbox Draw function
 [x] Movement acceleration
 [] Collision
 [] Blending order sorted
@@ -36,5 +38,5 @@ Bugs:
 
 Optional:
 
-[] Move to MSVC insted of MinGW
+[x] Move to MSVC instead of MinGW
 [] Atlas for textures (optional)

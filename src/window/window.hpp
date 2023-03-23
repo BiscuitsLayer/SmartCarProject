@@ -10,7 +10,13 @@
 #include "imgui_impl_win32.h"
 #include "imgui_internal.h"
 
-// Sources
+// Constants
+#include <constants/constants.hpp>
+
+// Forward declarations
+#include <window/window_fwd.hpp>
+
+// LibSmartCar
 #include <config/config_handler.hpp>
 
 // Forward declaration of event handler from imgui_impl_win32.cpp
