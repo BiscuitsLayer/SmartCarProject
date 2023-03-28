@@ -4,10 +4,10 @@
             "name": "(MSVC) Launch",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build_msvc/Debug/SmartCarMain.exe",
+            "program": "${workspaceFolder}/build/SmartCarMain.exe",
             "args": ["${workspaceFolder}/config.json"],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build_msvc",
+            "cwd": "${workspaceFolder}/build",
             "environment": [],
             "console": "externalTerminal"
         },

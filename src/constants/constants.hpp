@@ -3,6 +3,10 @@
 // STL
 #include <string>
 
+// Assimp
+#include <assimp/scene.h>
+#include <assimp/GltfMaterial.h>
+
 // OpenGL Wrapper
 #include <GL/OOGL.hpp>
 
@@ -31,14 +35,47 @@ const int APP_GL_VERTEX_NORMAL_OFFSET = offsetof(GL::Vertex, Normal);
 
 const int APP_ZERO_OFFSET = 0;
 
+// Assimp
+struct AssimpMaterialTextureParameters {
+    aiTextureType type;
+    unsigned int index;
+};
+
+struct AssimpMaterialColorParameters {
+    const char *pKey;
+    unsigned int type;
+    unsigned int index;
+};
+
+struct AssimpMaterialFloatParameters {
+    const char *pKey;
+    unsigned int type;
+    unsigned int index;
+};
+
+// Base color
+const int APP_ASSIMP_DIFFUSE_TEXTURE_INDEX = 0;
+const AssimpMaterialTextureParameters APP_ASSIMP_BASE_COLOR_TEXTURE_PARAMETERS{AI_MATKEY_BASE_COLOR_TEXTURE};
+const AssimpMaterialColorParameters APP_ASSIMP_BASE_COLOR_FACTOR_PARAMETERS{AI_MATKEY_BASE_COLOR};
+
+const AssimpMaterialFloatParameters APP_ASSIMP_METALLIC_FACTOR_PARAMETERS{AI_MATKEY_METALLIC_FACTOR};
+const AssimpMaterialFloatParameters APP_ASSIMP_ROUGHNESS_FACTOR_PARAMETERS{AI_MATKEY_ROUGHNESS_FACTOR};
+
+// Textures
 const int APP_CUBEMAP_TEXTURES_COUNT = 6;
 
-// TODO: Textures naming (before atlas is implemented)
-const std::string APP_TEXTURE_DIFFUSE_BASE_NAME = "textureDiffuse";
-const std::string APP_TEXTURE_SPECULAR_BASE_NAME = "textureSpecular";
+const int APP_CUBEMAP_TEXTURE_UNIT = 0;
 
-// Texture indexing
-static int APP_TEXTURE_NEXT_FREE_UNIT = 0;
+// const int APP_IBL_IRRADIANCE_TEXTURE_UNIT = 0;
+// const int APP_IBL_PREFILTER_TEXTURE_UNIT = 1;
+// const int APP_IBL_BRDF_LUT_TEXTURE_UNIT = 2;
+
+const int APP_BASE_COLOR_TEXTURE_UNIT = 1;
+// const int APP_PBR_NORMAL_TEXTURE_UNIT = 4;
+// const int APP_PBR_ROUGHNESS_TEXTURE_UNIT = 6;
+// const int APP_PBR_AO_TEXTURE_UNIT = 7;
+
+// const int APP_SHADOW_TEXTURE_UNIT = 7;
 
 // Car
 const GL::Vec3 APP_CAR_WHEELS_ROTATION_AXIS = GL::Vec3(1.0f, 0.0f, 0.0f);

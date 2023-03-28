@@ -8,7 +8,8 @@ namespace App {
 enum class KeyboardMode: int {
     ORBIT_CAMERA = 0,
     FIRST_PERSON_CAMERA,
-    CAR_MOVEMENT
+    CAR_MOVEMENT,
+    SIZE
 };
 
 using KeyboardStatus = std::array<bool, APP_KEYBOARD_KEYS_COUNT>;

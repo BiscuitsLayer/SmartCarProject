@@ -2,6 +2,7 @@
     "files.associations": {
         "*.frag": "hlsl",
         "*.vert": "hlsl",
+        "*.glsl": "hlsl",
         "xiosbase": "cpp",
         "xstring": "cpp",
         "algorithm": "cpp",

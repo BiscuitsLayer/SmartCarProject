@@ -4,8 +4,15 @@ in vec2 textureCoordinates;
 
 out vec4 FragColor;
 
-uniform sampler2D textureDiffuse1;
+uniform bool baseColorHasTexture;
+uniform sampler2D baseColorTexture;
+uniform vec4 baseColorFactor;
 
 void main() {
-    FragColor = texture(textureDiffuse1, textureCoordinates);
+    vec4 baseColor = baseColorFactor;
+    if (baseColorHasTexture) {
+        baseColor *= texture(baseColorTexture, textureCoordinates);
+    }
+
+    FragColor = baseColor;
 }

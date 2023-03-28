@@ -1,8 +1,6 @@
-=== Development list for project ===
+===== Development list for project =====
 
-Workflow:
-[x] target_link_libraries fix
-[x] include_directories -> target_include_durectories in cmake
+=== CPP core ===
 
 IN PROGRESS:
 [] Forward declarations
@@ -10,33 +8,22 @@ IN PROGRESS:
 [] Copy by value -> pass by const reference
 [] All variables in classes must be initialized in ctors
 
-[x] Move code to CPP files to fasten engine build
-[x] Model names and info in ImGui
-[] Combine models in obstacle set, car, env
-[x] Configs based on JSONs
-[x] Deal with Assimp DLL linkage
-[x] Get rid of Assimp unit test linkage
-[x] OOGL make call from CMakeLists.txt
+=== JSON format ===
 
-Graphics:
+[] Check for same names in JSON, error if name already exists
+[] Combine models in obstacle set, car, env in JSON
 
-[x] Fix STATIC_DRAW mode in bbox Draw function
-[x] Movement acceleration
+=== Graphics ===
+
+[] OpenGL calls improvement
 [] Collision
 [] Blending order sorted
 [] PBR for car model
+[] Light sources
+[] Shader raw params -> structs
 [] Free camera
 [] Fix lines in AABB
-[x] First person camera
-[x] Wheels rotation
 
-Bugs:
+=== Issues ===
 
-[] Texture unit for cubemap
-[] Texture naming (autogen headers for GLSL)
 [] Max FPS problem
-
-Optional:
-
-[x] Move to MSVC instead of MinGW
-[] Atlas for textures (optional)

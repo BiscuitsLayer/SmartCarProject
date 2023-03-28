@@ -17,13 +17,14 @@
 #include <helpers/helpers.hpp>
 #include <texture/texture.hpp>
 #include <bbox/bbox.hpp>
+#include <material/material.hpp>
 
 namespace App {
 
 class Mesh {
 public:
     Mesh(std::string default_shader_name, std::string bbox_shader_name, std::string name, Transform transform_to_model,
-        std::vector<GL::Vertex> vertices, std::vector<int> indices, std::vector<Texture> textures, BBox bbox);
+        std::vector<GL::Vertex> vertices, std::vector<int> indices, Material material, BBox bbox);
 
     void SetDrawBBox(bool value);
     void Draw();
@@ -39,7 +40,7 @@ private:
 
     std::vector<GL::Vertex> vertices_;
     std::vector<int> indices_;
-    std::vector<Texture> textures_;
+    Material material_;
 
     GL::VertexArray  vao_;  // vertex array object
     GL::VertexBuffer vbo_;  // vertex buffer object

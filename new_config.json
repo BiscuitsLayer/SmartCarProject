@@ -1,0 +1,119 @@
+{
+    "case_selected": 1,
+    "models_config": "../configs/models.json",
+    "shaders_config": "../configs/shaders.json",
+    "window_config": "../configs/window.json",
+    "cameras_config": "../configs/cameras.json",
+    "intersector_config": "../configs/intersector.json",
+    "cases": [
+        {
+            "index": 0,
+            "camera_case": 0,
+            "car": {
+                "name": "SportCar"
+            },
+            "skybox": {
+                "name": "Skybox"
+            },
+            "env": [
+                {
+                    "name": "Garage",
+                    "transform": {
+                        "translation": [
+                            0.0,
+                            -0.5,
+                            0.0
+                        ]
+                    }
+                }
+            ],
+            "obstacles": [
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "rotation": {
+                            "axis": [
+                                4.0,
+                                2.0,
+                                0.0
+                            ],
+                            "angle": 30.0
+                        },
+                        "translation": [
+                            -5.0,
+                            5.0,
+                            -5.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Backpack",
+                    "transform": {
+                        "scale": [
+                            0.01,
+                            0.01,
+                            0.01
+                        ],
+                        "rotation": {
+                            "axis": [
+                                1.0,
+                                0.0,
+                                0.0
+                            ],
+                            "angle": 45.0
+                        },
+                        "translation": [
+                            5.0,
+                            5.0,
+                            5.0
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "index": 1,
+            "camera_case": 0,
+            "car": {
+                "name": "SportCar"
+            },
+            "skybox": {
+                "name": "Skybox"
+            },
+            "env": [
+                {
+                    "name": "Garage",
+                    "transform": {
+                        "translation": [
+                            0.0,
+                            -0.5,
+                            0.0
+                        ]
+                    }
+                }
+            ],
+            "obstacles": [
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            3.0,
+                            0.5,
+                            2.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            10.0,
+                            0.5,
+                            2.0
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

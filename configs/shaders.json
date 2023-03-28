@@ -1,0 +1,25 @@
+[
+    {
+        "name": "DEFAULT",
+        "folder": "../shader",
+        "vertex": "backpack.vert",
+        "fragment": "backpack.frag"
+    },
+    {
+        "name": "SKYBOX",
+        "folder": "../shader",
+        "vertex": "skybox.vert",
+        "fragment": "skybox.frag"
+    },
+    {
+        "name": "BBOX",
+        "folder": "../shader",
+        "vertex": "bbox.vert",
+        "fragment": "bbox.frag"
+    },
+    {
+        "name": "INTERSECTION",
+        "folder": "../shader",
+        "compute": "intersection.comp"
+    }
+]

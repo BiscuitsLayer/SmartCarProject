@@ -2,6 +2,10 @@
 
 // STL
 #include <string>
+#include <optional>
+
+// OpenGL Wrapper
+#include <GL/OOGL.hpp>
 
 // Constants
 #include <constants/constants.hpp>
@@ -16,21 +20,28 @@ namespace App {
 
 class Texture {
 public:
-    enum class Type: uint32_t {
-        DIFFUSE = 0,
-        SPECULAR,
-        CUBEMAP
-    };
+    // Texture + color
+    Texture(GL::Texture texture, GL::Vec4 factor);
+    Texture(std::string path, GL::Vec4 factor);
 
-    Texture(GL::Texture texture, Type type, int texture_unit = APP_TEXTURE_NEXT_FREE_UNIT++);
-    Texture(std::string path, Type type, int texture_unit = APP_TEXTURE_NEXT_FREE_UNIT++);
+    // Only texture
+    Texture(GL::Texture texture);
+    Texture(std::string path);
+
+    // Only color
+    Texture(GL::Vec4 color);
+
+    // Empty
+    Texture();
 
     static Texture Cubemap(std::string path, std::array<std::string, APP_CUBEMAP_TEXTURES_COUNT> filenames);
 
-    // private:
-    GL::Texture texture_;
-    int texture_unit_;
-    Type type_;
+private:
+    std::optional<GL::Texture> texture_;
+    GL::Vec4 color_;
+
+    friend class Material;
+    friend class Skybox;
 };
 
 } // namespace App

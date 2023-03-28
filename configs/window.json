@@ -1,0 +1,12 @@
+{
+    "max_fps": {
+        "value": 90.0,
+        "enabled": false
+    },
+    "params": {
+        "width": 800,
+        "height": 600,
+        "title": "SmartCarTest",
+        "fullscreen": false
+    }
+}

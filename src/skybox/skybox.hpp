@@ -41,50 +41,51 @@ private:
     GL::VertexArray  vao_;  // vertex array object
     GL::VertexBuffer vbo_;  // vertex buffer object
 
-    std::vector<Texture> textures_;
+    // Cubemap only has a single texture
+    Texture texture_;
 
-    std::vector<GL::Vertex> vertices_ = {
-        GL::Vertex{GL::Vec3{-1.0f,  1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{-1.0f, -1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f, -1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f, -1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f,  1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{-1.0f,  1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
+    std::vector<GL::Vec3> vertices_ = {
+        GL::Vec3{-1.0f,  1.0f, -1.0f},
+        GL::Vec3{-1.0f, -1.0f, -1.0f},
+        GL::Vec3{ 1.0f, -1.0f, -1.0f},
+        GL::Vec3{ 1.0f, -1.0f, -1.0f},
+        GL::Vec3{ 1.0f,  1.0f, -1.0f},
+        GL::Vec3{-1.0f,  1.0f, -1.0f},
 
-        GL::Vertex{GL::Vec3{-1.0f, -1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{-1.0f, -1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{-1.0f,  1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{-1.0f,  1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{-1.0f,  1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{-1.0f, -1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
+        GL::Vec3{-1.0f, -1.0f,  1.0f},
+        GL::Vec3{-1.0f, -1.0f, -1.0f},
+        GL::Vec3{-1.0f,  1.0f, -1.0f},
+        GL::Vec3{-1.0f,  1.0f, -1.0f},
+        GL::Vec3{-1.0f,  1.0f,  1.0f},
+        GL::Vec3{-1.0f, -1.0f,  1.0f},
 
-        GL::Vertex{GL::Vec3{ 1.0f, -1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f, -1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f,  1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f,  1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f,  1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f, -1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
+        GL::Vec3{ 1.0f, -1.0f, -1.0f},
+        GL::Vec3{ 1.0f, -1.0f,  1.0f},
+        GL::Vec3{ 1.0f,  1.0f,  1.0f},
+        GL::Vec3{ 1.0f,  1.0f,  1.0f},
+        GL::Vec3{ 1.0f,  1.0f, -1.0f},
+        GL::Vec3{ 1.0f, -1.0f, -1.0f},
 
-        GL::Vertex{GL::Vec3{-1.0f, -1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{-1.0f,  1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f,  1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f,  1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f, -1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{-1.0f, -1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
+        GL::Vec3{-1.0f, -1.0f,  1.0f},
+        GL::Vec3{-1.0f,  1.0f,  1.0f},
+        GL::Vec3{ 1.0f,  1.0f,  1.0f},
+        GL::Vec3{ 1.0f,  1.0f,  1.0f},
+        GL::Vec3{ 1.0f, -1.0f,  1.0f},
+        GL::Vec3{-1.0f, -1.0f,  1.0f},
 
-        GL::Vertex{GL::Vec3{-1.0f,  1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f,  1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f,  1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f,  1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{-1.0f,  1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{-1.0f,  1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
+        GL::Vec3{-1.0f,  1.0f, -1.0f},
+        GL::Vec3{ 1.0f,  1.0f, -1.0f},
+        GL::Vec3{ 1.0f,  1.0f,  1.0f},
+        GL::Vec3{ 1.0f,  1.0f,  1.0f},
+        GL::Vec3{-1.0f,  1.0f,  1.0f},
+        GL::Vec3{-1.0f,  1.0f, -1.0f},
 
-        GL::Vertex{GL::Vec3{-1.0f, -1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{-1.0f, -1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f, -1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f, -1.0f, -1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{-1.0f, -1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
-        GL::Vertex{GL::Vec3{ 1.0f, -1.0f,  1.0f}, GL::Vec2{}, GL::Vec3{}},
+        GL::Vec3{-1.0f, -1.0f, -1.0f},
+        GL::Vec3{-1.0f, -1.0f,  1.0f},
+        GL::Vec3{ 1.0f, -1.0f, -1.0f},
+        GL::Vec3{ 1.0f, -1.0f, -1.0f},
+        GL::Vec3{-1.0f, -1.0f,  1.0f},
+        GL::Vec3{ 1.0f, -1.0f,  1.0f},
     };
 
     std::array<std::string, APP_CUBEMAP_TEXTURES_COUNT> filenames_;

@@ -1,0 +1,6 @@
+{
+    "shader": {
+        "default": "INTERSECTION"
+    },
+    "enabled": true
+}

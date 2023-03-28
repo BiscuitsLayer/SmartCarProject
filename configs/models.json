@@ -1,0 +1,77 @@
+[
+    {
+        "name": "SportCar",
+        "type": "CAR",
+        "GLTF": "../assets/car/scene.gltf",
+        "wheels": {
+            "mesh_names": [
+                "Object_0",
+                "Object_1",
+                "Object_2",
+                "Object_3",
+                "Object_24",
+                "Object_25"
+            ],
+            "speed": {
+                "rotate": 100.0
+            }
+        },
+        "speed": {
+            "move": 3.0,
+            "rotate": 1.5
+        },
+        "acceleration": 5.0,
+        "rotation_center": [
+            0.0,
+            0.0,
+            1.5
+        ],
+        "shader": {
+            "default": "DEFAULT",
+            "bbox": "BBOX"
+        }
+    },
+    {
+        "name": "Garage",
+        "type": "COMMON",
+        "GLTF": "../assets/garage/scene.gltf",
+        "shader": {
+            "default": "DEFAULT",
+            "bbox": "BBOX"
+        }
+    },
+    {
+        "name": "Cube",
+        "type": "COMMON",
+        "GLTF": "../assets/gltf_cube/Cube.gltf",
+        "shader": {
+            "default": "DEFAULT",
+            "bbox": "BBOX"
+        }
+    },
+    {
+        "name": "Backpack",
+        "type": "COMMON",
+        "GLTF": "../assets/backpack/scene.gltf",
+        "shader": {
+            "default": "DEFAULT",
+            "bbox": "BBOX"
+        }
+    },
+    {
+        "name": "Skybox",
+        "type": "SKYBOX",
+        "folder": "../assets/skybox/textures",
+        "filenames": [
+            "posx.jpg",
+            "negx.jpg",
+            "posy.jpg",
+            "negy.jpg",
+            "posz.jpg",
+            "negz.jpg"
+        ],
+        "shader": {
+            "default": "SKYBOX"
+        }
+    }
+]

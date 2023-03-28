@@ -12,6 +12,10 @@ Context& Context::Get() {
     return instance;
 }
 
+Context::Context()
+    : gl(std::nullopt), shader_handler(std::nullopt), camera(std::nullopt), projection_matrix(std::nullopt),
+    keyboard_mode(std::nullopt), keyboard_status(std::nullopt), models({}) {}
+
 GL::Vec3 GetTranslation(const GL::Mat4& matrix) {
     return GL::Vec3{matrix.m[12], matrix.m[13], matrix.m[14]};
 }

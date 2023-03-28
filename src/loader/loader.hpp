@@ -21,6 +21,7 @@
 #include <bbox/bbox.hpp>
 #include <mesh/mesh.hpp>
 #include <texture/texture.hpp>
+#include <material/material.hpp>
 
 namespace App {
 
@@ -31,7 +32,8 @@ public:
     std::vector<Mesh> GetMeshes() const;
 
 private:
-    std::vector<Texture> HandleMaterial(aiMaterial* mat, aiTextureType assimp_texture_type, Texture::Type app_texture_type);
+    AssimpParameterType GetAssimpParameterType(Material::ParameterType parameter_type);
+    Material HandleMaterial(aiMaterial* mat);
     void HandleMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation);
     void HandleNodeRecursive(aiNode* node, const aiScene* scene, aiMatrix4x4 transformation);
 

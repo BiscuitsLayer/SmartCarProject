@@ -5,18 +5,35 @@
 
 namespace App {
 
-Texture::Texture(GL::Texture texture, Type type, int texture_unit)
-    : texture_(texture), texture_unit_(texture_unit), type_(type) {
-    texture_.SetWrapping(GL::Wrapping::Repeat, GL::Wrapping::Repeat);
+Texture::Texture(GL::Texture texture, GL::Vec4 factor)
+    : texture_(texture), color_(factor) {}
+
+Texture::Texture(std::string path, GL::Vec4 factor)
+    : texture_(std::nullopt), color_(factor) {
+    std::string buffer = App::ReadFileData(path, false);
+    auto image = GL::Image{reinterpret_cast<unsigned char*>(buffer.data()), static_cast<GL::uint>(buffer.size())};
+    texture_ = GL::Texture{image, GL::InternalFormat::RGB};
+    texture_->SetWrapping(GL::Wrapping::Repeat, GL::Wrapping::Repeat);
 }
 
-Texture::Texture(std::string path, Type type, int texture_unit)
-    : texture_unit_(texture_unit), type_(type) {
-    std::string buffer = App::ReadFileData(path, false);
-    auto image = GL::Image{ reinterpret_cast<unsigned char*>(buffer.data()), static_cast<GL::uint>(buffer.size()) };
-    texture_ = GL::Texture{ image, GL::InternalFormat::RGB };
-    texture_.SetWrapping(GL::Wrapping::Repeat, GL::Wrapping::Repeat);
+Texture::Texture(GL::Texture texture)
+    : texture_(texture), color_(GL::Vec4{}) {
+    texture_->SetWrapping(GL::Wrapping::Repeat, GL::Wrapping::Repeat);
 }
+
+Texture::Texture(std::string path)
+    : texture_(std::nullopt), color_(GL::Vec4{}) {
+    std::string buffer = App::ReadFileData(path, false);
+    auto image = GL::Image{reinterpret_cast<unsigned char*>(buffer.data()), static_cast<GL::uint>(buffer.size())};
+    texture_ = GL::Texture{image, GL::InternalFormat::RGB};
+    texture_->SetWrapping(GL::Wrapping::Repeat, GL::Wrapping::Repeat);
+}
+
+Texture::Texture(GL::Vec4 color)
+    : texture_(std::nullopt), color_(color) {}
+
+Texture::Texture()
+    : texture_(std::nullopt), color_(GL::Vec4{}) {}
 
 Texture Texture::Cubemap(std::string path, std::array<std::string, APP_CUBEMAP_TEXTURES_COUNT> filenames) {
     std::string buffer;
@@ -32,7 +49,7 @@ Texture Texture::Cubemap(std::string path, std::array<std::string, APP_CUBEMAP_T
     }
 
     // TODO: fix texture unit
-    return Texture{ GL::Texture::Cubemap(image_ptrs, GL::InternalFormat::RGB), Type::CUBEMAP, 0 };
+    return Texture{GL::Texture::Cubemap(image_ptrs, GL::InternalFormat::RGB)};
 }
 
 } // namespace App

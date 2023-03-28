@@ -52,7 +52,7 @@ public:
     std::vector<std::shared_ptr<Model>> models;
 
 private:
-    Context() {}
+    Context();
 };
 
 GL::Vec3 GetTranslation(const GL::Mat4& matrix);

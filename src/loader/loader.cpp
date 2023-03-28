@@ -21,20 +21,52 @@ std::vector<Mesh> AssimpLoader::GetMeshes() const {
     return meshes_;
 }
 
-std::vector<Texture> AssimpLoader::HandleMaterial(aiMaterial* mat, aiTextureType assimp_texture_type, Texture::Type app_texture_type) {
-    std::vector<Texture> ans;
-    for (unsigned int i = 0; i < mat->GetTextureCount(assimp_texture_type); ++i) {
-        aiString texture_filename;
-        mat->GetTexture(assimp_texture_type, i, &texture_filename);
-        std::string full_path{directory_ + texture_filename.C_Str()};
+AssimpParameterType AssimpLoader::GetAssimpParameterType(Material::ParameterType parameter_type) {
+    switch (parameter_type) {
+        case Material::ParameterType::BASE_COLOR: {
+            return std::make_pair(APP_ASSIMP_BASE_COLOR_TEXTURE_PARAMETERS, APP_ASSIMP_BASE_COLOR_FACTOR_PARAMETERS);
+        }
+    }
+}
 
-        auto found = paths_to_loaded_textures_.find(full_path);
-        if (found != paths_to_loaded_textures_.end()) {
-            ans.push_back(found->second);
-        } else {
-            Texture new_texture{full_path, app_texture_type};
-            paths_to_loaded_textures_.insert(std::make_pair(full_path, new_texture));
-            ans.push_back(new_texture);
+
+Material AssimpLoader::HandleMaterial(aiMaterial* mat) {
+    Material ans{mat->GetName().C_Str()};
+
+    for (int type = Material::ParameterType::BASE_COLOR; type < Material::ParameterType::SIZE; ++type) {
+        Material::ParameterType parameter_type{type};
+        auto assimp_parameter_type = GetAssimpParameterType(parameter_type);
+        auto texture_count = mat->GetTextureCount(assimp_parameter_type.first.type);
+
+        if (texture_count > 1) {
+            std::cout << "Warning: there are more that 1 texture of certain type given for the material: " << ans.GetName() << std::endl;
+        }
+
+        // TODO: now getting just the first texture in the list
+        if (texture_count > 0) { // Getting both texture and factor
+            aiString texture_filename;
+            mat->GetTexture(assimp_parameter_type.first.type, assimp_parameter_type.first.index, &texture_filename);
+            std::string full_path{directory_ + texture_filename.C_Str()};
+
+            auto found = paths_to_loaded_textures_.find(full_path);
+            if (found != paths_to_loaded_textures_.end()) {
+                ans.SetTexture(found->second, parameter_type);
+            } else {
+                aiColor4D factor;
+                mat->Get(assimp_parameter_type.second.pKey,
+                    assimp_parameter_type.second.type, assimp_parameter_type.second.index, factor);
+
+                Texture new_texture{full_path, GL::Vec4(factor.r, factor.g, factor.b, factor.a)};
+                paths_to_loaded_textures_.insert(std::make_pair(full_path, new_texture));
+                ans.SetTexture(new_texture, parameter_type);
+            }
+        } else { // Getting only factor
+            aiColor4D color;
+            mat->Get(assimp_parameter_type.second.pKey,
+                assimp_parameter_type.second.type, assimp_parameter_type.second.index, color);
+
+            Texture new_texture{GL::Vec4(color.r, color.g, color.b, color.a)};
+            ans.SetTexture(new_texture, parameter_type);
         }
     }
     return ans;
@@ -43,7 +75,6 @@ std::vector<Texture> AssimpLoader::HandleMaterial(aiMaterial* mat, aiTextureType
 void AssimpLoader::HandleMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation) {
     std::vector<GL::Vertex> vertices;
     std::vector<int> indices;
-    std::vector<Texture> textures;
 
     GL::Mat4 transform_to_model {
         transformation.a1, transformation.a2, transformation.a3, transformation.a4,
@@ -82,21 +113,16 @@ void AssimpLoader::HandleMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 tr
     }
 
     // Materials
+    Material material;
+
     // WARNING: don't compare like mesh->mMaterialIndex > -1, because of unsigned comparison
     if (mesh->mMaterialIndex >= 0) {
-        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-
-        std::vector<Texture> diffuse_textures;
-        diffuse_textures = HandleMaterial(material, aiTextureType_DIFFUSE, Texture::Type::DIFFUSE);
-        textures.insert(textures.end(), diffuse_textures.begin(), diffuse_textures.end());
-
-        std::vector<Texture> specular_textures;
-        specular_textures = HandleMaterial(material, aiTextureType_SPECULAR, Texture::Type::SPECULAR);
-        textures.insert(textures.end(), specular_textures.begin(), specular_textures.end());
+        aiMaterial* assimp_material = scene->mMaterials[mesh->mMaterialIndex];
+        material = HandleMaterial(assimp_material);
     }
 
     BBox bbox{bbox_shader_name_, bbox_min, bbox_max};
-    Mesh new_mesh{default_shader_name_, bbox_shader_name_, mesh->mName.C_Str(), Transform{transform_to_model}, vertices, indices, textures, bbox};
+    Mesh new_mesh{default_shader_name_, bbox_shader_name_, mesh->mName.C_Str(), Transform{transform_to_model}, vertices, indices, material, bbox};
     meshes_.push_back(new_mesh);
 }
 
