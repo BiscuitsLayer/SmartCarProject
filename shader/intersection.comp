@@ -23,11 +23,51 @@ layout(std430, binding = 2) writeonly buffer IntersetionResultsBlock {
     float intersection_results[];
 };
 
-bool Intersect(vec4 obstacle_min_point, vec4 obstacle_max_point, vec4 car_parts_min_point, vec4 car_parts_max_point) {
-    return (obstacle_min_point.x <= car_parts_max_point.x) && (obstacle_max_point.x >= car_parts_min_point.x)
-    && (obstacle_min_point.y <= car_parts_max_point.y) && (obstacle_max_point.y >= car_parts_min_point.y)
-    && (obstacle_min_point.z <= car_parts_max_point.z) && (obstacle_max_point.z >= car_parts_min_point.z);
+bool CheckPointInsideStaticBBox(vec4 obstacle_min_point, vec4 obstacle_max_point, vec3 point) {
+    return (point.x <= obstacle_max_point.x) && (obstacle_min_point.x <= point.x)
+    && (point.y <= obstacle_max_point.y) && (obstacle_min_point.y <= point.y)
+    && (point.z <= obstacle_max_point.z) && (obstacle_min_point.z <= point.z);
 }
+
+/*
+    Main idea: check if any vertex of dynamic (car part) bbox is inside
+    the static (obstacle bbox) <- in this case there is definetely an intersection
+*/  
+bool IntersectStaticBBoxWithDynamicBBox(vec4 obstacle_min_point, vec4 obstacle_max_point, vec4 car_parts_min_point, vec4 car_parts_max_point) {
+    bool test = false;
+    
+    vec3 pt0 = vec3(car_parts_min_point.x, car_parts_min_point.y, car_parts_min_point.z);
+    test = test || CheckPointInsideStaticBBox(obstacle_min_point, obstacle_max_point, pt0);
+
+    vec3 pt1 = vec3(car_parts_max_point.x, car_parts_min_point.y, car_parts_min_point.z);
+    test = test || CheckPointInsideStaticBBox(obstacle_min_point, obstacle_max_point, pt1);
+
+    vec3 pt2 = vec3(car_parts_min_point.x, car_parts_max_point.y, car_parts_min_point.z);
+    test = test || CheckPointInsideStaticBBox(obstacle_min_point, obstacle_max_point, pt2);
+
+    vec3 pt3 = vec3(car_parts_max_point.x, car_parts_max_point.y, car_parts_min_point.z);
+    test = test || CheckPointInsideStaticBBox(obstacle_min_point, obstacle_max_point, pt3);
+
+    vec3 pt4 = vec3(car_parts_min_point.x, car_parts_min_point.y, car_parts_max_point.z);
+    test = test || CheckPointInsideStaticBBox(obstacle_min_point, obstacle_max_point, pt4);
+
+    vec3 pt5 = vec3(car_parts_max_point.x, car_parts_min_point.y, car_parts_max_point.z);
+    test = test || CheckPointInsideStaticBBox(obstacle_min_point, obstacle_max_point, pt5);
+
+    vec3 pt6 = vec3(car_parts_min_point.x, car_parts_max_point.y, car_parts_max_point.z);
+    test = test || CheckPointInsideStaticBBox(obstacle_min_point, obstacle_max_point, pt6);
+
+    vec3 pt7 = vec3(car_parts_max_point.x, car_parts_max_point.y, car_parts_max_point.z);
+    test = test || CheckPointInsideStaticBBox(obstacle_min_point, obstacle_max_point, pt7);
+
+    return test;
+}
+
+// bool Intersect(vec4 obstacle_min_point, vec4 obstacle_max_point, vec4 car_parts_min_point, vec4 car_parts_max_point) {
+//     return (obstacle_min_point.x <= car_parts_max_point.x) && (obstacle_max_point.x >= car_parts_min_point.x)
+//     && (obstacle_min_point.y <= car_parts_max_point.y) && (obstacle_max_point.y >= car_parts_min_point.y)
+//     && (obstacle_min_point.z <= car_parts_max_point.z) && (obstacle_max_point.z >= car_parts_min_point.z);
+// }
 
 void main() {
     uint obstacle_id = gl_GlobalInvocationID.x;
@@ -44,6 +84,6 @@ void main() {
     vec4 car_parts_min_point = car_parts_bbox.model * car_parts_bbox.mesh_to_model * car_parts_bbox.min_point;
     vec4 car_parts_max_point = car_parts_bbox.model * car_parts_bbox.mesh_to_model * car_parts_bbox.max_point;
 
-    bool result = Intersect(obstacle_min_point, obstacle_max_point, car_parts_min_point, car_parts_max_point);
+    bool result = IntersectStaticBBoxWithDynamicBBox(obstacle_min_point, obstacle_max_point, car_parts_min_point, car_parts_max_point);
     intersection_results[obstacle_id * car_parts_size + car_parts_id] = result ? 1 : 0;
 }

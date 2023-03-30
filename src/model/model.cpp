@@ -81,7 +81,7 @@ std::vector<MemoryAlignedBBox> Model::CollectMABB() {
 
     for (auto&& mesh : meshes_) {
         auto mabb = mesh.GetMABB();
-        mabb.model = static_cast<GL::Mat4>(transform_);
+        mabb.model = GetModelMatrix();
         result.push_back(mabb);
     }
     return result;

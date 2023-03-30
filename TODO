@@ -2,6 +2,8 @@
 
 === CPP core ===
 
+[] Serialize models data (using protobuf)
+
 Code refactor (IN PROGRESS):
 [] Forward declarations
 [] Const methods
@@ -28,7 +30,7 @@ Config refactor (IN PROGRESS):
 [] Light sources
 [] Shader raw params -> structs
 [] Free camera
-[] Fix lines in AABB
+[x] Fix lines in AABB
 
 === Issues ===
 

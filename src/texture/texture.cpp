@@ -9,7 +9,9 @@ namespace App {
 /* empty */
 
 Texture::Texture(GL::Texture texture, GL::Vec4 factor)
-    : texture_(texture), factor_(factor) {}
+    : texture_(texture), factor_(factor) {
+    texture_->SetWrapping(GL::Wrapping::Repeat, GL::Wrapping::Repeat);
+}
 
 Texture::Texture(std::string path, GL::Vec4 factor)
     : texture_(std::nullopt), factor_(factor) {
@@ -20,17 +22,10 @@ Texture::Texture(std::string path, GL::Vec4 factor)
 }
 
 Texture::Texture(GL::Texture texture)
-    : texture_(texture), factor_(GL::Vec4{}) {
-    texture_->SetWrapping(GL::Wrapping::Repeat, GL::Wrapping::Repeat);
-}
+    : Texture(texture, GL::Vec4{}) {}
 
 Texture::Texture(std::string path)
-    : texture_(std::nullopt), factor_(GL::Vec4{}) {
-    std::string buffer = App::ReadFileData(path, false);
-    auto image = GL::Image{reinterpret_cast<unsigned char*>(buffer.data()), static_cast<GL::uint>(buffer.size())};
-    texture_ = GL::Texture{image, GL::InternalFormat::RGB};
-    texture_->SetWrapping(GL::Wrapping::Repeat, GL::Wrapping::Repeat);
-}
+    : Texture(path, GL::Vec4{}) {}
 
 Texture::Texture(GL::Vec4 factor)
     : texture_(std::nullopt), factor_(factor) {}

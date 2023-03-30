@@ -47,6 +47,6 @@ void main() {
     vec3 V = normalize(cameraPosition - Pos);
     vec3 R = reflect(-1.0 * V, N); 
 
-    FragColor = vec4(R, 1.0);
+    FragColor = baseColor;
     return;
 }

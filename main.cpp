@@ -111,19 +111,20 @@ int main(int argc, char **argv) try {
 			}
 		}
 
-		std::dynamic_pointer_cast<App::CarModel>(context.models[0])->Move(delta_time);
-
-		gl.Clear(GL::Buffer::Color | GL::Buffer::Depth);
-		gui.Prepare();
-
 		intersector.ClearObstacles();
 		intersector.ClearCarParts();
 
 		intersector.AddObstacles(context.models[2]->CollectMABB());
 		intersector.AddObstacles(context.models[3]->CollectMABB());
 		intersector.AddCarParts(context.models[0]->CollectMABB());
+
+		if (!intersector.Execute()) {
+			std::dynamic_pointer_cast<App::CarModel>(context.models[0])->Move(delta_time);
+		}
+
+		gl.Clear(GL::Buffer::Color | GL::Buffer::Depth);
+		gui.Prepare();
 		
-		intersector.Execute();
 
 		for (auto model : context.models) {
 			model->Draw();

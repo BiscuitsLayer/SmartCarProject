@@ -27,7 +27,7 @@ public:
     void AddCarParts(const std::vector<MemoryAlignedBBox>& new_car_parts_bboxes);
 
     // TODO: should not be const, because returns intersection values
-    void Execute() const;
+    bool Execute() const;
 
 private:
     std::vector<MemoryAlignedBBox> obstacle_bboxes_;

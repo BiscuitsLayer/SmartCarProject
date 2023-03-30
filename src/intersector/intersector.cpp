@@ -35,7 +35,7 @@ void Intersector::AddCarParts(const std::vector<MemoryAlignedBBox>& new_car_part
     }
 }
 
-void Intersector::Execute() const {
+bool Intersector::Execute() const {
     // TODO: get rid of magic numbers
     // TODO: fix code (with SubData) instead of generating buffer object every frame
     // TODO: fix SubData and GetSubData in OOGL (check if they need glBindBufferBase)
@@ -53,26 +53,20 @@ void Intersector::Execute() const {
     std::vector<float> intersection_results(obstacle_bboxes_.size() * car_parts_bboxes_.size(), APP_INTERSECTOR_INTERSECTION_NOT_FOUND);
     auto intersection_result_ssbo = GL::StorageBuffer(intersection_results.data(), intersection_results.size() * sizeof(float), GL::BufferUsage::DynamicDraw, 2);
 
+    // Execute compute shader
     gl.DispatchCompute(obstacle_bboxes_.size(), car_parts_bboxes_.size(), APP_INTERSECTOR_NUM_GROUPS_Z_COUNT);
     gl.Barrier(GL::BarrierBit::All);
 
+    // Get the results back on CPU
     auto read_data = intersection_result_ssbo.Map<float>(GL::BufferAccess::ReadOnly);
 
     float sum = 0;
     for (int i = 0; i < intersection_results.size(); ++i) {
-        // if (i % car_parts_bboxes.size() == 0) {
-        //     std::cout << std::endl;
-        // }
-        // std::cout << (*read_data)[i] << ' ';
-
-        // if (*(read_data + i) == APP_INTERSECTOR_INTERSECTION_FOUND) {
-        //     std::cout << "intersection found" << std::endl;
-        // }
-
-        sum += *(read_data + i);
+        if (read_data[i] == APP_INTERSECTOR_INTERSECTION_FOUND) {
+            return true;
+        }
     }
-
-    // std::cout << "sum = " << sum << std::endl;
+    return false;
 }
 
 } // namespace App
