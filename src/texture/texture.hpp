@@ -29,7 +29,7 @@ public:
     Texture(std::string path);
 
     // Only color
-    Texture(GL::Vec4 color);
+    Texture(GL::Vec4 factor);
 
     // Empty
     Texture();
@@ -38,7 +38,7 @@ public:
 
 private:
     std::optional<GL::Texture> texture_;
-    GL::Vec4 color_;
+    GL::Vec4 factor_;
 
     friend class Material;
     friend class Skybox;

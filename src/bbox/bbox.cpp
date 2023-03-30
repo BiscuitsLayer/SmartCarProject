@@ -5,6 +5,12 @@
 
 namespace App {
 
+// Extern variables
+extern const int APP_GL_VEC3_BYTESIZE;
+extern const int APP_ZERO_OFFSET;
+extern const int APP_GL_VEC3_BYTESIZE;
+extern const int APP_GL_VEC3_COMPONENTS_COUNT;
+
 BBox::BBox(const std::string& bbox_shader_name, const GL::Vec3& min, const GL::Vec3& max)
     : init_min_(min), init_max_(max),
     init_vertices_(

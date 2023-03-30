@@ -38,7 +38,4 @@ private:
     GL::Mat4 transform_matrix_;
 };
 
-GL::Mat4 GetModelViewProjectionMatrix(GL::Mat4 model, GL::Mat4 view, GL::Mat4 projection);
-GL::Mat4 GetViewNoTranslationProjectionMatrix(GL::Mat4 view, GL::Mat4 projection);
-
 } // namespace App

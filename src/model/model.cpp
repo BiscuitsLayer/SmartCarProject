@@ -2,6 +2,9 @@
 
 namespace App {
 
+// Extern variables
+/* empty */
+
 Model::Model(std::string model_name, std::string default_shader_name, std::string bbox_shader_name, std::string gltf, Transform transform)
     : name_(model_name), default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name),
     transform_(transform) {
@@ -53,15 +56,19 @@ void Model::Draw() {
     auto& gl = context.gl->get();
     auto shader_handler = context.shader_handler.value();
 
-    GL::Mat4 mvp = App::GetModelViewProjectionMatrix(GetModelMatrix(), context.camera->GetViewMatrix(), context.projection_matrix.value());
-
     auto program = shader_handler.at(default_shader_name_);
     gl.UseProgram(*program);
-    program->SetUniform(program->GetUniform("MVP"), mvp);
+    program->SetUniform(program->GetUniform("aMatrices.modelMatrix"), GetModelMatrix());
+    program->SetUniform(program->GetUniform("aMatrices.viewMatrix"), context.camera->GetViewMatrix());
+    program->SetUniform(program->GetUniform("aMatrices.projectionMatrix"), context.projection_matrix.value());
+
+    program->SetUniform(program->GetUniform("cameraPosition"), context.camera->GetPosition());
 
     auto bbox_program = shader_handler.at(bbox_shader_name_);
     gl.UseProgram(*bbox_program);
-    bbox_program->SetUniform(bbox_program->GetUniform("MVP"), mvp);
+    program->SetUniform(program->GetUniform("aMatrices.modelMatrix"), GetModelMatrix());
+    program->SetUniform(program->GetUniform("aMatrices.viewMatrix"), context.camera->GetViewMatrix());
+    program->SetUniform(program->GetUniform("aMatrices.projectionMatrix"), context.projection_matrix.value());
 
     for (auto&& mesh : meshes_) {
         mesh.Draw();

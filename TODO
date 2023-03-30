@@ -2,11 +2,16 @@
 
 === CPP core ===
 
-IN PROGRESS:
+Code refactor (IN PROGRESS):
 [] Forward declarations
 [] Const methods
 [] Copy by value -> pass by const reference
 [] All variables in classes must be initialized in ctors
+
+Config refactor (IN PROGRESS):
+[x] Divide in different config files
+[] Repair config handler
+[] Model loading time <- display, reduce if possible
 
 === JSON format ===
 
@@ -15,6 +20,7 @@ IN PROGRESS:
 
 === Graphics ===
 
+[] Multisampling <- turn on (of FXAA)
 [] OpenGL calls improvement
 [] Collision
 [] Blending order sorted

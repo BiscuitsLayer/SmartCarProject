@@ -8,6 +8,9 @@
 
 namespace App {
 
+// Extern variables
+/* empty */
+
 Gui::Gui(const App::Config::WindowConfig& window_config) {
     auto raw_window_handle = FindWindowA("OOGL_WINDOW", window_config.params.title.c_str());
 

@@ -1,4 +1,5 @@
 build/
+temp/
 
 # Different compiler builds (for debugging)
 build_gcc/

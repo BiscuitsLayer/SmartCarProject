@@ -32,8 +32,10 @@ public:
     std::vector<Mesh> GetMeshes() const;
 
 private:
-    AssimpParameterType GetAssimpParameterType(Material::ParameterType parameter_type);
-    Material HandleMaterial(aiMaterial* mat);
+    AssimpMaterialTextureParameters GetAssimpTextureParameters(Material::ParameterType parameter_type);
+    GL::Vec4 GetMaterialFactor(aiMaterial* assimp_material, Material::ParameterType parameter_type);
+    Material HandleMaterial(aiMaterial* assimp_material);
+    
     void HandleMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation);
     void HandleNodeRecursive(aiNode* node, const aiScene* scene, aiMatrix4x4 transformation);
 

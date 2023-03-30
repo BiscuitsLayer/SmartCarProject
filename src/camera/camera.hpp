@@ -29,6 +29,7 @@ public:
     virtual ~Camera() {}
 
     GL::Mat4 GetViewMatrix() const;
+    GL::Vec3 GetPosition() const;
 
     void MoveFront(float delta_time);
     void MoveBack(float delta_time);

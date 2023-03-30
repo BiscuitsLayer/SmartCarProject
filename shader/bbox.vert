@@ -2,9 +2,16 @@
 
 in vec3 aPos;
 
-uniform mat4 meshTransformToModel;
-uniform mat4 MVP;
+// Transform matrices
+uniform struct {
+    mat4 meshSelfTransformMatrix;
+    mat4 meshTransformToModelMatrix;
+    mat4 modelMatrix;
+    mat4 viewMatrix;
+    mat4 projectionMatrix;
+} aMatrices;
 
 void main() {
-    gl_Position = MVP * meshTransformToModel * vec4(aPos,  1.0);
+    mat4 MVP = aMatrices.projectionMatrix * aMatrices.viewMatrix * aMatrices.modelMatrix;
+    gl_Position = MVP * aMatrices.meshTransformToModelMatrix * vec4(aPos,  1.0);
 }

@@ -2,6 +2,9 @@
 
 namespace App {
 
+// Extern variables
+extern const float APP_CAR_SPEED_EPS;
+
 Accelerator::Accelerator(const float max_speed, const float acceleration)
     : max_speed_(max_speed), acceleration_(acceleration), cur_speed_(0.0f) {
     if (acceleration <= 0) {

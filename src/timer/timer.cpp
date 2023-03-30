@@ -2,6 +2,9 @@
 
 namespace App {
 
+// Extern variables
+/* empty */
+
 Timer::Timer(): start_time(Clock::now()), previous_tick(Clock::now()) {}
 
 void Timer::Start() {

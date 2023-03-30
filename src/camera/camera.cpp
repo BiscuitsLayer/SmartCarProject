@@ -5,6 +5,11 @@
 
 namespace App {
 
+// Extern variables
+extern const GL::Vec3 APP_CAMERA_WORLD_SPACE_UP;
+extern const float APP_VECTOR_LENGTH_EPS;
+extern const GL::Vec3 APP_CAMERA_RESERVE_WORLD_SPACE_UP;
+
 Camera::Camera(const GL::Vec3& position, const GL::Vec3& target, const float move_speed, const float rotate_speed,
     const float min_length_to_target, const float max_length_to_target, const bool is_target_fixed_on_car,
     const bool is_position_fixed_behind_car, const GL::Vec3& translation_from_car)
@@ -29,6 +34,10 @@ Camera::Camera(const Config::CameraConfig& config)
 
 GL::Mat4 Camera::GetViewMatrix() const {
     return view_matrix_;
+}
+
+GL::Vec3 Camera::GetPosition() const {
+    return position_;
 }
 
 void Camera::MoveFront(float delta_time) {

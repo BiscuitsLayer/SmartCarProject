@@ -2,6 +2,9 @@
 
 namespace App {
 
+// Extern variables
+/* empty */
+
 MemoryAlignedBBox::MemoryAlignedBBox(const GL::Vec3& new_min, const GL::Vec3& new_max,
     const GL::Mat4& new_model, const GL::Mat4& new_mesh_to_model)
     : min_point(GL::Vec4(new_min.X, new_min.Y, new_min.Z, 1.0)), max_point(GL::Vec4(new_max.X, new_max.Y, new_max.Z, 1.0)),

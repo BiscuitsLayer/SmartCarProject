@@ -2,6 +2,11 @@
 
 namespace App {
 
+// Extern variables
+extern const int APP_INTERSECTOR_NUM_GROUPS_Z_COUNT;
+extern const float APP_INTERSECTOR_INTERSECTION_FOUND;
+extern const float APP_INTERSECTOR_INTERSECTION_NOT_FOUND;
+
 Intersector::Intersector(const std::string& intersect_shader_name)
     : intersect_shader_name_(intersect_shader_name) {}
 

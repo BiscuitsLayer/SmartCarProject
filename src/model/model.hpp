@@ -15,6 +15,7 @@
 #include <mesh/mesh.hpp>
 #include <config/config_handler.hpp>
 #include <loader/loader.hpp>
+#include <timer/timer.hpp>
 
 namespace App {
 

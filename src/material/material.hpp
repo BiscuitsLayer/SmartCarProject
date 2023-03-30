@@ -18,6 +18,8 @@ class Material {
 public:
     enum ParameterType : int {
         BASE_COLOR = 0,
+        METALLIC_ROUGHNESS,
+        NORMAL,
         SIZE
     };
 

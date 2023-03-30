@@ -2,6 +2,9 @@
 
 namespace App {
 
+// Extern variables
+extern const GL::Vec3 APP_CAR_WHEELS_ROTATION_AXIS;
+
 CarModel::CarModel(const std::string& name, const std::string& default_shader_name,
     const std::string& bbox_shader_name, const std::string& gltf,
     const std::vector<std::string>& wheel_meshes_names, const float move_max_speed,

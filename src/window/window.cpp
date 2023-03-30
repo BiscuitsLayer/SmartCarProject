@@ -2,6 +2,9 @@
 
 namespace App {
 
+// Extern variables
+/* empty */
+
 CustomWindow::CustomWindow(GL::uint width, GL::uint height, const std::string& title, GL::WindowStyle::window_style_t style)
     : Window(width, height, title, style, WindowEventHandlerWithImGui) {}
 

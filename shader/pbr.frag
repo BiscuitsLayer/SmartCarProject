@@ -8,19 +8,16 @@ in FragData {
 } fragData;
 
 // IBL (TODO: implement from learnopengl)
-uniform samplerCube irradianceMap;
-uniform samplerCube prefilterMap;
+uniform samplerCube irradianceTexture;
+uniform samplerCube prefilterTexture;
 uniform sampler2D brdfLUT;
 
 // PBR material parameters
-uniform sampler2D albedoMap;
-uniform sampler2D normalMap;
-uniform sampler2D metallicMap;
-uniform sampler2D roughnessMap;
-//uniform sampler2D aoMap;
-
-// Shadow map
-uniform sampler2D shadowMap;
+uniform sampler2D baseColorTexture;
+uniform sampler2D normalTexture;
+uniform sampler2D metallicTexture;
+uniform sampler2D roughnessTexture;
+//uniform sampler2D aoTexture;
 
 uniform float bloomThreshold;
 
@@ -37,22 +34,22 @@ layout (location = 1) out vec4 BrightColor;
 
 void main() {       
     // material properties
-    const vec3 albedo = pow(texture(albedoMap, fragData.TexCoords).rgb, vec3(2.2));
-    const float metallic = texture(metallicMap, fragData.TexCoords).r;
-    const float roughness = texture(roughnessMap, fragData.TexCoords).r;
+    const vec3 baseColor = pow(texture(baseColorTexture, fragData.TexCoords).rgb, vec3(2.2));
+    const float metallic = texture(metallicTexture, fragData.TexCoords).r;
+    const float roughness = texture(roughnessTexture, fragData.TexCoords).r;
        
     // input lighting data
     // Get world-space normals from TBN matrix
-    vec3 N = texture(normalMap, fragData.TexCoords).rgb;
+    vec3 N = texture(normalTexture, fragData.TexCoords).rgb;
     N = normalize(N * 2.0 - 1.0);
     N = normalize(fragData.TBN * N); 
     const vec3 V = normalize(camPos - fragData.FragPos);
     const vec3 R = reflect(-V, N); 
 
     // calculate reflectance at normal incidence; if di-electric (like plastic) use F0 
-    // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
+    // of 0.04 and if it's a metal, use the baseColor color as F0 (metallic workflow)    
     vec3 F0 = vec3(0.04); 
-    F0 = mix(F0, albedo, metallic);
+    F0 = mix(F0, baseColor, metallic);
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
@@ -87,7 +84,7 @@ void main() {
 
     const float shadow = ComputeShadow(fragData.FragPosLightSpace);
     // add to outgoing radiance Lo
-    Lo = (kD * albedo / PI + specular) * radiance * NdotL * shadow;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+    Lo = (kD * baseColor / PI + specular) * radiance * NdotL * shadow;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 }
     
     // ambient lighting (we now use IBL as the ambient term)
@@ -97,12 +94,12 @@ void main() {
     vec3 kD = 1.0 - kS;
     kD *= 1.0 - metallic;     
     
-    vec3 irradiance = texture(irradianceMap, N).rgb;
-    vec3 diffuse    = irradiance * albedo;
+    vec3 irradiance = texture(irradianceTexture, N).rgb;
+    vec3 diffuse    = irradiance * baseColor;
     
-    // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
+    // sample both the pre-filter Texture and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
     const float MAX_REFLECTION_LOD = 4.0;
-    vec3 prefilteredColor = textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;    
+    vec3 prefilteredColor = textureLod(prefilterTexture, R,  roughness * MAX_REFLECTION_LOD).rgb;    
     vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
     

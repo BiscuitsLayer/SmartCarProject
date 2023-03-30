@@ -2,6 +2,14 @@
 
 namespace App {
 
+// Extern variables
+extern const AssimpMaterialTextureParameters APP_ASSIMP_BASE_COLOR_TEXTURE_PARAMETERS;
+extern const AssimpMaterialColorParameters APP_ASSIMP_BASE_COLOR_FACTOR_PARAMETERS;
+extern const AssimpMaterialTextureParameters APP_ASSIMP_METALLIC_ROUGHNESS_TEXTURE_PARAMETERS;
+extern const AssimpMaterialFloatParameters APP_ASSIMP_METALLIC_FACTOR_PARAMETERS;
+extern const AssimpMaterialFloatParameters APP_ASSIMP_ROUGHNESS_FACTOR_PARAMETERS;
+extern const AssimpMaterialTextureParameters APP_ASSIMP_NORMAL_TEXTURE_PARAMETERS;
+
 AssimpLoader::AssimpLoader(std::string default_shader_name, std::string bbox_shader_name, std::string& path)
     : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name) {
     directory_ = path.substr(0, path.find_last_of('/')) + '/';
@@ -21,22 +29,65 @@ std::vector<Mesh> AssimpLoader::GetMeshes() const {
     return meshes_;
 }
 
-AssimpParameterType AssimpLoader::GetAssimpParameterType(Material::ParameterType parameter_type) {
+AssimpMaterialTextureParameters AssimpLoader::GetAssimpTextureParameters(Material::ParameterType parameter_type) {
     switch (parameter_type) {
         case Material::ParameterType::BASE_COLOR: {
-            return std::make_pair(APP_ASSIMP_BASE_COLOR_TEXTURE_PARAMETERS, APP_ASSIMP_BASE_COLOR_FACTOR_PARAMETERS);
+            return APP_ASSIMP_BASE_COLOR_TEXTURE_PARAMETERS;
+            break;
+        }
+        case Material::ParameterType::METALLIC_ROUGHNESS: {
+            return APP_ASSIMP_METALLIC_ROUGHNESS_TEXTURE_PARAMETERS;
+            break;
+        }
+        case Material::ParameterType::NORMAL: {
+            return APP_ASSIMP_NORMAL_TEXTURE_PARAMETERS;
+            break;
+        }
+        default: {
+            throw std::runtime_error("AssimpLoader: texture parameters not set for given type!");
         }
     }
 }
 
+GL::Vec4 AssimpLoader::GetMaterialFactor(aiMaterial* assimp_material, Material::ParameterType parameter_type) {
+    GL::Vec4 ans{};
 
-Material AssimpLoader::HandleMaterial(aiMaterial* mat) {
-    Material ans{mat->GetName().C_Str()};
+    switch (parameter_type) {
+        case Material::ParameterType::BASE_COLOR: {
+            aiColor4D factor;
+            assimp_material->Get(APP_ASSIMP_BASE_COLOR_FACTOR_PARAMETERS.pKey, APP_ASSIMP_BASE_COLOR_FACTOR_PARAMETERS.type,
+                APP_ASSIMP_BASE_COLOR_FACTOR_PARAMETERS.index, factor);
+            ans = GL::Vec4{factor.r, factor.g, factor.b, factor.a};
+            return ans;
+        }
+        case Material::ParameterType::METALLIC_ROUGHNESS: {
+            float metallicFactor = 0.0f;
+            assimp_material->Get(APP_ASSIMP_METALLIC_FACTOR_PARAMETERS.pKey, APP_ASSIMP_METALLIC_FACTOR_PARAMETERS.type,
+                APP_ASSIMP_METALLIC_FACTOR_PARAMETERS.index, metallicFactor);
+            ans.X = metallicFactor;
+
+            float roughnessFactor = 0.0f;
+            assimp_material->Get(APP_ASSIMP_ROUGHNESS_FACTOR_PARAMETERS.pKey, APP_ASSIMP_ROUGHNESS_FACTOR_PARAMETERS.type,
+                APP_ASSIMP_ROUGHNESS_FACTOR_PARAMETERS.index, roughnessFactor);
+            ans.Y = roughnessFactor;
+            return ans;
+        }
+        case Material::ParameterType::NORMAL: {
+            return ans;
+        }
+        default: {
+            throw std::runtime_error("AssimpLoader: factor parameters not set for given type!");
+        }
+    }
+}
+
+Material AssimpLoader::HandleMaterial(aiMaterial* assimp_material) {
+    Material ans{assimp_material->GetName().C_Str()};
 
     for (int type = Material::ParameterType::BASE_COLOR; type < Material::ParameterType::SIZE; ++type) {
         Material::ParameterType parameter_type{type};
-        auto assimp_parameter_type = GetAssimpParameterType(parameter_type);
-        auto texture_count = mat->GetTextureCount(assimp_parameter_type.first.type);
+        auto assimp_texture_parameters = GetAssimpTextureParameters(parameter_type);
+        auto texture_count = assimp_material->GetTextureCount(assimp_texture_parameters.type);
 
         if (texture_count > 1) {
             std::cout << "Warning: there are more that 1 texture of certain type given for the material: " << ans.GetName() << std::endl;
@@ -45,27 +96,23 @@ Material AssimpLoader::HandleMaterial(aiMaterial* mat) {
         // TODO: now getting just the first texture in the list
         if (texture_count > 0) { // Getting both texture and factor
             aiString texture_filename;
-            mat->GetTexture(assimp_parameter_type.first.type, assimp_parameter_type.first.index, &texture_filename);
+            assimp_material->GetTexture(assimp_texture_parameters.type, assimp_texture_parameters.index, &texture_filename);
             std::string full_path{directory_ + texture_filename.C_Str()};
 
             auto found = paths_to_loaded_textures_.find(full_path);
             if (found != paths_to_loaded_textures_.end()) {
                 ans.SetTexture(found->second, parameter_type);
             } else {
-                aiColor4D factor;
-                mat->Get(assimp_parameter_type.second.pKey,
-                    assimp_parameter_type.second.type, assimp_parameter_type.second.index, factor);
+                GL::Vec4 factor = GetMaterialFactor(assimp_material, parameter_type);
+                Texture new_texture = Texture{full_path, factor};
 
-                Texture new_texture{full_path, GL::Vec4(factor.r, factor.g, factor.b, factor.a)};
                 paths_to_loaded_textures_.insert(std::make_pair(full_path, new_texture));
                 ans.SetTexture(new_texture, parameter_type);
             }
         } else { // Getting only factor
-            aiColor4D color;
-            mat->Get(assimp_parameter_type.second.pKey,
-                assimp_parameter_type.second.type, assimp_parameter_type.second.index, color);
+            GL::Vec4 factor = GetMaterialFactor(assimp_material, parameter_type);
+            Texture new_texture = Texture{factor};
 
-            Texture new_texture{GL::Vec4(color.r, color.g, color.b, color.a)};
             ans.SetTexture(new_texture, parameter_type);
         }
     }
@@ -89,26 +136,41 @@ void AssimpLoader::HandleMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 tr
     // Vertices
     for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
         GL::Vertex vertex;
-        // process vertex positions, normals and texture coordinates
-        vertex.Pos = GL::Vec3{mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+        // Positions
+        if (mesh->HasPositions()) {
+            vertex.Pos = GL::Vec3{mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
 
-        bbox_min = GL::Vec3{(std::min)(bbox_min.X, vertex.Pos.X), (std::min)(bbox_min.Y, vertex.Pos.Y), (std::min)(bbox_min.Z, vertex.Pos.Z)};
-        bbox_max = GL::Vec3{(std::max)(bbox_max.X, vertex.Pos.X), (std::max)(bbox_max.Y, vertex.Pos.Y), (std::max)(bbox_max.Z, vertex.Pos.Z)};
+            // Set bbox borders
+            bbox_min = GL::Vec3{(std::min)(bbox_min.X, vertex.Pos.X), (std::min)(bbox_min.Y, vertex.Pos.Y), (std::min)(bbox_min.Z, vertex.Pos.Z)};
+            bbox_max = GL::Vec3{(std::max)(bbox_max.X, vertex.Pos.X), (std::max)(bbox_max.Y, vertex.Pos.Y), (std::max)(bbox_max.Z, vertex.Pos.Z)};
+        }
 
+        // Texture coordinates
         if (mesh->HasTextureCoords(0)) {
             vertex.Tex = GL::Vec2{mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
         } else {
             vertex.Tex = GL::Vec2{0.0f, 0.0f};
         }
-        vertex.Normal = GL::Vec3{mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+
+        // Normals
+        if (mesh->HasNormals()) {
+            vertex.Normal = GL::Vec3{mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+        }
+
+        if (mesh->HasTangentsAndBitangents()) {
+            vertex.Tangent = GL::Vec3{mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
+        }
+
         vertices.push_back(vertex);
     }
 
     // Indices
-    for (unsigned int i = 0; i < mesh->mNumFaces; ++i) {
-        aiFace face = mesh->mFaces[i];
-        for (unsigned int j = 0; j < face.mNumIndices; ++j) {
-            indices.push_back(face.mIndices[j]);
+    if (mesh->HasFaces()) {
+        for (unsigned int i = 0; i < mesh->mNumFaces; ++i) {
+            aiFace face = mesh->mFaces[i];
+            for (unsigned int j = 0; j < face.mNumIndices; ++j) {
+                indices.push_back(face.mIndices[j]);
+            }
         }
     }
 

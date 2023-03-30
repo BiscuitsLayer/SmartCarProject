@@ -1,10 +1,12 @@
 #version 330 core
 
-in vec3 textureDirection; // same as textureCoordinate, but in 3D
+// Same as textureCoordinate, but in 3D
+in vec3 textureDirection;
 
 out vec4 FragColor;
 
-uniform samplerCube cubemap; // cubemap texture sampler
+// Cubemap texture sampler
+uniform samplerCube cubemap;
 
 void main() {             
     FragColor = texture(cubemap, textureDirection);

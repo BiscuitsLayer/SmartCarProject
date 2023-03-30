@@ -5,11 +5,14 @@
 
 namespace App {
 
+// Extern variables
+/* empty */
+
 Texture::Texture(GL::Texture texture, GL::Vec4 factor)
-    : texture_(texture), color_(factor) {}
+    : texture_(texture), factor_(factor) {}
 
 Texture::Texture(std::string path, GL::Vec4 factor)
-    : texture_(std::nullopt), color_(factor) {
+    : texture_(std::nullopt), factor_(factor) {
     std::string buffer = App::ReadFileData(path, false);
     auto image = GL::Image{reinterpret_cast<unsigned char*>(buffer.data()), static_cast<GL::uint>(buffer.size())};
     texture_ = GL::Texture{image, GL::InternalFormat::RGB};
@@ -17,23 +20,23 @@ Texture::Texture(std::string path, GL::Vec4 factor)
 }
 
 Texture::Texture(GL::Texture texture)
-    : texture_(texture), color_(GL::Vec4{}) {
+    : texture_(texture), factor_(GL::Vec4{}) {
     texture_->SetWrapping(GL::Wrapping::Repeat, GL::Wrapping::Repeat);
 }
 
 Texture::Texture(std::string path)
-    : texture_(std::nullopt), color_(GL::Vec4{}) {
+    : texture_(std::nullopt), factor_(GL::Vec4{}) {
     std::string buffer = App::ReadFileData(path, false);
     auto image = GL::Image{reinterpret_cast<unsigned char*>(buffer.data()), static_cast<GL::uint>(buffer.size())};
     texture_ = GL::Texture{image, GL::InternalFormat::RGB};
     texture_->SetWrapping(GL::Wrapping::Repeat, GL::Wrapping::Repeat);
 }
 
-Texture::Texture(GL::Vec4 color)
-    : texture_(std::nullopt), color_(color) {}
+Texture::Texture(GL::Vec4 factor)
+    : texture_(std::nullopt), factor_(factor) {}
 
 Texture::Texture()
-    : texture_(std::nullopt), color_(GL::Vec4{}) {}
+    : texture_(std::nullopt), factor_(GL::Vec4{}) {}
 
 Texture Texture::Cubemap(std::string path, std::array<std::string, APP_CUBEMAP_TEXTURES_COUNT> filenames) {
     std::string buffer;

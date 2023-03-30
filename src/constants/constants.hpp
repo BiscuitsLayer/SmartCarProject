@@ -5,37 +5,15 @@
 
 // Assimp
 #include <assimp/scene.h>
+#include <assimp/material.h>
 #include <assimp/GltfMaterial.h>
 
 // OpenGL Wrapper
 #include <GL/OOGL.hpp>
 
-// Application constants
-const int APP_KEYBOARD_KEYS_COUNT = GL::Key::key_t::Divide + 1;
+namespace App {
 
-// Vectors constants
-const float APP_VECTOR_LENGTH_EPS = 1e-3f;
-
-const int APP_GL_VEC2_COMPONENTS_COUNT = 2;
-const int APP_GL_VEC2_BYTESIZE = sizeof(GL::Vec2);
-
-const int APP_GL_VEC3_COMPONENTS_COUNT = 3;
-const int APP_GL_VEC3_BYTESIZE = sizeof(GL::Vec3);
-
-// Camera
-const GL::Vec3 APP_CAMERA_WORLD_SPACE_UP = GL::Vec3(0.0f, 1.0f, 0.0f);
-const GL::Vec3 APP_CAMERA_RESERVE_WORLD_SPACE_UP = GL::Vec3(1.0f, 0.0f, 0.0f);
-
-// GL constants
-const int APP_GL_VERTEX_BYTESIZE = sizeof(GL::Vertex);
-
-const int APP_GL_VERTEX_POS_OFFSET = offsetof(GL::Vertex, Pos);
-const int APP_GL_VERTEX_TEX_OFFSET = offsetof(GL::Vertex, Tex);
-const int APP_GL_VERTEX_NORMAL_OFFSET = offsetof(GL::Vertex, Normal);
-
-const int APP_ZERO_OFFSET = 0;
-
-// Assimp
+// Assimp helpers
 struct AssimpMaterialTextureParameters {
     aiTextureType type;
     unsigned int index;
@@ -53,35 +31,73 @@ struct AssimpMaterialFloatParameters {
     unsigned int index;
 };
 
-// Base color
-const int APP_ASSIMP_DIFFUSE_TEXTURE_INDEX = 0;
-const AssimpMaterialTextureParameters APP_ASSIMP_BASE_COLOR_TEXTURE_PARAMETERS{AI_MATKEY_BASE_COLOR_TEXTURE};
-const AssimpMaterialColorParameters APP_ASSIMP_BASE_COLOR_FACTOR_PARAMETERS{AI_MATKEY_BASE_COLOR};
-
-const AssimpMaterialFloatParameters APP_ASSIMP_METALLIC_FACTOR_PARAMETERS{AI_MATKEY_METALLIC_FACTOR};
-const AssimpMaterialFloatParameters APP_ASSIMP_ROUGHNESS_FACTOR_PARAMETERS{AI_MATKEY_ROUGHNESS_FACTOR};
+/* ===== CONSTEXPR VARIABLES (FOR ARRAY SIZE) ===== */
+// Application constants
+constexpr int APP_KEYBOARD_KEYS_COUNT = GL::Key::key_t::Divide + 1;
 
 // Textures
-const int APP_CUBEMAP_TEXTURES_COUNT = 6;
+constexpr int APP_CUBEMAP_TEXTURES_COUNT = 6;
 
-const int APP_CUBEMAP_TEXTURE_UNIT = 0;
+/* ===== EXTERN VARIABLES ===== */
+extern const float APP_VECTOR_LENGTH_EPS;
 
-// const int APP_IBL_IRRADIANCE_TEXTURE_UNIT = 0;
-// const int APP_IBL_PREFILTER_TEXTURE_UNIT = 1;
-// const int APP_IBL_BRDF_LUT_TEXTURE_UNIT = 2;
+// Vectors constants
+extern const float APP_VECTOR_LENGTH_EPS;
 
-const int APP_BASE_COLOR_TEXTURE_UNIT = 1;
-// const int APP_PBR_NORMAL_TEXTURE_UNIT = 4;
-// const int APP_PBR_ROUGHNESS_TEXTURE_UNIT = 6;
-// const int APP_PBR_AO_TEXTURE_UNIT = 7;
+extern const int APP_GL_VEC2_COMPONENTS_COUNT;
+extern const int APP_GL_VEC2_BYTESIZE;
 
-// const int APP_SHADOW_TEXTURE_UNIT = 7;
+extern const int APP_GL_VEC3_COMPONENTS_COUNT;
+extern const int APP_GL_VEC3_BYTESIZE;
+
+// Camera
+extern const GL::Vec3 APP_CAMERA_WORLD_SPACE_UP;
+extern const GL::Vec3 APP_CAMERA_RESERVE_WORLD_SPACE_UP;
+
+// GL constants
+extern const int APP_GL_VERTEX_BYTESIZE;
+
+extern const int APP_GL_VERTEX_POS_OFFSET;
+extern const int APP_GL_VERTEX_TEX_OFFSET;
+extern const int APP_GL_VERTEX_NORMAL_OFFSET;
+extern const int APP_GL_VERTEX_TANGENT_OFFSET;
+
+extern const int APP_ZERO_OFFSET;
+
+// Base color
+// WARNING: in GLTF2.0 often referred to as "pbrMetallicRoughness"
+// if texture is not provided one should use only baseColorFactor value everywhere
+extern const AssimpMaterialTextureParameters APP_ASSIMP_BASE_COLOR_TEXTURE_PARAMETERS;
+extern const AssimpMaterialColorParameters APP_ASSIMP_BASE_COLOR_FACTOR_PARAMETERS;
+
+// Metallic roughness
+// WARNING: texture has metallic value in "R" channel, roughness value in "G" channel
+// if texture is not provided one should use only metallicFactor and roughnessFactor everywhere
+// WARNING: in this project we will set:
+//      metallicFactor = metallicRoughnessFactor.r;
+//      roughnessFactor = metallicRoughnessFactor.g;
+extern const AssimpMaterialTextureParameters APP_ASSIMP_METALLIC_ROUGHNESS_TEXTURE_PARAMETERS;
+extern const AssimpMaterialFloatParameters APP_ASSIMP_METALLIC_FACTOR_PARAMETERS;
+extern const AssimpMaterialFloatParameters APP_ASSIMP_ROUGHNESS_FACTOR_PARAMETERS;
+
+// Normal map
+extern const int APP_ASSIMP_NORMAL_TEXTURE_INDEX;
+extern const AssimpMaterialTextureParameters APP_ASSIMP_NORMAL_TEXTURE_PARAMETERS;
+
+// Textures
+extern const int APP_CUBEMAP_TEXTURE_UNIT;
+
+extern const int APP_BASE_COLOR_TEXTURE_UNIT;
+extern const int APP_METALLIC_ROUGHNESS_TEXTURE_UNIT;
+extern const int APP_NORMAL_TEXTURE_UNIT;
 
 // Car
-const GL::Vec3 APP_CAR_WHEELS_ROTATION_AXIS = GL::Vec3(1.0f, 0.0f, 0.0f);
-const float APP_CAR_SPEED_EPS = 0.05f;
+extern const GL::Vec3 APP_CAR_WHEELS_ROTATION_AXIS;
+extern const float APP_CAR_SPEED_EPS;
 
 // Intersector
-const int APP_INTERSECTOR_NUM_GROUPS_Z_COUNT = 1;
-const float APP_INTERSECTOR_INTERSECTION_FOUND = 1.0f;
-const float APP_INTERSECTOR_INTERSECTION_NOT_FOUND = 0.0f;
+extern const int APP_INTERSECTOR_NUM_GROUPS_Z_COUNT;
+extern const float APP_INTERSECTOR_INTERSECTION_FOUND;
+extern const float APP_INTERSECTOR_INTERSECTION_NOT_FOUND;
+
+} // namespace App

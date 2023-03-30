@@ -56,6 +56,9 @@ int main(int argc, char **argv) try {
 
 	gl.Enable(GL::Capability::DepthTest);
 	gl.Enable(GL::Capability::Blend);
+	gl.Enable(GL::Capability::CullFace);
+	gl.Enable(GL::Capability::Multisample);
+
 	gl.BlendFunc(GL::BlendingFactor::SourceAlpha, GL::BlendingFactor::OneMinusSourceAlpha);
 
 	context.camera = App::Camera(camera_config);
@@ -67,6 +70,9 @@ int main(int argc, char **argv) try {
 	auto model_configs = config_handler.GetModelConfigs();
 
 	for (auto model_config : model_configs) {
+        App::Timer loading_timer;
+		loading_timer.Start();
+
 		if (model_config->type == "CAR") {
 			auto car_model_config = std::dynamic_pointer_cast<App::Config::CarModelConfig>(model_config);
 			auto car_model = std::make_shared<App::CarModel>(*car_model_config);
@@ -80,6 +86,8 @@ int main(int argc, char **argv) try {
 			auto model = std::make_shared<App::Model>(*common_model_config);
 			context.models.push_back(model);
 		}
+
+        std::cout << "Model (" << model_config->name << ") loaded successfully in " << loading_timer.Stop<App::Timer::Milliseconds>() << " milliseconds" << std::endl;
 	}
 
 	App::Gui gui(window_config);

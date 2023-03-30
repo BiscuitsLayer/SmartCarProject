@@ -218,7 +218,7 @@
                         0.0,
                         -7.5
                     ],
-                    "fixed_behind_car": false,
+                    "fixed_behind_car": true,
                     "translation_from_car": [
                         0.0,
                         3.0,
@@ -231,7 +231,7 @@
                         0.0,
                         1.5
                     ],
-                    "fixed_on_car": false
+                    "fixed_on_car": true
                 },
                 "speed": {
                     "move": 5.0,

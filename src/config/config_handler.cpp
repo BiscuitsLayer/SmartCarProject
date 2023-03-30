@@ -2,6 +2,9 @@
 
 namespace App {
 
+// Extern variables
+extern const int APP_GL_VEC3_COMPONENTS_COUNT;
+
 ConfigHandler::ConfigHandler(const std::string& filename)
     : data_(std::make_shared<json>(json::parse(ReadFileData(filename, false)))) {
     if (data_ == nullptr || data_->is_discarded()) {

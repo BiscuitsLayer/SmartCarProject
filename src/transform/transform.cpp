@@ -2,6 +2,9 @@
 
 namespace App {
 
+// Extern variables
+/* empty */
+
 Transform::Transform()
     : transform_matrix_(GL::Mat4{}) {}
 
@@ -65,22 +68,6 @@ void Transform::UpdateMatrix() {
     transform_matrix_ = scale_matrix_ * transform_matrix_;
     transform_matrix_ = rotate_matrix_ * transform_matrix_;
     transform_matrix_ = translation_matrix_ * transform_matrix_;
-}
-
-GL::Mat4 GetModelViewProjectionMatrix(GL::Mat4 model, GL::Mat4 view, GL::Mat4 projection) {
-    return projection * view * model;
-}
-
-GL::Mat4 GetViewNoTranslationProjectionMatrix(GL::Mat4 view, GL::Mat4 projection) {
-    // remove translation from the view matrix
-    view = GL::Mat4(
-        view.m[0], view.m[4], view.m[8], 0,
-        view.m[1], view.m[5], view.m[9], 0,
-        view.m[2], view.m[6], view.m[10], 0,
-        view.m[3], view.m[7], view.m[11], view.m[15]
-    );
-
-    return projection * view;
 }
 
 } // namespace App
