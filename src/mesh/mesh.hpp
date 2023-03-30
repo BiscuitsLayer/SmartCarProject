@@ -28,7 +28,7 @@ public:
 
     void SetDrawBBox(bool value);
     void Draw();
-    MemoryAlignedBBox GetMABB();
+    MemoryAlignedBBox GetMABB() const;
 
 private:
     std::string name_;

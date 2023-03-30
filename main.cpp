@@ -39,8 +39,6 @@ int main(int argc, char **argv) try {
 	config_handler.ParseIntersectorConfig();
 	auto intersector_config = config_handler.GetIntersectorConfig();
 
-	App::Intersector intersector(intersector_config);
-
 	config_handler.ParseCameraConfig();
 	auto camera_config = config_handler.GetCameraConfig();
 
@@ -90,6 +88,7 @@ int main(int argc, char **argv) try {
         std::cout << "Model (" << model_config->name << ") loaded successfully in " << loading_timer.Stop<App::Timer::Milliseconds>() << " milliseconds" << std::endl;
 	}
 
+	std::dynamic_pointer_cast<App::CarModel>(context.models[0])->intersector_.emplace(intersector_config);
 	App::Gui gui(window_config);
 
 	App::Timer main_timer;
@@ -111,16 +110,15 @@ int main(int argc, char **argv) try {
 			}
 		}
 
-		intersector.ClearObstacles();
-		intersector.ClearCarParts();
+		std::dynamic_pointer_cast<App::CarModel>(context.models[0])->intersector_->ClearObstacles();
+		// std::dynamic_pointer_cast<App::CarModel>(context.models[0])->intersector_->ClearCarParts();
 
-		intersector.AddObstacles(context.models[2]->CollectMABB());
-		intersector.AddObstacles(context.models[3]->CollectMABB());
-		intersector.AddCarParts(context.models[0]->CollectMABB());
+		std::dynamic_pointer_cast<App::CarModel>(context.models[0])->intersector_->AddObstacles(context.models[2]->CollectMABB());
+		std::dynamic_pointer_cast<App::CarModel>(context.models[0])->intersector_->AddObstacles(context.models[3]->CollectMABB());
 
-		if (!intersector.Execute()) {
-			std::dynamic_pointer_cast<App::CarModel>(context.models[0])->Move(delta_time);
-		}
+		// intersector.AddCarParts(context.models[0]->CollectMABB());
+
+		std::dynamic_pointer_cast<App::CarModel>(context.models[0])->Move(delta_time);
 
 		gl.Clear(GL::Buffer::Color | GL::Buffer::Depth);
 		gui.Prepare();

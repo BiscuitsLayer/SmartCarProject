@@ -75,7 +75,7 @@ void Model::Draw() {
     }
 }
 
-std::vector<MemoryAlignedBBox> Model::CollectMABB() {
+std::vector<MemoryAlignedBBox> Model::CollectMABB() const {
     std::vector<MemoryAlignedBBox> result;
     result.reserve(meshes_.size());
 

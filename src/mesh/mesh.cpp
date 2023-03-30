@@ -59,7 +59,7 @@ void Mesh::Draw() {
     }
 }
 
-MemoryAlignedBBox Mesh::GetMABB() {
+MemoryAlignedBBox Mesh::GetMABB() const {
     auto mabb = bbox_.GetMABB();
     mabb.mesh_to_model = static_cast<GL::Mat4>(transform_to_model_);
     return mabb;

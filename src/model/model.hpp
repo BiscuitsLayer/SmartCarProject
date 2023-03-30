@@ -42,7 +42,7 @@ public:
 
     void SetDrawBBoxes(bool value);
     virtual void Draw();
-    virtual std::vector<MemoryAlignedBBox> CollectMABB();
+    virtual std::vector<MemoryAlignedBBox> CollectMABB() const;
 
 protected:
     std::string name_;
