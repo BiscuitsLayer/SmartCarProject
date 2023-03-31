@@ -1,6 +1,3 @@
-// Constants
-#include <constants/constants.hpp>
-
 // LibSmartCar
 #include <helpers/helpers.hpp>
 #include <transform/transform.hpp>

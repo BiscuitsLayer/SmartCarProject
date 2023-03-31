@@ -6,15 +6,13 @@ project(SmartCarProject)
 ### Definitions ###
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_INCLUDE_PATH "${CMAKE_SOURCE_DIR}/src")
 
 ### LibSmartCar ###
 set(LIB_SMART_CAR_DIR "src")
-set(LIB_SMART_CAR_INCLUDE_DIR "${LIB_SMART_CAR_DIR}")
 # Add package
 add_subdirectory(${LIB_SMART_CAR_DIR})
 # Provide includes
-include_directories(${LIB_SMART_CAR_INCLUDE_DIR})
+include_directories(${LIB_SMART_CAR_INCLUDE_DIRS})
 
 ### Main ###
 # Build main target

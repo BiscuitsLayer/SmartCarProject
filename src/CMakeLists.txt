@@ -1,10 +1,31 @@
 ### Entrypoint ###
 cmake_minimum_required(VERSION 3.14)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-project(LibSmartCar)
+project(LibSmartCar VERSION 1.0.0)
 
 ### Definitions ###
 set(CMAKE_CXX_STANDARD 20)
+set(LIB_SMART_CAR_ASSETS_DIR "../assets/")
+set(LIB_SMART_CAR_SHADER_DIR "../shader/")
+set(LIB_SMART_CAR_SERIALIZED_FILES_DIR "serialized/")
+# Provide includes (not using target_include_directories, because there are many libraries there, 
+# so we just include these directories for all of them)
+# CMAKE_CURRENT_SOURCE_DIR <- for LibSmartCar includes
+# CMAKE_CURRENT_BINARY_DIR <- for config_out.hpp (to get variables from CMake into CPP code)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+# Set LIB_SMART_CAR_INCLUDE_DIRS for main project's CMakeLists.txt (not available in currnt CMakeLists.txt)
+set(LIB_SMART_CAR_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
+
+### Config ###
+# Provide directories for CPP sources
+configure_file(
+    config_in.hpp
+    ${CMAKE_CURRENT_BINARY_DIR}/config_out.hpp
+)
+# Create directory for serialized files
+file(MAKE_DIRECTORY ${LIB_SMART_CAR_SERIALIZED_FILES_DIR})
+execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${LIB_SMART_CAR_SERIALIZED_FILES_DIR})
+
 
 ### OOGL ###
 # Provide directories
@@ -106,5 +127,9 @@ add_library(${PROJECT_NAME} STATIC
 target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_LIBRARIES} OOGL 
     MyImGuiSubset assimp::assimp nlohmann_json::nlohmann_json
 )
-# Provide includes
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+### Check include directories ###
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+foreach(dir ${dirs})
+	message(STATUS "src: include dir = '${dir}'")
+endforeach()

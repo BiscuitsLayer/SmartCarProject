@@ -31,6 +31,10 @@ void Accelerator::DecreaseSpeed(const float delta_time) {
     }
 }
 
+void Accelerator::Stop() {
+    cur_speed_ = 0.0f;
+}
+
 const float Accelerator::GetSpeed() const {
     return cur_speed_;
 }

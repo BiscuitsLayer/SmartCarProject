@@ -23,6 +23,18 @@ GL::Vec3 GetTranslation(const GL::Mat4& matrix) {
     return GL::Vec3{matrix.m[12], matrix.m[13], matrix.m[14]};
 }
 
+std::string GetFilenameFromPath(const std::string& path) {
+    size_t starting_index = path.find_last_of('/') + 1;
+    if (starting_index >= path.size()) {
+        return {};
+    }
+    return path.substr(starting_index);
+}
+
+std::string GetFolderFromPath(const std::string& path) {
+    return path.substr(0, path.find_last_of('/')) + '/';
+}
+
 std::string ReadFileData(const std::string& filename, bool debug_dump) {
     std::ifstream source(filename, std::ios::binary);
     if (!source) {
@@ -40,6 +52,21 @@ std::string ReadFileData(const std::string& filename, bool debug_dump) {
         std::cout << buffer << std::endl;
     }
     return buffer;
+}
+
+void SaveToFile(const std::string& filename, const std::vector<unsigned char>& buffer, bool debug_dump) {
+    // WARNING: using modified ofstream instead of std::ofstream to write unsigned chars
+    std::basic_fstream<unsigned char, std::char_traits<unsigned char>> destination;
+    destination.open(filename, std::fstream::out | std::fstream::binary);
+    if (!destination) {
+        throw std::runtime_error("SaveToFile: can't open file: " + filename);
+    }
+
+    destination.write(buffer.data(), buffer.size());
+
+    if (debug_dump) {
+        std::cout << std::string{buffer.begin(), buffer.end()} << std::endl;
+    }
 }
 
 } // namespace App

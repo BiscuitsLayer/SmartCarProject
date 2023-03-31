@@ -8,6 +8,9 @@
 #include <assimp/material.h>
 #include <assimp/GltfMaterial.h>
 
+// Configured by CMake
+#include <config_out.hpp>
+
 // OpenGL Wrapper
 #include <GL/OOGL.hpp>
 

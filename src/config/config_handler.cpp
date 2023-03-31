@@ -118,14 +118,13 @@ void ConfigHandler::SetCameraConfig(const json_object& camera) {
 void ConfigHandler::SetShaderHandler(const std::vector<json_object>& shaders) {
     for (auto shader : shaders) {
         const std::string& name = FindString(shader, "name");
-        const std::string& folder = FindString(shader, "folder");
 
         const std::string& vertex = FindString(shader, "vertex", true);
         if (!vertex.empty()) {
-            const std::string& vertex_path = folder + "/" + vertex;
+            const std::string& vertex_path = APP_SHADER_DIR + vertex;
             GL::Shader vertex_shader(GL::ShaderType::Vertex, App::ReadFileData(vertex_path, false));
 
-            const std::string& fragment_path = folder + "/" + FindString(shader, "fragment", true);
+            const std::string& fragment_path = APP_SHADER_DIR + FindString(shader, "fragment", true);
             GL::Shader fragment_shader(GL::ShaderType::Fragment, App::ReadFileData(fragment_path, false));
 
             shader_handler_[name] = std::make_shared<GL::Program>(vertex_shader, fragment_shader);
@@ -133,7 +132,7 @@ void ConfigHandler::SetShaderHandler(const std::vector<json_object>& shaders) {
 
         const std::string& compute = FindString(shader, "compute", true);
         if (!compute.empty()) {
-            const std::string& compute_path = folder + "/" + compute;
+            const std::string& compute_path = APP_SHADER_DIR + compute;
             GL::Shader compute_shader(GL::ShaderType::Compute, App::ReadFileData(compute_path, false));
 
             shader_handler_[name] = std::make_shared<GL::Program>(compute_shader);
@@ -146,7 +145,7 @@ void ConfigHandler::SetCarModelConfig(const json_object& car_object) {
 
     car_model_config.name = FindString(car_object, "name");
     car_model_config.type = FindString(car_object, "type");
-    car_model_config.gltf = FindString(car_object, "GLTF");
+    car_model_config.gltf = APP_ASSETS_DIR + FindString(car_object, "GLTF");
     car_model_config.transform = FindTransform(car_object, true);
 
     auto wheels = FindObject(car_object, "wheels");
@@ -177,7 +176,7 @@ void ConfigHandler::SetSkyboxModelConfig(const json_object& skybox_object) {
 
     skybox_model_config.name = FindString(skybox_object, "name");
     skybox_model_config.type = FindString(skybox_object, "type");
-    skybox_model_config.folder = FindString(skybox_object, "folder");
+    skybox_model_config.folder = APP_ASSETS_DIR + FindString(skybox_object, "folder");
 
     auto filenames = FindArray(skybox_object, "filenames");
     if (filenames.size() != APP_CUBEMAP_TEXTURES_COUNT) {
@@ -201,7 +200,7 @@ void ConfigHandler::SetCommonModelConfig(const json_object& common_object) {
 
     common_model_config.name = FindString(common_object, "name");
     common_model_config.type = FindString(common_object, "type");
-    common_model_config.gltf = FindString(common_object, "GLTF");
+    common_model_config.gltf = APP_ASSETS_DIR + FindString(common_object, "GLTF");
     common_model_config.transform = FindTransform(common_object, true);
 
     auto shader = FindObject(common_object, "shader");

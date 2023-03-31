@@ -15,9 +15,8 @@ Texture::Texture(GL::Texture texture, GL::Vec4 factor)
 
 Texture::Texture(std::string path, GL::Vec4 factor)
     : texture_(std::nullopt), factor_(factor) {
-    std::string buffer = App::ReadFileData(path, false);
-    auto image = GL::Image{reinterpret_cast<unsigned char*>(buffer.data()), static_cast<GL::uint>(buffer.size())};
-    texture_ = GL::Texture{image, GL::InternalFormat::RGB};
+    auto image_ptr = LoadSerializedData(path);
+    texture_ = GL::Texture{*image_ptr, GL::InternalFormat::RGB};
     texture_->SetWrapping(GL::Wrapping::Repeat, GL::Wrapping::Repeat);
 }
 
@@ -40,14 +39,36 @@ Texture Texture::Cubemap(std::string path, std::array<std::string, APP_CUBEMAP_T
     unsigned int index = 0;
     for (auto filename : filenames) {
         std::string full_path = path + "/" + filename;
-        buffer = App::ReadFileData(full_path, false);
-        auto image = std::make_shared<GL::Image>(reinterpret_cast<unsigned char*>(buffer.data()), buffer.size());
-        image_ptrs[index] = image;
+        image_ptrs[index] = LoadSerializedData(full_path);
         ++index;
     }
 
-    // TODO: fix texture unit
     return Texture{GL::Texture::Cubemap(image_ptrs, GL::InternalFormat::RGB)};
+}
+
+std::shared_ptr<GL::Image> Texture::LoadSerializedData(const std::string& path) {
+    auto image_ptr = std::make_shared<GL::Image>();
+    std::string serialized_filename = APP_SERIALIZED_FILES_DIR + GetFilenameFromPath(path) + ".serialized";
+    
+    try {
+        auto serialized_data = ReadFileData(serialized_filename, false);
+        std::cout << "\tSerialized texture (" << path << ") found" << std::endl;
+        std::vector<GL::uchar> serialized_data_reformatted{serialized_data.begin(), serialized_data.end()};
+        image_ptr->Deserialize(serialized_data_reformatted.data());
+        std::cout << "\tSerialized texture (" << path << ") loaded successfully" << std::endl;
+    } catch (std::exception& e) {
+        std::string buffer = App::ReadFileData(path, false);
+        std::cout << "\tLoading texture (" << path << ") from raw data" << std::endl;
+        image_ptr->Load(reinterpret_cast<unsigned char*>(buffer.data()), static_cast<GL::uint>(buffer.size()));
+
+        std::cout << "\tSaving texture (" << path << ") in serialized data" << std::endl;
+        std::vector<GL::uchar> serialized_data(image_ptr->GetSerializedBufferSize(), 0);
+        image_ptr->Serialize(serialized_data.data());
+        SaveToFile(serialized_filename, serialized_data, false);
+        std::cout << "\tSaved texture (" << path << ") successfully!" << std::endl;
+    }
+
+    return image_ptr;
 }
 
 } // namespace App

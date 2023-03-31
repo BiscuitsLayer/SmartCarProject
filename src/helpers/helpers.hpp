@@ -57,6 +57,10 @@ private:
 
 GL::Vec3 GetTranslation(const GL::Mat4& matrix);
 
+std::string GetFilenameFromPath(const std::string& path);
+std::string GetFolderFromPath(const std::string& path);
+
 std::string ReadFileData(const std::string& filename, bool debug_dump = true);
+void SaveToFile(const std::string& filename, const std::vector<unsigned char>& buffer, bool debug_dump = true);
 
 } // namespace App

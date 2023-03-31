@@ -12,7 +12,7 @@ extern const AssimpMaterialTextureParameters APP_ASSIMP_NORMAL_TEXTURE_PARAMETER
 
 AssimpLoader::AssimpLoader(std::string default_shader_name, std::string bbox_shader_name, std::string& path)
     : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name) {
-    directory_ = path.substr(0, path.find_last_of('/')) + '/';
+    directory_ = GetFolderFromPath(path);
 
     Assimp::Importer importer;
     // aiProcess_FlipUVs flips the texture coordinates on the y-axis <- necessary for OpenGL
@@ -104,10 +104,16 @@ Material AssimpLoader::HandleMaterial(aiMaterial* assimp_material) {
                 ans.SetTexture(found->second, parameter_type);
             } else {
                 GL::Vec4 factor = GetMaterialFactor(assimp_material, parameter_type);
+
+                Timer texture_loading_timer{};
+                texture_loading_timer.Start();
+
                 Texture new_texture = Texture{full_path, factor};
 
                 paths_to_loaded_textures_.insert(std::make_pair(full_path, new_texture));
                 ans.SetTexture(new_texture, parameter_type);
+                
+                std::cout << "Texture (" << full_path << ") loaded successfully in " << texture_loading_timer.Stop<App::Timer::Milliseconds>() << " milliseconds" << std::endl;
             }
         } else { // Getting only factor
             GL::Vec4 factor = GetMaterialFactor(assimp_material, parameter_type);

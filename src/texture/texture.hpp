@@ -13,6 +13,9 @@
 // Forward declarations
 #include <texture/texture_fwd.hpp>
 
+// LibSmartCar
+#include <timer/timer.hpp>
+
 // Incomplete type resolve
 #include <helpers/helpers_fwd.hpp>
 
@@ -37,6 +40,8 @@ public:
     static Texture Cubemap(std::string path, std::array<std::string, APP_CUBEMAP_TEXTURES_COUNT> filenames);
 
 private:
+    static std::shared_ptr<GL::Image> LoadSerializedData(const std::string& path);
+
     std::optional<GL::Texture> texture_;
     GL::Vec4 factor_;
 

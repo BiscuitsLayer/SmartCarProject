@@ -19,6 +19,7 @@ public:
 
     void IncreaseSpeed(const float delta_time, const bool move_front);
     void DecreaseSpeed(const float delta_time);
+    void Stop();
     const float GetSpeed() const;
 
 private:

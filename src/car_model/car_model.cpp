@@ -103,6 +103,8 @@ void CarModel::Move(float delta_time) {
     if (!intersector_->Execute()) {
         UpdateMovementTransform();
         RotateWheels(accelerator_.GetSpeed() * delta_time);
+    } else {
+        accelerator_.Stop();
     }
     ClearPrecomputedMovementTransform();
 
