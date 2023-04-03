@@ -28,22 +28,29 @@ public:
     void UpdateVertices(const Transform& mesh_self_transform);
     void Draw() const;
     const MemoryAlignedBBox GetMABB() const;
+    void DrawOnCollision() const;
 
 private:
     const GL::Vec3 init_min_;
     const GL::Vec3 init_max_;
 
     const std::vector<GL::Vec3> init_vertices_;
-    const std::vector<unsigned int> indices_;
+    const std::vector<unsigned int> wireframe_indices_;
+    const std::vector<unsigned int> solid_indices_;
+
 
     const std::string bbox_shader_name_;
 
     GL::Vec3 cur_min_;
     GL::Vec3 cur_max_;
 
-    GL::VertexArray  vao_;  // vertex array object
     GL::VertexBuffer vbo_;  // vertex buffer object
-    GL::VertexBuffer ebo_;  // element buffer object
+
+    GL::VertexArray  wireframe_vao_;  // vertex array object
+    GL::VertexBuffer wireframe_ebo_;  // element buffer object
+
+    GL::VertexArray  solid_vao_;  // vertex array object
+    GL::VertexBuffer solid_ebo_;  // element buffer object    
 };
 
 } // namespace App

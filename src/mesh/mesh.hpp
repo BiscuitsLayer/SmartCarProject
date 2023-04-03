@@ -27,8 +27,9 @@ public:
         std::vector<GL::Vertex> vertices, std::vector<int> indices, Material material, BBox bbox);
 
     void SetDrawBBox(bool value);
-    void Draw();
+    void Draw() const;
     MemoryAlignedBBox GetMABB() const;
+    void DrawBBoxOnCollision() const;
 
 private:
     std::string name_;

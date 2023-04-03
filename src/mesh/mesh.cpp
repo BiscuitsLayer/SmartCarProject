@@ -36,7 +36,7 @@ void Mesh::SetDrawBBox(bool value) {
     draw_bbox_ = value;
 }
 
-void Mesh::Draw() {
+void Mesh::Draw() const {
     auto& context = App::Context::Get();
     auto& gl = context.gl->get();
     auto shader_handler = context.shader_handler.value();
@@ -63,6 +63,10 @@ MemoryAlignedBBox Mesh::GetMABB() const {
     auto mabb = bbox_.GetMABB();
     mabb.mesh_to_model = static_cast<GL::Mat4>(transform_to_model_);
     return mabb;
+}
+
+void Mesh::DrawBBoxOnCollision() const {
+    bbox_.DrawOnCollision();
 }
 
 } // namespace App

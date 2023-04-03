@@ -35,7 +35,7 @@ void Intersector::AddCarParts(const std::vector<MemoryAlignedBBox>& new_car_part
     }
 }
 
-bool Intersector::Execute() const {
+std::pair<int, int> Intersector::Execute() const {
     // TODO: get rid of magic numbers
     // TODO: fix code (with SubData) instead of generating buffer object every frame
     // TODO: fix SubData and GetSubData in OOGL (check if they need glBindBufferBase)
@@ -63,10 +63,13 @@ bool Intersector::Execute() const {
     float sum = 0;
     for (int i = 0; i < intersection_results.size(); ++i) {
         if (read_data[i] == APP_INTERSECTOR_INTERSECTION_FOUND) {
-            return true;
+            // i = obstacle_id * car_parts_size + car_parts_id
+            int obstacle_id = i / car_parts_bboxes_.size();
+            int car_parts_id = i % car_parts_bboxes_.size();
+            return std::make_pair(obstacle_id, car_parts_id);
         }
     }
-    return false;
+    return std::make_pair(-1, -1);
 }
 
 } // namespace App

@@ -25,25 +25,40 @@ BBox::BBox(const std::string& bbox_shader_name, const GL::Vec3& min, const GL::V
             GL::Vec3{init_min_.X, init_max_.Y, init_max_.Z},
         }
         ),
-    indices_(
+    wireframe_indices_(
         {
             /*
-                    4 --- 7
-                  / |   / |
-                5 --- 6   |
-                |   0 |-- 3
-                | /   | /
-                1 --- 2
+                  4 -------- 7
+                 /|         /|
+                5 -------- 6 |
+                | |        | |
+                | 0 -------| 3
+                |/         |/
+                1 -------- 2
             */
             0, 1, 1, 2, 2, 3, 3, 0, // bottom edges
             4, 5, 5, 6, 6, 7, 7, 4, // top edges
             0, 4, 1, 5, 2, 6, 3, 7, // side edges
         }
         ),
+    solid_indices_(
+        {
+            1, 0, 3, 3, 2, 1,
+            5, 1, 2, 2, 6, 5,
+            6, 2, 3, 3, 7, 6,
+            4, 0, 1, 1, 5, 4,
+            7, 3, 0, 0, 4, 7,
+            4, 5, 6, 6, 7, 4
+        }
+        ),
     bbox_shader_name_(bbox_shader_name) {
     vbo_ = GL::VertexBuffer(init_vertices_.data(), init_vertices_.size() * APP_GL_VEC3_BYTESIZE, GL::BufferUsage::DynamicDraw);
-    ebo_ = GL::VertexBuffer(indices_.data(), indices_.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
-    vao_.BindElements(ebo_);
+
+    wireframe_ebo_ = GL::VertexBuffer(wireframe_indices_.data(), wireframe_indices_.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
+    wireframe_vao_.BindElements(wireframe_ebo_);
+
+    solid_ebo_ = GL::VertexBuffer(solid_indices_.data(), solid_indices_.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
+    solid_vao_.BindElements(solid_ebo_);
 
     UpdateVertices(Transform{});
 }
@@ -81,7 +96,8 @@ void BBox::UpdateVertices(const Transform& mesh_self_transform) {
     auto shader_handler = context.shader_handler.value();
 
     auto bbox_program = shader_handler.at(bbox_shader_name_);
-    vao_.BindAttribute(bbox_program->GetAttribute("aPos"), vbo_, GL::Type::Float, APP_GL_VEC3_COMPONENTS_COUNT, APP_GL_VEC3_BYTESIZE, APP_ZERO_OFFSET);
+    wireframe_vao_.BindAttribute(bbox_program->GetAttribute("aPos"), vbo_, GL::Type::Float, APP_GL_VEC3_COMPONENTS_COUNT, APP_GL_VEC3_BYTESIZE, APP_ZERO_OFFSET);
+    solid_vao_.BindAttribute(bbox_program->GetAttribute("aPos"), vbo_, GL::Type::Float, APP_GL_VEC3_COMPONENTS_COUNT, APP_GL_VEC3_BYTESIZE, APP_ZERO_OFFSET);
 }
 
 void BBox::Draw() const {
@@ -92,11 +108,24 @@ void BBox::Draw() const {
     auto bbox_program = shader_handler.at(bbox_shader_name_);
     gl.UseProgram(*bbox_program);
 
-    gl.DrawElements(vao_, GL::Primitive::Lines, 0, indices_.size(), GL::Type::UnsignedInt);
+    bbox_program->SetUniform(bbox_program->GetUniform("true"), false);
+    gl.DrawElements(wireframe_vao_, GL::Primitive::Lines, 0, wireframe_indices_.size(), GL::Type::UnsignedInt);
 }
 
 const MemoryAlignedBBox BBox::GetMABB() const {
     return MemoryAlignedBBox{cur_min_, cur_max_, GL::Mat4{}, GL::Mat4{}};
+}
+
+void BBox::DrawOnCollision() const {
+    auto& context = App::Context::Get();
+    auto& gl = context.gl->get();
+    auto shader_handler = context.shader_handler.value();
+
+    auto bbox_program = shader_handler.at(bbox_shader_name_);
+    gl.UseProgram(*bbox_program);
+
+    bbox_program->SetUniform(bbox_program->GetUniform("isWireframe"), false);
+    gl.DrawElements(solid_vao_, GL::Primitive::Triangles, 0, solid_indices_.size(), GL::Type::UnsignedInt);
 }
 
 } // namespace App

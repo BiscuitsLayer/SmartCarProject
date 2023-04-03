@@ -2,7 +2,7 @@
 
 === CPP core ===
 
-[] Serialize models data (using protobuf)
+[x] Serialize models data
 
 Code refactor (IN PROGRESS):
 [] Forward declarations
@@ -13,7 +13,7 @@ Code refactor (IN PROGRESS):
 Config refactor (IN PROGRESS):
 [x] Divide in different config files
 [] Repair config handler
-[] Model loading time <- display, reduce if possible
+[x] Model loading time
 
 === JSON format ===
 
@@ -22,13 +22,12 @@ Config refactor (IN PROGRESS):
 
 === Graphics ===
 
-[] Multisampling <- turn on (of FXAA)
+[x] Multisampling
 [] OpenGL calls improvement
 [] Collision
 [] Blending order sorted
 [] PBR for car model
 [] Light sources
-[] Shader raw params -> structs
 [] Free camera
 [x] Fix lines in AABB
 

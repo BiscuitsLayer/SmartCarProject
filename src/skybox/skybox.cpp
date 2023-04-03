@@ -27,7 +27,7 @@ Skybox::Skybox(std::string model_name, std::string shader_name, std::string fold
 Skybox::Skybox(Config::SkyboxModelConfig config)
     : Skybox(config.name, config.shader.default_shader_name, config.folder, config.filenames) {}
 
-void Skybox::Draw() {
+void Skybox::Draw() const {
     auto& context = App::Context::Get();
     auto& gl = context.gl->get();
     auto shader_handler = context.shader_handler.value();

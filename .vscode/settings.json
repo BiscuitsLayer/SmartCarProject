@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "TODO": "plaintext",
         "*.frag": "hlsl",
         "*.vert": "hlsl",
         "*.glsl": "hlsl",
@@ -75,7 +76,6 @@
         "xtr1common": "cpp",
         "xtree": "cpp",
         "xutility": "cpp",
-        "*.cpp_old": "cpp",
         "deque": "cpp",
         "queue": "cpp",
         "temp": "cpp",

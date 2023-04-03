@@ -46,7 +46,12 @@ int main(int argc, char **argv) try {
 	);
 
 	App::CustomWindow window(window_config);
-	GL::Context& gl = window.GetContext();
+	GL::Context& gl = window.GetContext(
+		App::APP_WINDOW_COLOR_BITS,
+		App::APP_WINDOW_DEPTH_BITS,
+		App::APP_WINDOW_STENCIL_BITS,
+		App::APP_WINDOW_MULTISAMPLE_BITS
+	);
 	context.gl = window.GetContext();
 
 	gl.Enable(GL::Capability::DepthTest);
@@ -108,12 +113,8 @@ int main(int argc, char **argv) try {
 		}
 
 		std::dynamic_pointer_cast<App::CarModel>(context.models[0])->intersector_->ClearObstacles();
-		// std::dynamic_pointer_cast<App::CarModel>(context.models[0])->intersector_->ClearCarParts();
-
 		std::dynamic_pointer_cast<App::CarModel>(context.models[0])->intersector_->AddObstacles(context.models[2]->CollectMABB());
 		std::dynamic_pointer_cast<App::CarModel>(context.models[0])->intersector_->AddObstacles(context.models[3]->CollectMABB());
-
-		// intersector.AddCarParts(context.models[0]->CollectMABB());
 
 		std::dynamic_pointer_cast<App::CarModel>(context.models[0])->Move(delta_time);
 

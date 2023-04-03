@@ -41,8 +41,9 @@ public:
     virtual const GL::Mat4 GetModelMatrix() const;
 
     void SetDrawBBoxes(bool value);
-    virtual void Draw();
+    virtual void Draw() const;
     virtual std::vector<MemoryAlignedBBox> CollectMABB() const;
+    virtual void DrawBBoxOnCollision(size_t bbox_mesh_index) const;
 
 protected:
     std::string name_;

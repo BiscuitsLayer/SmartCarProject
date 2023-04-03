@@ -51,7 +51,7 @@ void Model::SetDrawBBoxes(bool value) {
     }
 }
 
-void Model::Draw() {
+void Model::Draw() const {
     auto& context = App::Context::Get();
     auto& gl = context.gl->get();
     auto shader_handler = context.shader_handler.value();
@@ -86,5 +86,10 @@ std::vector<MemoryAlignedBBox> Model::CollectMABB() const {
     }
     return result;
 }
+
+void Model::DrawBBoxOnCollision(size_t bbox_mesh_index) const {
+    meshes_[bbox_mesh_index].DrawBBoxOnCollision();
+}
+
 
 } // namespace App

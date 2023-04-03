@@ -35,7 +35,7 @@ public:
         std::array<std::string, APP_CUBEMAP_TEXTURES_COUNT> filenames);
     Skybox(Config::SkyboxModelConfig config);
 
-    virtual void Draw() override;
+    virtual void Draw() const override;
 
 private:
     GL::VertexArray  vao_;  // vertex array object

@@ -100,11 +100,15 @@ void CarModel::Move(float delta_time) {
     // the resulting movement
     intersector_->ClearCarParts();
     intersector_->AddCarParts(CollectMABB());
-    if (!intersector_->Execute()) {
+    // TODO: make constant
+    std::pair<int, int> APP_NO_INSTERSECTION = std::make_pair<int, int>(-1, -1);
+
+    if (auto result = intersector_->Execute(); result == APP_NO_INSTERSECTION) {
         UpdateMovementTransform();
         RotateWheels(accelerator_.GetSpeed() * delta_time);
     } else {
         accelerator_.Stop();
+        DrawBBoxOnCollision(result.second);
     }
     ClearPrecomputedMovementTransform();
 

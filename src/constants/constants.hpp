@@ -42,8 +42,6 @@ constexpr int APP_KEYBOARD_KEYS_COUNT = GL::Key::key_t::Divide + 1;
 constexpr int APP_CUBEMAP_TEXTURES_COUNT = 6;
 
 /* ===== EXTERN VARIABLES ===== */
-extern const float APP_VECTOR_LENGTH_EPS;
-
 // Vectors constants
 extern const float APP_VECTOR_LENGTH_EPS;
 
@@ -58,6 +56,11 @@ extern const GL::Vec3 APP_CAMERA_WORLD_SPACE_UP;
 extern const GL::Vec3 APP_CAMERA_RESERVE_WORLD_SPACE_UP;
 
 // GL constants
+extern const int APP_WINDOW_COLOR_BITS;
+extern const int APP_WINDOW_DEPTH_BITS;
+extern const int APP_WINDOW_STENCIL_BITS;
+extern const int APP_WINDOW_MULTISAMPLE_BITS;
+
 extern const int APP_GL_VERTEX_BYTESIZE;
 
 extern const int APP_GL_VERTEX_POS_OFFSET;

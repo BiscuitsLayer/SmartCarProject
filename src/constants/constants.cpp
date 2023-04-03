@@ -16,6 +16,11 @@ const GL::Vec3 APP_CAMERA_WORLD_SPACE_UP = GL::Vec3(0.0f, 1.0f, 0.0f);
 const GL::Vec3 APP_CAMERA_RESERVE_WORLD_SPACE_UP = GL::Vec3(1.0f, 0.0f, 0.0f);
 
 // GL constants
+const int APP_WINDOW_COLOR_BITS = 23;
+const int APP_WINDOW_DEPTH_BITS= 24;
+const int APP_WINDOW_STENCIL_BITS = 0;
+const int APP_WINDOW_MULTISAMPLE_BITS = 4;
+
 const int APP_GL_VERTEX_BYTESIZE = sizeof(GL::Vertex);
 
 const int APP_GL_VERTEX_POS_OFFSET = offsetof(GL::Vertex, Pos);
