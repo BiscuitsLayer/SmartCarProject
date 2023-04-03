@@ -42,6 +42,14 @@ constexpr int APP_KEYBOARD_KEYS_COUNT = GL::Key::key_t::Divide + 1;
 constexpr int APP_CUBEMAP_TEXTURES_COUNT = 6;
 
 /* ===== EXTERN VARIABLES ===== */
+// Keyboard
+enum class KeyboardMode: int {
+    ORBIT_CAMERA = 0,
+    CAR_MOVEMENT,
+    SIZE
+};
+extern const char* keyboard_modes[static_cast<size_t>(KeyboardMode::SIZE)];
+
 // Vectors constants
 extern const float APP_VECTOR_LENGTH_EPS;
 

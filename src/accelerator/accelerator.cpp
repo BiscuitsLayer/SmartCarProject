@@ -17,6 +17,7 @@ void Accelerator::IncreaseSpeed(const float delta_time, const bool move_front) {
     if ((new_speed > -1.0f * max_speed_) && (new_speed < max_speed_)) {
         cur_speed_ = new_speed;
     }
+    was_stopped_ = false;
 }
 
 void Accelerator::DecreaseSpeed(const float delta_time) {
@@ -33,11 +34,15 @@ void Accelerator::DecreaseSpeed(const float delta_time) {
 
 void Accelerator::Stop() {
     cur_speed_ = 0.0f;
+    was_stopped_ = true;
 }
 
 const float Accelerator::GetSpeed() const {
     return cur_speed_;
 }
 
+const bool Accelerator::WasStopped() const {
+    return was_stopped_;
+}
 
 } // namespace App

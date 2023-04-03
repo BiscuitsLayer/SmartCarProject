@@ -14,7 +14,7 @@ extern const int APP_GL_VEC3_COMPONENTS_COUNT;
 extern const int APP_GL_VEC3_BYTESIZE;
 
 Mesh::Mesh(std::string default_shader_name, std::string bbox_shader_name, std::string name, Transform transform_to_model, std::vector<GL::Vertex> vertices, std::vector<int> indices, Material material, BBox bbox)
-    : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name), name_(name), transform_to_model_(transform_to_model), vertices_(vertices), indices_(indices), material_(material), draw_bbox_(true), bbox_(bbox) {
+    : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name), name_(name), transform_to_model_(transform_to_model), vertices_(vertices), indices_(indices), material_(material), bbox_(bbox) {
     vbo_ = GL::VertexBuffer(vertices.data(), vertices.size() * APP_GL_VERTEX_BYTESIZE, GL::BufferUsage::StaticDraw);
     ebo_ = GL::VertexBuffer(indices.data(), indices.size() * sizeof(unsigned int), GL::BufferUsage::StaticDraw);
 
@@ -33,7 +33,7 @@ Mesh::Mesh(std::string default_shader_name, std::string bbox_shader_name, std::s
 }
 
 void Mesh::SetDrawBBox(bool value) {
-    draw_bbox_ = value;
+    value ? bbox_.Enable() : bbox_.Disable();
 }
 
 void Mesh::Draw() const {
@@ -50,7 +50,7 @@ void Mesh::Draw() const {
     program->SetUniform(program->GetUniform("aMatrices.meshSelfTransformMatrix"), self_transform_);
     gl.DrawElements(vao_, GL::Primitive::Triangles, 0, indices_.size(), GL::Type::UnsignedInt);
 
-    if (draw_bbox_) {
+    if (bbox_.IsEnabled()) {
         auto bbox_program = shader_handler.at(bbox_shader_name_);
         gl.UseProgram(*bbox_program);
 
@@ -66,7 +66,15 @@ MemoryAlignedBBox Mesh::GetMABB() const {
 }
 
 void Mesh::DrawBBoxOnCollision() const {
-    bbox_.DrawOnCollision();
+    auto& context = App::Context::Get();
+    auto& gl = context.gl->get();
+    auto shader_handler = context.shader_handler.value();
+
+    auto bbox_program = shader_handler.at(bbox_shader_name_);
+    gl.UseProgram(*bbox_program);
+
+    bbox_program->SetUniform(bbox_program->GetUniform("aMatrices.meshTransformToModelMatrix"), transform_to_model_);
+    bbox_.Draw();
 }
 
 } // namespace App

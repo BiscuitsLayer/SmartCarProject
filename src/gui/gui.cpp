@@ -9,7 +9,7 @@
 namespace App {
 
 // Extern variables
-/* empty */
+extern const char* keyboard_modes[static_cast<size_t>(KeyboardMode::SIZE)];
 
 Gui::Gui(const App::Config::WindowConfig& window_config) {
     auto raw_window_handle = FindWindowA("OOGL_WINDOW", window_config.params.title.c_str());
@@ -101,7 +101,7 @@ void Gui::Draw() {
 
                     ImGui::Text(mesh.name_.c_str());
                     ImGui::SameLine();
-                    ImGui::Checkbox("BBox", &mesh.draw_bbox_);
+                    ImGui::Checkbox("BBox", &mesh.bbox_.is_enabled_);
 
                     ImGui::PopID();
                 }
@@ -136,7 +136,6 @@ void Gui::Draw() {
     ImGui::SeparatorText("Keyboard mode");
 
     ImGui::PushItemWidth(160);
-    const char* keyboard_modes[] = { "ORBIT CAMERA", "FIRST PERSON CAMERA", "CAR MOVEMENT" };
 
     ImGui::PushID(0);
     ImGui::ListBox("", (int*)&context.keyboard_mode.value(), keyboard_modes, IM_ARRAYSIZE(keyboard_modes));

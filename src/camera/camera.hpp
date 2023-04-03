@@ -37,6 +37,7 @@ public:
     void MoveRight(float delta_time);
 
     void UpdateWithModel(const GL::Mat4& target_model_matrix);
+    bool ReachedFinalPosition() const;
 
 protected:
     void UpdateMatrix();
@@ -66,6 +67,7 @@ protected:
 
     bool is_target_fixed_on_car_;
     bool is_position_fixed_behind_car_;
+    bool reached_final_position_;
 
     friend class Gui;
 };

@@ -36,7 +36,6 @@ private:
     Transform transform_to_model_;
     Transform self_transform_;
 
-    bool draw_bbox_;
     BBox bbox_;
 
     std::vector<GL::Vertex> vertices_;

@@ -1,6 +1,9 @@
 #version 330 core
 
-in vec3 aPos;
+in vec3 aWireframePos;
+in vec3 aSolidPos;
+
+uniform bool isWireframe;
 
 // Transform matrices
 uniform struct {
@@ -13,5 +16,7 @@ uniform struct {
 
 void main() {
     mat4 MVP = aMatrices.projectionMatrix * aMatrices.viewMatrix * aMatrices.modelMatrix;
+
+    vec3 aPos = isWireframe ? aWireframePos : aSolidPos;
     gl_Position = MVP * aMatrices.meshTransformToModelMatrix * vec4(aPos,  1.0);
 }

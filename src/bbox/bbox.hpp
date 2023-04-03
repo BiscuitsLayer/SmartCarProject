@@ -30,14 +30,27 @@ public:
     const MemoryAlignedBBox GetMABB() const;
     void DrawOnCollision() const;
 
+    void Enable() {
+        is_enabled_ = true;
+    }
+
+    void Disable() {
+        is_enabled_ = false;
+    }
+
+    bool IsEnabled() const {
+        return is_enabled_;
+    }
+
 private:
+    bool is_enabled_;
+
     const GL::Vec3 init_min_;
     const GL::Vec3 init_max_;
 
     const std::vector<GL::Vec3> init_vertices_;
     const std::vector<unsigned int> wireframe_indices_;
     const std::vector<unsigned int> solid_indices_;
-
 
     const std::string bbox_shader_name_;
 
@@ -50,7 +63,9 @@ private:
     GL::VertexBuffer wireframe_ebo_;  // element buffer object
 
     GL::VertexArray  solid_vao_;  // vertex array object
-    GL::VertexBuffer solid_ebo_;  // element buffer object    
+    GL::VertexBuffer solid_ebo_;  // element buffer object
+
+    friend class Gui; // to use "is_enabled_" in checkbox
 };
 
 } // namespace App

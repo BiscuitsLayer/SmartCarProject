@@ -2,6 +2,9 @@
 
 namespace App {
 
+// Keyboard
+const char* keyboard_modes[static_cast<size_t>(KeyboardMode::SIZE)] = { "ORBIT CAMERA", "CAR MOVEMENT" };
+
 // Vectors constants
 const float APP_VECTOR_LENGTH_EPS = 1e-3f;
 

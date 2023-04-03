@@ -253,7 +253,7 @@
                         }
                     },
                     "speed": {
-                        "move": 3.0,
+                        "move": 10.0,
                         "rotate": 1.5
                     },
                     "acceleration": 5.0,

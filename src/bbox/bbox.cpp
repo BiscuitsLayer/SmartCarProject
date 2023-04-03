@@ -96,8 +96,8 @@ void BBox::UpdateVertices(const Transform& mesh_self_transform) {
     auto shader_handler = context.shader_handler.value();
 
     auto bbox_program = shader_handler.at(bbox_shader_name_);
-    wireframe_vao_.BindAttribute(bbox_program->GetAttribute("aPos"), vbo_, GL::Type::Float, APP_GL_VEC3_COMPONENTS_COUNT, APP_GL_VEC3_BYTESIZE, APP_ZERO_OFFSET);
-    solid_vao_.BindAttribute(bbox_program->GetAttribute("aPos"), vbo_, GL::Type::Float, APP_GL_VEC3_COMPONENTS_COUNT, APP_GL_VEC3_BYTESIZE, APP_ZERO_OFFSET);
+    wireframe_vao_.BindAttribute(bbox_program->GetAttribute("aWireframePos"), vbo_, GL::Type::Float, APP_GL_VEC3_COMPONENTS_COUNT, APP_GL_VEC3_BYTESIZE, APP_ZERO_OFFSET);
+    solid_vao_.BindAttribute(bbox_program->GetAttribute("aSolidPos"), vbo_, GL::Type::Float, APP_GL_VEC3_COMPONENTS_COUNT, APP_GL_VEC3_BYTESIZE, APP_ZERO_OFFSET);
 }
 
 void BBox::Draw() const {
@@ -108,8 +108,8 @@ void BBox::Draw() const {
     auto bbox_program = shader_handler.at(bbox_shader_name_);
     gl.UseProgram(*bbox_program);
 
-    bbox_program->SetUniform(bbox_program->GetUniform("true"), false);
-    gl.DrawElements(wireframe_vao_, GL::Primitive::Lines, 0, wireframe_indices_.size(), GL::Type::UnsignedInt);
+    bbox_program->SetUniform(bbox_program->GetUniform("isWireframe"), true);
+    gl.DrawElements(wireframe_vao_, GL::Primitive::Lines, APP_ZERO_OFFSET, wireframe_indices_.size(), GL::Type::UnsignedInt);
 }
 
 const MemoryAlignedBBox BBox::GetMABB() const {
@@ -125,7 +125,7 @@ void BBox::DrawOnCollision() const {
     gl.UseProgram(*bbox_program);
 
     bbox_program->SetUniform(bbox_program->GetUniform("isWireframe"), false);
-    gl.DrawElements(solid_vao_, GL::Primitive::Triangles, 0, solid_indices_.size(), GL::Type::UnsignedInt);
+    gl.DrawElements(solid_vao_, GL::Primitive::Triangles, APP_ZERO_OFFSET, solid_indices_.size(), GL::Type::UnsignedInt);
 }
 
 } // namespace App

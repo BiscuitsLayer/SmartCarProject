@@ -26,7 +26,7 @@ public:
     void ClearCarParts();
     void AddCarParts(const std::vector<MemoryAlignedBBox>& new_car_parts_bboxes);
 
-    std::pair<int, int> Execute() const;
+    std::pair<std::vector<int>, std::vector<int>> Execute() const;
 
 private:
     std::vector<MemoryAlignedBBox> obstacle_bboxes_;

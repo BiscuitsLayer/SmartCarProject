@@ -100,23 +100,31 @@ void CarModel::Move(float delta_time) {
     // the resulting movement
     intersector_->ClearCarParts();
     intersector_->AddCarParts(CollectMABB());
-    // TODO: make constant
-    std::pair<int, int> APP_NO_INSTERSECTION = std::make_pair<int, int>(-1, -1);
 
-    if (auto result = intersector_->Execute(); result == APP_NO_INSTERSECTION) {
+    auto result = intersector_->Execute();
+    if (result.first.empty() && result.second.empty()) { // no collisions found - car can be moved
         UpdateMovementTransform();
         RotateWheels(accelerator_.GetSpeed() * delta_time);
     } else {
         accelerator_.Stop();
-        DrawBBoxOnCollision(result.second);
+        // for (auto obstacle_id : result.first) {
+        //     obstacle.DrawBBoxOnCollision(obstacle_id)
+        // }
+        for (auto car_parts_id : result.second) {
+            DrawBBoxOnCollision(car_parts_id);
+        }
     }
     ClearPrecomputedMovementTransform();
+
+    // If the car is moving - keep updating the camera
+    // If the car is still - update the camera only in case there was a collision
+    if ((accelerator_.GetSpeed() != 0.0f) || (accelerator_.WasStopped() && !context.camera->ReachedFinalPosition())) {
+        context.camera->UpdateWithModel(GetModelMatrix());
+    }
 
     if (!context.keyboard_status.value()[GL::Key::W] && !context.keyboard_status.value()[GL::Key::S]) {
         accelerator_.DecreaseSpeed(delta_time);
     }
-
-    context.camera->UpdateWithModel(GetModelMatrix());
 }
 
 void CarModel::SetDrawWheelsBBoxes(bool value) {

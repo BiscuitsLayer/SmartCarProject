@@ -79,15 +79,31 @@ void Camera::MoveRight(float delta_time) {
 }
 
 void Camera::UpdateWithModel(const GL::Mat4& target_model_matrix) {
+    reached_final_position_ = true;
+
     if (is_target_fixed_on_car_) {
         GL::Vec3 new_target = GetTranslation(target_model_matrix);
-        target_ = new_target;
+
+        GL::Vec3 delta_target = target_ - new_target;
+        if (delta_target.Dot(delta_target) > APP_VECTOR_LENGTH_EPS) {
+            target_ = (9 * target_ + new_target) / 10;
+            reached_final_position_ = false;
+        }
     }
 
     if (is_position_fixed_behind_car_) {
         GL::Vec3 new_position = GetTranslation(target_model_matrix * translation_from_car_);
-        position_ = new_position;
+
+        GL::Vec3 delta_position = position_- new_position;
+        if (delta_position.Dot(delta_position) > APP_VECTOR_LENGTH_EPS) {
+            position_ = (9 * position_ + new_position) / 10;
+            reached_final_position_ = false;
+        }
     }
+}
+
+bool Camera::ReachedFinalPosition() const {
+    return reached_final_position_;
 }
 
 void Camera::UpdateMatrix() {

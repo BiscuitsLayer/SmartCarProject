@@ -21,12 +21,15 @@ public:
     void DecreaseSpeed(const float delta_time);
     void Stop();
     const float GetSpeed() const;
+    const bool WasStopped() const;
 
 private:
     const float max_speed_;
     const float acceleration_;
 
     float cur_speed_;
+
+    bool was_stopped_; // if car was stopped by collision, we should keep updating camera position
 };
 
 } // namespace App

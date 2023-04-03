@@ -66,9 +66,9 @@ void Model::Draw() const {
 
     auto bbox_program = shader_handler.at(bbox_shader_name_);
     gl.UseProgram(*bbox_program);
-    program->SetUniform(program->GetUniform("aMatrices.modelMatrix"), GetModelMatrix());
-    program->SetUniform(program->GetUniform("aMatrices.viewMatrix"), context.camera->GetViewMatrix());
-    program->SetUniform(program->GetUniform("aMatrices.projectionMatrix"), context.projection_matrix.value());
+    bbox_program->SetUniform(bbox_program->GetUniform("aMatrices.modelMatrix"), GetModelMatrix());
+    bbox_program->SetUniform(bbox_program->GetUniform("aMatrices.viewMatrix"), context.camera->GetViewMatrix());
+    bbox_program->SetUniform(bbox_program->GetUniform("aMatrices.projectionMatrix"), context.projection_matrix.value());
 
     for (auto&& mesh : meshes_) {
         mesh.Draw();
