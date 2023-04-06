@@ -1,5 +1,8 @@
 #include "window.hpp"
 
+// Incomplete type resolve
+#include <config/config_handler.hpp>
+
 namespace App {
 
 // Extern variables
@@ -8,7 +11,7 @@ namespace App {
 CustomWindow::CustomWindow(GL::uint width, GL::uint height, const std::string& title, GL::WindowStyle::window_style_t style)
     : Window(width, height, title, style, WindowEventHandlerWithImGui) {}
 
-CustomWindow::CustomWindow(Config::WindowConfig config)
+CustomWindow::CustomWindow(const Config::WindowConfig& config)
     : CustomWindow(config.params.width, config.params.height, config.params.title,
         config.params.fullscreen ? GL::WindowStyle::Fullscreen : GL::WindowStyle::Close) {}
 
@@ -38,7 +41,7 @@ LRESULT CALLBACK WindowEventHandlerWithImGui(HWND hwnd, UINT msg, WPARAM wParam,
     }
 }
 
-void LimitMaxFps(App::Config::WindowConfig window_config) {
+void LimitMaxFps(const Config::WindowConfig& window_config) {
     if (window_config.max_fps.enabled) {
         static std::chrono::system_clock::time_point a = std::chrono::system_clock::now();
         static std::chrono::system_clock::time_point b = std::chrono::system_clock::now();

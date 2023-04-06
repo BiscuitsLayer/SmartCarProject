@@ -44,71 +44,114 @@ void Gui::Prepare() const {
 void Gui::Draw() {
     auto& context = App::Context::Get();
 
+    ///// LEFT MENU /////
+
+    const float displayWidth = ImGui::GetIO().DisplaySize.x;
+    const float displayHeight = ImGui::GetIO().DisplaySize.y;
+
+    float mainAreaTop = 0.0f;
+
+    // Quick Hack: Added some padding to hide the window resize controls from right/bottom/top edge of the
+    // window. When proper window docking is available in imgui use that instead.
+    constexpr float HACK_PADDING = 0.0f; //9.0f;
+    const float mainAreaHeight = displayHeight - mainAreaTop;
+    const float windowHeight = mainAreaHeight + HACK_PADDING * 2u;
+    const float windowPosY = mainAreaTop - HACK_PADDING;
+
+    constexpr float MENU_DEFAULT_WIDTH_FACTOR = 30.0f;
+    const float menuWidth = MENU_DEFAULT_WIDTH_FACTOR * ImGui::GetFontSize();
+
+    ImGui::SetNextWindowSize(ImVec2(menuWidth, mainAreaHeight), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSizeConstraints(ImVec2(0, -1), ImVec2(FLT_MAX, -1)); // Horizontal resize only
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+    ImGui::Begin("Right Menu", nullptr,
+        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | /* ImGuiWindowFlags_NoScrollbar | */
+        ImGuiWindowFlags_NoBringToFrontOnFocus);
+
+    ImGui::PopStyleVar(2u); // Undo ImGui::PushStyleVar
+
+    const float windowWidth = ImGui::GetWindowWidth();
+    const float windowPosX = 0; //displayWidth - windowWidth + HACK_PADDING;
+
+    // Keep the window glued to the right edge of the screen.
+    ImGui::SetWindowSize(ImVec2(windowWidth, windowHeight));
+    ImGui::SetWindowPos(ImVec2(windowPosX, windowPosY));
+
+    const float menuContentWidth = ImGui::GetContentRegionAvail().x - HACK_PADDING;
+    const float menuContentHeight = ImGui::GetContentRegionAvail().y - HACK_PADDING * 2u;
+
+    ImGui::Dummy(ImVec2(0.0f, HACK_PADDING));
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+
     // DEMO WINDOW TOOLS
 
     if (show_imgui_demo_window) {
         ImGui::ShowDemoWindow(&show_imgui_demo_window);
     }
 
-    ImGui::Begin("Parameters");
+    //ImGui::Begin("Parameters");
+
+    if (ImGui::Button("Clear car transform")) {
+        // Update car movement transform
+        context.car_model->precomputed_movement_transform_ = Transform{};
+        context.car_model->UpdateMovementTransform();
+        context.car_model->accelerator_.Stop();
+
+        // Update camera target and position
+        context.camera->reached_final_position_ = false;
+    }
+    ImGui::SameLine();
     ImGui::Checkbox("Demo Window", &show_imgui_demo_window);
 
     // MODELS
 
-    ImGui::SeparatorText("Models");
+    ImGui::SeparatorText("Car model");
 
-    for (int model_idx = 0; model_idx < context.models.size(); ++model_idx) {
+    // Car model
+    ImGui::PushID("car_model");
+    if (ImGui::TreeNode(context.car_model->name_.c_str())) {
+
+        // WARNING: be careful with ImGui ID system: without PushID
+        // both "All BBoxes" enable and disable buttons and
+        // "Wheels BBoxes" enable and disable buttons will have
+        // the same ID and therefore won't work properly
+        ImGui::PushID("wheels");
+
+        ImGui::Text("Wheels BBoxes");
+        ImGui::SameLine();
+        if (ImGui::SmallButton("Enable")) {
+            context.car_model->SetDrawWheelsBBoxes(true);
+        }
+        ImGui::SameLine();
+        if (ImGui::SmallButton("Disable")) {
+            context.car_model->SetDrawWheelsBBoxes(false);
+        }
+        ModelMeshBBoxSelector(context.car_model);
+
+        ImGui::PopID(); // wheels
+    }
+    ImGui::PopID(); // car model
+
+    ImGui::SeparatorText("Environment");
+
+    for (int model_idx = 0; model_idx < context.env.size(); ++model_idx) {
         ImGui::PushID(model_idx);
-        if (ImGui::TreeNode(context.models[model_idx]->name_.c_str())) {
-            ImGui::Text("All BBoxes");
-            ImGui::SameLine();
-            if (ImGui::SmallButton("Enable")) {
-                context.models[model_idx]->SetDrawBBoxes(true);
-            }
-            ImGui::SameLine();
-            if (ImGui::SmallButton("Disable")) {
-                context.models[model_idx]->SetDrawBBoxes(false);
-            }
+        if (ImGui::TreeNode(context.env[model_idx]->name_.c_str())) {
+            ModelMeshBBoxSelector(context.env[model_idx]);
+        }
+        ImGui::PopID();
+    }
 
-            if (model_idx == 0) {
-                auto car_model_ptr = std::dynamic_pointer_cast<App::CarModel>(context.models[model_idx]);
+    ImGui::SeparatorText("Obstacles");
 
-                // WARNING: be careful with ImGui ID system: without PushID
-                // both "All BBoxes" enable and disable buttons and
-                // "Wheels BBoxes" enable and disable buttons will have
-                // the same ID and therefore won't work properly
-                ImGui::PushID("wheels");
-
-                ImGui::Text("Wheels BBoxes");
-                ImGui::SameLine();
-                if (ImGui::SmallButton("Enable")) {
-                    car_model_ptr->SetDrawWheelsBBoxes(true);
-                }
-                ImGui::SameLine();
-                if (ImGui::SmallButton("Disable")) {
-                    car_model_ptr->SetDrawWheelsBBoxes(false);
-                }
-
-                ImGui::PopID();
-
-            }
-
-            if (ImGui::TreeNode("Meshes")) {
-                for (int mesh_idx = 0; mesh_idx < context.models[model_idx]->meshes_.size(); ++mesh_idx) {
-                    ImGui::PushID(mesh_idx);
-
-                    auto& mesh = context.models[model_idx]->meshes_[mesh_idx];
-
-                    ImGui::Text(mesh.name_.c_str());
-                    ImGui::SameLine();
-                    ImGui::Checkbox("BBox", &mesh.bbox_.is_enabled_);
-
-                    ImGui::PopID();
-                }
-                ImGui::TreePop();
-            }
-
-            ImGui::TreePop();
+    for (int model_idx = 0; model_idx < context.obstacles.size(); ++model_idx) {
+        ImGui::PushID(model_idx);
+        if (ImGui::TreeNode(context.obstacles[model_idx]->name_.c_str())) {
+            ModelMeshBBoxSelector(context.obstacles[model_idx]);
         }
         ImGui::PopID();
     }
@@ -129,8 +172,6 @@ void Gui::Draw() {
     ImGui::DragFloat("Min length to target", &context.camera->min_length_to_target_, 0.2f, 1.0f, (std::min)(context.camera->max_length_to_target_, 999.8f));
     ImGui::DragFloat("Max length to target", &context.camera->max_length_to_target_, 0.2f, (std::max)(context.camera->min_length_to_target_, 1.2f), 1000.0f);
 
-    context.camera->UpdateMatrix();
-
     // KEYBOARD MODE
 
     ImGui::SeparatorText("Keyboard mode");
@@ -148,11 +189,45 @@ void Gui::Draw() {
     ImGui::SeparatorText("FPS counter");
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    ImGui::End();
+    //ImGui::End();
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+    ImGui::End(); // Right Menu
 
     ImGui::EndFrame();
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
+
+void Gui::ModelMeshBBoxSelector(std::shared_ptr<App::Model> model) const {
+    ImGui::Text("All BBoxes");
+    ImGui::SameLine();
+    if (ImGui::SmallButton("Enable")) {
+        model->SetDrawBBoxes(true);
+    }
+    ImGui::SameLine();
+    if (ImGui::SmallButton("Disable")) {
+        model->SetDrawBBoxes(false);
+    }
+
+    if (ImGui::TreeNode("Meshes")) {
+        for (int mesh_idx = 0; mesh_idx < model->meshes_.size(); ++mesh_idx) {
+            ImGui::PushID(mesh_idx);
+
+            auto& mesh = model->meshes_[mesh_idx];
+
+            ImGui::Text(mesh.name_.c_str());
+            ImGui::SameLine();
+            ImGui::Checkbox("BBox", &mesh.bbox_.is_enabled_);
+
+            ImGui::PopID();
+        }
+        ImGui::TreePop();
+    }
+
+    ImGui::TreePop();
+}
+
 
 } // namespace App

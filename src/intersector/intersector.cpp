@@ -15,27 +15,37 @@ Intersector::Intersector(const Config::IntersectorConfig& config)
 
 void Intersector::ClearObstacles() {
     obstacle_bboxes_.clear();
+    current_obstacle_index_ = 0;
 }
 
-void Intersector::AddObstacles(const std::vector<MemoryAlignedBBox>& new_obstacle_bboxes) {
+void Intersector::AddObstacles(const Model* model) {
+    std::vector<MemoryAlignedBBox> new_obstacle_bboxes = model->CollectMABB();
     obstacle_bboxes_.reserve(obstacle_bboxes_.size() + new_obstacle_bboxes.size());
-    for (auto&& bbox : new_obstacle_bboxes) {
-        obstacle_bboxes_.push_back(bbox);
+
+    for (int bbox_index = 0; bbox_index < new_obstacle_bboxes.size(); ++bbox_index) {
+        obstacle_bboxes_.push_back(new_obstacle_bboxes[bbox_index]);
+        obstacle_index_to_model_index_mesh_index[obstacle_bboxes_.size() - 1] = std::make_pair(current_obstacle_index_, bbox_index);
     }
+    ++current_obstacle_index_;
 }
 
 void Intersector::ClearCarParts() {
     car_parts_bboxes_.clear();
+    current_car_part_index_ = 0;
 }
 
-void Intersector::AddCarParts(const std::vector<MemoryAlignedBBox>& new_car_parts_bboxes) {
+void Intersector::AddCarParts(const CarModel* car_model) {
+    std::vector<MemoryAlignedBBox> new_car_parts_bboxes = car_model->CollectMABB();
     car_parts_bboxes_.reserve(car_parts_bboxes_.size() + new_car_parts_bboxes.size());
-    for (auto&& bbox : new_car_parts_bboxes) {
-        car_parts_bboxes_.emplace_back(bbox);
+
+    for (int bbox_index = 0; bbox_index < new_car_parts_bboxes.size(); ++bbox_index) {
+        car_parts_bboxes_.push_back(new_car_parts_bboxes[bbox_index]);
+        car_part_index_to_model_index_mesh_index[car_parts_bboxes_.size() - 1] = std::make_pair(current_car_part_index_, bbox_index);
     }
+    ++current_car_part_index_;
 }
 
-std::pair<std::vector<int>, std::vector<int>> Intersector::Execute() const {
+void Intersector::Intersect() {
     // TODO: get rid of magic numbers
     // TODO: fix code (with SubData) instead of generating buffer object every frame
     // TODO: fix SubData and GetSubData in OOGL (check if they need glBindBufferBase)
@@ -73,7 +83,7 @@ std::pair<std::vector<int>, std::vector<int>> Intersector::Execute() const {
             car_parts_collided_ids.push_back(car_parts_id);
         }
     }
-    return std::make_pair(obstacles_collided_ids, car_parts_collided_ids);
+    results_ = std::make_pair(obstacles_collided_ids, car_parts_collided_ids);
 }
 
 } // namespace App

@@ -31,7 +31,13 @@ public:
     MemoryAlignedBBox GetMABB() const;
     void DrawBBoxOnCollision() const;
 
+    void MakeInstanced(const std::vector<Transform>& instance_transforms);
+
 private:
+    bool is_instanced_;
+    std::optional<std::vector<Transform>> instance_transforms_;
+    GL::VertexBuffer instance_transforms_vbo_;  // vertex buffer object
+
     std::string name_;
     Transform transform_to_model_;
     Transform self_transform_;

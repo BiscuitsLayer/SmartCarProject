@@ -7,7 +7,6 @@ uniform bool isWireframe;
 
 // Transform matrices
 uniform struct {
-    mat4 meshSelfTransformMatrix;
     mat4 meshTransformToModelMatrix;
     mat4 modelMatrix;
     mat4 viewMatrix;

@@ -2,8 +2,8 @@
     {
         "name": "DEFAULT",
         "folder": "../shader",
-        "vertex": "backpack.vert",
-        "fragment": "backpack.frag"
+        "vertex": "default.vert",
+        "fragment": "default.frag"
     },
     {
         "name": "SKYBOX",

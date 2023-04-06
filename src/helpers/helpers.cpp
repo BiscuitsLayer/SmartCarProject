@@ -1,5 +1,9 @@
 #include "helpers.hpp"
 
+// Incomplete type resolve
+#include <car_model/car_model.hpp>
+#include <skybox/skybox.hpp>
+
 namespace App {
 
 // Extern variables
@@ -17,7 +21,7 @@ Context& Context::Get() {
 
 Context::Context()
     : gl(std::nullopt), shader_handler(std::nullopt), camera(std::nullopt), projection_matrix(std::nullopt),
-    keyboard_mode(std::nullopt), keyboard_status(std::nullopt), models({}) {}
+    keyboard_mode(std::nullopt), keyboard_status(std::nullopt), env({}), obstacles({}) {}
 
 GL::Vec3 GetTranslation(const GL::Mat4& matrix) {
     return GL::Vec3{matrix.m[12], matrix.m[13], matrix.m[14]};

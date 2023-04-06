@@ -19,6 +19,10 @@ using json_object = nlohmann::detail::iter_impl<json>;
 #include <helpers/helpers.hpp>
 #include <transform/transform.hpp>
 
+// Incomplete type resolve
+#include <car_model/car_model_fwd.hpp>
+#include <skybox/skybox_fwd.hpp>
+
 namespace App {
 
 namespace Config {
@@ -81,7 +85,6 @@ struct BaseModelConfig {
     std::string name;
     std::string type;
     Shader shader;
-    Transform transform;
 
     // To make the class polymorphic, so we are able
     // to use down-casting with shared_ptr
@@ -90,6 +93,7 @@ struct BaseModelConfig {
 
 struct CommonModelConfig: public BaseModelConfig {
     std::string gltf;
+    Transform transform;
 };
 
 struct CarModelConfig: public BaseModelConfig {
@@ -101,6 +105,7 @@ struct CarModelConfig: public BaseModelConfig {
     Speed speed;
     float acceleration;
     GL::Vec3 rotation_center;
+    Transform transform;
 };
 
 struct SkyboxModelConfig: public BaseModelConfig {
@@ -112,29 +117,25 @@ struct SkyboxModelConfig: public BaseModelConfig {
 
 class ConfigHandler {
 public:
-    ConfigHandler(const std::string& filename);
-
-    void ParseWindowConfig();
-    void ParseIntersectorConfig();
-    void ParseCameraConfig();
-    void ParseShaders();
-    void ParseModelConfigs();
+    ConfigHandler(const std::string& filename, const std::string& config_files_folder);
 
     Config::WindowConfig GetWindowConfig() const;
     Config::IntersectorConfig GetIntersectorConfig() const;
     Config::CameraConfig GetCameraConfig() const;
     ShaderHandler GetShaderHandler() const;
-    std::vector<std::shared_ptr<Config::BaseModelConfig>> GetModelConfigs() const;
 
 private:
-    void SetWindowConfig(const json_object& window);
-    void SetIntersectorConfig(const json_object& intersector);
-    void SetCameraConfig(const json_object& camera);
-    void SetShaderHandler(const std::vector<json_object>& shaders);
+    void SetWindowConfig(const std::shared_ptr<json> window_json);
+    void SetIntersectorConfig(const std::shared_ptr<json> intersector_json);
+    void SetCamerasConfigs(const std::shared_ptr<json> cameras_json);
+    void SetShaderHandler(const std::shared_ptr<json> shaders_json);
+    void SetModelsConfigs(const std::shared_ptr<json> models_json);
 
     void SetCarModelConfig(const json_object& car_object);
     void SetSkyboxModelConfig(const json_object& skybox_object);
     void SetCommonModelConfig(const json_object& common_object);
+
+    const std::vector<json_object> ConvertToArray(const std::shared_ptr<json> array_json) const;
 
     const json_object FindObject(std::shared_ptr<json> parent, const std::string& object_name, bool can_skip = false) const;
     const json_object FindObject(const json_object& parent, const std::string& object_name, bool can_skip = false) const;
@@ -162,12 +163,14 @@ private:
 
     const std::shared_ptr<json> data_;
     json_object case_selected_;
+    int camera_case_selected_index_;
 
     Config::WindowConfig window_config_;
     Config::IntersectorConfig intersector_config_;
-    Config::CameraConfig camera_config_;
+    std::vector<Config::CameraConfig> cameras_configs_;
     ShaderHandler shader_handler_;
-    std::vector<std::shared_ptr<Config::BaseModelConfig>> model_configs_;
+
+    std::map<std::string, std::shared_ptr<Config::BaseModelConfig>> models_configs_;
 };
 
 } // namespace App

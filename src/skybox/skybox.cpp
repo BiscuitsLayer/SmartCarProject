@@ -9,7 +9,7 @@ extern const int APP_ZERO_OFFSET;
 extern const int APP_CUBEMAP_TEXTURE_UNIT;
 
 Skybox::Skybox(std::string model_name, std::string shader_name, std::string folder, std::array<std::string, APP_CUBEMAP_TEXTURES_COUNT> filenames)
-    : Model(model_name, {}, {}, {}, App::Transform{}), shader_name_(shader_name), filenames_(filenames) {
+    : shader_name_(shader_name), filenames_(filenames) {
     vbo_ = GL::VertexBuffer(vertices_.data(), vertices_.size() * APP_GL_VEC3_BYTESIZE, GL::BufferUsage::StaticDraw);
 
     auto& context = App::Context::Get();

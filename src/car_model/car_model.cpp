@@ -36,82 +36,42 @@ const GL::Mat4 CarModel::GetModelMatrix() const {
     return static_cast<GL::Mat4>(transform_) * movement_transform_ * center_translation_;
 }
 
-const GL::Mat4 CarModel::GetPrecomputedModelMatrix() const {
-    return static_cast<GL::Mat4>(transform_) * precomputed_movement_transform_ * center_translation_;
-}
-
 void CarModel::Move(float delta_time) {
     auto& context = App::Context::Get();
-    if (context.keyboard_status.value()[GL::Key::W]) {
-        switch (context.keyboard_mode.value()) {
-            case App::KeyboardMode::ORBIT_CAMERA: {
-                context.camera->MoveFront(delta_time);
-                break;
-            }
-            case App::KeyboardMode::CAR_MOVEMENT: {
-                accelerator_.IncreaseSpeed(delta_time, true);
-                break;
-            }
+    if (context.keyboard_mode.value() == App::KeyboardMode::CAR_MOVEMENT) {
+        if (context.keyboard_status.value()[GL::Key::W]) {
+            accelerator_.IncreaseSpeed(delta_time, true);
+        }
+        if (context.keyboard_status.value()[GL::Key::S]) {
+            accelerator_.IncreaseSpeed(delta_time, false);
+        }
+        if (context.keyboard_status.value()[GL::Key::A]) {
+            RotateLeft(delta_time, accelerator_.GetSpeed() > 0.0);
+        }
+        if (context.keyboard_status.value()[GL::Key::D]) {
+            RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
         }
     }
-
-    if (context.keyboard_status.value()[GL::Key::S]) {
-        switch (context.keyboard_mode.value()) {
-            case App::KeyboardMode::ORBIT_CAMERA: {
-                context.camera->MoveBack(delta_time);
-                break;
-            }
-            case App::KeyboardMode::CAR_MOVEMENT: {
-                accelerator_.IncreaseSpeed(delta_time, false);
-                break;
-            }
-        }
-    }
-
-    if (context.keyboard_status.value()[GL::Key::A]) {
-        switch (context.keyboard_mode.value()) {
-            case App::KeyboardMode::ORBIT_CAMERA: {
-                context.camera->MoveLeft(delta_time);
-                break;
-            }
-            case App::KeyboardMode::CAR_MOVEMENT: {
-                RotateLeft(delta_time, accelerator_.GetSpeed() > 0.0);
-                break;
-            }
-        }
-    }
-
-    if (context.keyboard_status.value()[GL::Key::D]) {
-        switch (context.keyboard_mode.value()) {
-            case App::KeyboardMode::ORBIT_CAMERA: {
-                context.camera->MoveRight(delta_time);
-                break;
-            }
-            case App::KeyboardMode::CAR_MOVEMENT: {
-                RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
-                break;
-            }
-        }
-    }
-
     MoveForward(delta_time);
 
-    // If there won't be any collisions after precomputed movement, set it as
-    // the resulting movement
-    intersector_->ClearCarParts();
-    intersector_->AddCarParts(CollectMABB());
+    // Do intersection
+    std::vector<int> intersection_result{};
+    if (intersector_) {
+        intersector_->ClearCarParts();
+        intersector_->AddCarParts(this);
 
-    auto result = intersector_->Execute();
-    if (result.first.empty() && result.second.empty()) { // no collisions found - car can be moved
+        intersector_->Intersect();
+        intersection_result = intersector_->GetIntersectedCarPartMeshIndices(0);
+    }
+    
+    // No collisions found - car can be moved
+    if (intersection_result.empty()) { 
         UpdateMovementTransform();
         RotateWheels(accelerator_.GetSpeed() * delta_time);
     } else {
         accelerator_.Stop();
-        // for (auto obstacle_id : result.first) {
-        //     obstacle.DrawBBoxOnCollision(obstacle_id)
-        // }
-        for (auto car_parts_id : result.second) {
-            DrawBBoxOnCollision(car_parts_id);
+        for (auto mesh_index : intersection_result) {
+            DrawBBoxOnCollision(mesh_index);
         }
     }
     ClearPrecomputedMovementTransform();
@@ -153,12 +113,10 @@ void CarModel::RotateWheels(float delta_time) {
 }
 
 void CarModel::MoveForward(float delta_time) {
-    // precomputed_movement_transform_ = movement_transform_;
     precomputed_movement_transform_.Translate(GL::Vec3(0.0f, 0.0f, accelerator_.GetSpeed() * delta_time));
 }
 
 void CarModel::RotateLeft(float delta_time, bool move_front) {
-    // precomputed_movement_transform_ = movement_transform_;
     if (accelerator_.GetSpeed() != 0.0) {
         float rotate_speed = rotate_max_speed_ * accelerator_.GetSpeed() / move_max_speed_;
         precomputed_movement_transform_.Rotate(GL::Vec3(0.0f, 1.0f, 0.0f), rotate_speed * delta_time);
@@ -166,7 +124,6 @@ void CarModel::RotateLeft(float delta_time, bool move_front) {
 }
 
 void CarModel::RotateRight(float delta_time, bool move_front) {
-    // precomputed_movement_transform_ = movement_transform_;
     if (accelerator_.GetSpeed() != 0.0) {
         float rotate_speed = rotate_max_speed_ * accelerator_.GetSpeed() / move_max_speed_;
         precomputed_movement_transform_.Rotate(GL::Vec3(0.0f, 1.0f, 0.0f), -1.0f * rotate_speed * delta_time);
@@ -179,6 +136,10 @@ void CarModel::ClearPrecomputedMovementTransform() {
 
 void CarModel::UpdateMovementTransform() {
     movement_transform_ = precomputed_movement_transform_;
+}
+
+const GL::Mat4 CarModel::GetPrecomputedModelMatrix() const {
+    return static_cast<GL::Mat4>(transform_) * precomputed_movement_transform_ * center_translation_;
 }
 
 } // namespace App

@@ -18,7 +18,7 @@ Config refactor (IN PROGRESS):
 === JSON format ===
 
 [] Check for same names in JSON, error if name already exists
-[] Combine models in obstacle set, car, env in JSON
+[x] Combine models in obstacle set, car, env in JSON
 
 === Graphics ===
 

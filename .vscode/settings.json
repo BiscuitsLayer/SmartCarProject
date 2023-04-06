@@ -94,6 +94,5 @@
         "span": "cpp",
         "valarray": "cpp",
         "csignal": "cpp"
-    },
-    "cmake.configureOnOpen": true
+    }
 }

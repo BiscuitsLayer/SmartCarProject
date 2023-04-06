@@ -23,9 +23,7 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/config_out.hpp
 )
 # Create directory for serialized files
-file(MAKE_DIRECTORY ${LIB_SMART_CAR_SERIALIZED_FILES_DIR})
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${LIB_SMART_CAR_SERIALIZED_FILES_DIR})
-
 
 ### OOGL ###
 # Provide directories
@@ -95,6 +93,8 @@ add_library(Constants OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/constants/constants.cpp
 add_library(Gui OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/gui/gui.cpp)
 # Helpers
 add_library(Helpers OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/helpers/helpers.cpp)
+# Instanced model
+add_library(InstancedModel OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/instanced_model/instanced_model.cpp)
 # Intersector
 add_library(Intersector OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/intersector/intersector.cpp)
 # Loader
@@ -119,9 +119,9 @@ add_library(Window OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/window/window.cpp)
 add_library(${PROJECT_NAME} STATIC 
     $<TARGET_OBJECTS:Accelerator> $<TARGET_OBJECTS:BBox> $<TARGET_OBJECTS:Camera> $<TARGET_OBJECTS:CarModel>
     $<TARGET_OBJECTS:Config> $<TARGET_OBJECTS:Constants> $<TARGET_OBJECTS:Gui> $<TARGET_OBJECTS:Helpers>
-    $<TARGET_OBJECTS:Intersector> $<TARGET_OBJECTS:Loader> $<TARGET_OBJECTS:Material> $<TARGET_OBJECTS:Mesh>
-    $<TARGET_OBJECTS:Model> $<TARGET_OBJECTS:Skybox> $<TARGET_OBJECTS:Texture> $<TARGET_OBJECTS:Timer>
-    $<TARGET_OBJECTS:Transform> $<TARGET_OBJECTS:Window>
+    $<TARGET_OBJECTS:InstancedModel> $<TARGET_OBJECTS:Intersector> $<TARGET_OBJECTS:Loader> 
+    $<TARGET_OBJECTS:Material> $<TARGET_OBJECTS:Mesh> $<TARGET_OBJECTS:Model> $<TARGET_OBJECTS:Skybox> 
+    $<TARGET_OBJECTS:Texture> $<TARGET_OBJECTS:Timer> $<TARGET_OBJECTS:Transform> $<TARGET_OBJECTS:Window>
 )
 # Link the library
 target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_LIBRARIES} OOGL 

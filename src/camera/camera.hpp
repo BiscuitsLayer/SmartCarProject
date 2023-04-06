@@ -28,20 +28,21 @@ public:
     // to use down-casting with shared_ptr
     virtual ~Camera() {}
 
-    GL::Mat4 GetViewMatrix() const;
-    GL::Vec3 GetPosition() const;
+    GL::Mat4 GetViewMatrix() const { return view_matrix_; }
+    GL::Vec3 GetPosition() const { return position_; }
 
-    void MoveFront(float delta_time);
-    void MoveBack(float delta_time);
-    void MoveLeft(float delta_time);
-    void MoveRight(float delta_time);
-
-    void UpdateWithModel(const GL::Mat4& target_model_matrix);
-    bool ReachedFinalPosition() const;
+    void Move(const float delta_time);
+    void UpdateWithModel(const GL::Mat4& model_matrix);
+    bool ReachedFinalPosition() const { return reached_final_position_; }
+    void UpdateMatrix();
 
 protected:
-    void UpdateMatrix();
-    void AlignStepFront(float delta_coord);
+    void MoveFront(const float delta_time);
+    void MoveBack(const float delta_time);
+    void MoveLeft(const float delta_time);
+    void MoveRight(const float delta_time);
+
+    void AlignStepFront(const float delta_coord);
 
     // The positive z-axis is going through your screen towards you
     GL::Vec3 position_;
@@ -69,7 +70,7 @@ protected:
     bool is_position_fixed_behind_car_;
     bool reached_final_position_;
 
-    friend class Gui;
+    friend class Gui; // access to private variables
 };
 
 } // namespace App

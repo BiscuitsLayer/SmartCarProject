@@ -29,7 +29,10 @@ private:
 
     float cur_speed_;
 
-    bool was_stopped_; // if car was stopped by collision, we should keep updating camera position
+    // Check if car was stopped by collision
+    bool was_stopped_; 
+
+    friend class Gui; // access to private variables
 };
 
 } // namespace App

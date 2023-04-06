@@ -1,135 +1,45 @@
 {
     "case": 1,
-    "shaders": [
-        {
-            "name": "DEFAULT",
-            "vertex": "backpack.vert",
-            "fragment": "backpack.frag"
-        },
-        {
-            "name": "SKYBOX",
-            "vertex": "skybox.vert",
-            "fragment": "skybox.frag"
-        },
-        {
-            "name": "BBOX",
-            "vertex": "bbox.vert",
-            "fragment": "bbox.frag"
-        },
-        {
-            "name": "INTERSECTION",
-            "compute": "intersection.comp"
-        }
-    ],
-    "window": {
-        "max_fps": {
-            "value": 90.0,
-            "enabled": false
-        },
-        "params": {
-            "width": 800,
-            "height": 600,
-            "title": "SmartCarTest",
-            "fullscreen": false
-        }
-    },
-    "intersector": {
-        "shader": {
-            "default": "INTERSECTION"
-        },
-        "enabled": true
-    },
+    "window_config": "window.json",
+    "intersector_config": "intersector.json",
+    "cameras_config": "cameras.json",
+    "shaders_config": "shaders.json",
+    "models_config": "models.json",
     "cases": [
         {
-            "camera": {
-                "projection": {
-                    "FOV": 45.0,
-                    "near": 0.1,
-                    "far": 10000.0
-                },
-                "length_to_target": {
-                    "min": 1.0,
-                    "max": 1000.0
-                },
-                "position": {
-                    "value": [
-                        0.0,
-                        2.0,
-                        -10.0
-                    ],
-                    "fixed_behind_car": true,
-                    "translation_from_car": [
-                        0.0,
-                        3.0,
-                        -9.0
-                    ]
-                },
-                "target": {
-                    "value": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "fixed_on_car": true
-                },
-                "speed": {
-                    "move": 5.0,
-                    "rotate": 10.0
+            "index": 0,
+            "camera_case": 0,
+            "car": {
+                "name": "SportCar",
+                "transform": {
+                    "rotation": {
+                        "axis": [
+                            0.0,
+                            1.0,
+                            0.0
+                        ],
+                        "angle": -90.0
+                    }
                 }
             },
-            "models": [
-                {
-                    "name": "SportCar",
-                    "type": "CAR",
-                    "GLTF": "car/scene.gltf",
-                    "wheels": {
-                        "mesh_names": [
-                            "Object_0",
-                            "Object_1",
-                            "Object_2",
-                            "Object_3",
-                            "Object_24",
-                            "Object_25"
-                        ],
-                        "speed": {
-                            "rotate": 100.0
-                        }
-                    },
-                    "speed": {
-                        "move": 3.0,
-                        "rotate": 1.5
-                    },
-                    "acceleration": 5.0,
-                    "rotation_center": [
-                        0.0,
-                        0.0,
-                        1.5
-                    ],
-                    "shader": {
-                        "default": "DEFAULT",
-                        "bbox": "BBOX"
-                    }
-                },
+            "skybox": {
+                "name": "Skybox"
+            },
+            "env": [
                 {
                     "name": "Garage",
-                    "type": "COMMON",
-                    "GLTF": "garage/scene.gltf",
                     "transform": {
                         "translation": [
                             0.0,
                             -0.5,
                             0.0
                         ]
-                    },
-                    "shader": {
-                        "default": "DEFAULT",
-                        "bbox": "BBOX"
                     }
-                },
+                }
+            ],
+            "obstacles": [
                 {
                     "name": "Cube",
-                    "type": "COMMON",
-                    "GLTF": "gltf_cube/Cube.gltf",
                     "transform": {
                         "rotation": {
                             "axis": [
@@ -144,16 +54,10 @@
                             5.0,
                             -5.0
                         ]
-                    },
-                    "shader": {
-                        "default": "DEFAULT",
-                        "bbox": "BBOX"
                     }
                 },
                 {
                     "name": "Backpack",
-                    "type": "COMMON",
-                    "GLTF": "backpack/scene.gltf",
                     "transform": {
                         "scale": [
                             0.01,
@@ -173,162 +77,120 @@
                             5.0,
                             5.0
                         ]
-                    },
-                    "shader": {
-                        "default": "DEFAULT",
-                        "bbox": "BBOX"
-                    }
-                },
-                {
-                    "name": "Skybox",
-                    "type": "SKYBOX",
-                    "folder": "skybox/textures",
-                    "filenames": [
-                        "posx.jpg",
-                        "negx.jpg",
-                        "posy.jpg",
-                        "negy.jpg",
-                        "posz.jpg",
-                        "negz.jpg"
-                    ],
-                    "shader": {
-                        "default": "SKYBOX"
                     }
                 }
             ]
         },
         {
-            "camera": {
-                "projection": {
-                    "FOV": 45.0,
-                    "near": 0.1,
-                    "far": 10000.0
-                },
-                "length_to_target": {
-                    "min": 1.0,
-                    "max": 1000.0
-                },
-                "position": {
-                    "value": [
-                        0.0,
-                        0.0,
-                        -7.5
-                    ],
-                    "fixed_behind_car": true,
-                    "translation_from_car": [
-                        0.0,
-                        3.0,
-                        -9.0
-                    ]
-                },
-                "target": {
-                    "value": [
-                        0.0,
-                        0.0,
-                        1.5
-                    ],
-                    "fixed_on_car": true
-                },
-                "speed": {
-                    "move": 5.0,
-                    "rotate": 10.0
-                }
+            "index": 1,
+            "camera_case": 0,
+            "car": {
+                "name": "SportCar"
             },
-            "models": [
-                {
-                    "name": "SportCar",
-                    "type": "CAR",
-                    "GLTF": "car/scene.gltf",
-                    "wheels": {
-                        "mesh_names": [
-                            "Object_0",
-                            "Object_1",
-                            "Object_2",
-                            "Object_3",
-                            "Object_24",
-                            "Object_25"
-                        ],
-                        "speed": {
-                            "rotate": 100.0
-                        }
-                    },
-                    "speed": {
-                        "move": 10.0,
-                        "rotate": 1.5
-                    },
-                    "acceleration": 5.0,
-                    "rotation_center": [
-                        0.0,
-                        0.0,
-                        1.5
-                    ],
-                    "shader": {
-                        "default": "DEFAULT",
-                        "bbox": "BBOX"
-                    }
-                },
+            "skybox": {
+                "name": "Skybox"
+            },
+            "env": [
                 {
                     "name": "Garage",
-                    "type": "COMMON",
-                    "GLTF": "garage/scene.gltf",
                     "transform": {
                         "translation": [
                             0.0,
                             -0.5,
                             0.0
                         ]
-                    },
-                    "shader": {
-                        "default": "DEFAULT",
-                        "bbox": "BBOX"
                     }
                 },
                 {
+                    "name": "Garage",
+                    "transform": {
+                        "translation": [
+                            17.0,
+                            -0.501,
+                            0.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Garage",
+                    "transform": {
+                        "translation": [
+                            34.0,
+                            -0.5,
+                            0.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Garage",
+                    "transform": {
+                        "translation": [
+                            51.0,
+                            -0.501,
+                            0.0
+                        ]
+                    }
+                }
+            ],
+            "obstacles": [
+                {
                     "name": "Cube",
-                    "type": "COMMON",
-                    "GLTF": "gltf_cube/Cube.gltf",
                     "transform": {
                         "translation": [
                             3.0,
                             0.5,
                             2.0
                         ]
-                    },
-                    "shader": {
-                        "default": "DEFAULT",
-                        "bbox": "BBOX"
                     }
                 },
                 {
                     "name": "Cube",
-                    "type": "COMMON",
-                    "GLTF": "gltf_cube/Cube.gltf",
                     "transform": {
                         "translation": [
                             10.0,
                             0.5,
-                            2.0
+                            -2.0
                         ]
-                    },
-                    "shader": {
-                        "default": "DEFAULT",
-                        "bbox": "BBOX"
                     }
                 },
                 {
-                    "name": "Skybox",
-                    "type": "SKYBOX",
-                    "folder": "skybox/textures",
-                    "filenames": [
-                        "posx.jpg",
-                        "negx.jpg",
-                        "posy.jpg",
-                        "negy.jpg",
-                        "posz.jpg",
-                        "negz.jpg"
-                    ],
-                    "shader": {
-                        "default": "SKYBOX"
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            22.0,
+                            0.5,
+                            2.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            30.0,
+                            0.5,
+                            2.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            40.0,
+                            0.5,
+                            -2.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            55.0,
+                            0.5,
+                            2.0
+                        ]
                     }
                 }
             ]

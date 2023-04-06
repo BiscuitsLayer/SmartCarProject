@@ -2,7 +2,7 @@
     {
         "name": "SportCar",
         "type": "CAR",
-        "GLTF": "../assets/car/scene.gltf",
+        "GLTF": "car/scene.gltf",
         "wheels": {
             "mesh_names": [
                 "Object_0",
@@ -17,8 +17,8 @@
             }
         },
         "speed": {
-            "move": 3.0,
-            "rotate": 1.5
+            "move": 10.0,
+            "rotate": 2.0
         },
         "acceleration": 5.0,
         "rotation_center": [
@@ -34,7 +34,7 @@
     {
         "name": "Garage",
         "type": "COMMON",
-        "GLTF": "../assets/garage/scene.gltf",
+        "GLTF": "garage/scene.gltf",
         "shader": {
             "default": "DEFAULT",
             "bbox": "BBOX"
@@ -43,7 +43,7 @@
     {
         "name": "Cube",
         "type": "COMMON",
-        "GLTF": "../assets/gltf_cube/Cube.gltf",
+        "GLTF": "gltf_cube/Cube.gltf",
         "shader": {
             "default": "DEFAULT",
             "bbox": "BBOX"
@@ -52,7 +52,7 @@
     {
         "name": "Backpack",
         "type": "COMMON",
-        "GLTF": "../assets/backpack/scene.gltf",
+        "GLTF": "backpack/scene.gltf",
         "shader": {
             "default": "DEFAULT",
             "bbox": "BBOX"
@@ -61,7 +61,7 @@
     {
         "name": "Skybox",
         "type": "SKYBOX",
-        "folder": "../assets/skybox/textures",
+        "folder": "skybox/textures",
         "filenames": [
             "posx.jpg",
             "negx.jpg",

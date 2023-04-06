@@ -59,6 +59,12 @@ extern const int APP_GL_VEC2_BYTESIZE;
 extern const int APP_GL_VEC3_COMPONENTS_COUNT;
 extern const int APP_GL_VEC3_BYTESIZE;
 
+extern const int APP_GL_VEC4_COMPONENTS_COUNT;
+extern const int APP_GL_VEC4_BYTESIZE;
+
+extern const int APP_GL_MAT4_COMPONENTS_COUNT;
+extern const int APP_GL_MAT4_BYTESIZE;
+
 // Camera
 extern const GL::Vec3 APP_CAMERA_WORLD_SPACE_UP;
 extern const GL::Vec3 APP_CAMERA_RESERVE_WORLD_SPACE_UP;

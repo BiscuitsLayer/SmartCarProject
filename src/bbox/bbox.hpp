@@ -26,21 +26,12 @@ public:
     BBox(const std::string& bbox_shader_name, const GL::Vec3& min, const GL::Vec3& max);
 
     void UpdateVertices(const Transform& mesh_self_transform);
-    void Draw() const;
+    void Draw(const bool is_wireframe) const;
     const MemoryAlignedBBox GetMABB() const;
-    void DrawOnCollision() const;
 
-    void Enable() {
-        is_enabled_ = true;
-    }
-
-    void Disable() {
-        is_enabled_ = false;
-    }
-
-    bool IsEnabled() const {
-        return is_enabled_;
-    }
+    void Enable() { is_enabled_ = true; }
+    void Disable() { is_enabled_ = false; }
+    bool IsEnabled() const { return is_enabled_; }
 
 private:
     bool is_enabled_;
@@ -65,7 +56,7 @@ private:
     GL::VertexArray  solid_vao_;  // vertex array object
     GL::VertexBuffer solid_ebo_;  // element buffer object
 
-    friend class Gui; // to use "is_enabled_" in checkbox
+    friend class Gui; // access to private variables
 };
 
 } // namespace App

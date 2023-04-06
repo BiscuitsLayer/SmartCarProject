@@ -6,6 +6,17 @@ project(SmartCarProject)
 ### Definitions ###
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Debug)
+set(APP_CONFIG_DIR "../configs/")
+# Provide includes
+# CMAKE_CURRENT_BINARY_DIR <- for config_application_out.hpp (to get variables from CMake into CPP code)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+### Config ###
+# Provide directories for CPP sources
+configure_file(
+    config_application_in.hpp
+    ${CMAKE_CURRENT_BINARY_DIR}/config_application_out.hpp
+)
 
 ### LibSmartCar ###
 set(LIB_SMART_CAR_DIR "src")

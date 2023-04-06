@@ -16,9 +16,14 @@
 // Forward declarations
 #include <helpers/helpers_fwd.hpp>
 
-// Complete types
+// LibSmartCar
 #include <camera/camera.hpp>
 #include <model/model.hpp>
+#include <window/window.hpp>
+
+// Incomplete type resolve
+#include <car_model/car_model_fwd.hpp>
+#include <skybox/skybox_fwd.hpp>
 
 namespace App {
 
@@ -49,7 +54,12 @@ public:
     std::optional<GL::Mat4> projection_matrix;
     std::optional<KeyboardMode> keyboard_mode;
     std::optional<KeyboardStatus> keyboard_status;
-    std::vector<std::shared_ptr<Model>> models;
+    std::optional<CustomWindow> window;
+
+    std::shared_ptr<CarModel> car_model;
+    std::shared_ptr<Skybox> skybox;
+    std::vector<std::shared_ptr<Model>> env;
+    std::vector<std::shared_ptr<Model>> obstacles;
 
 private:
     Context();

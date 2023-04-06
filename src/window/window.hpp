@@ -16,8 +16,11 @@
 // Forward declarations
 #include <window/window_fwd.hpp>
 
-// LibSmartCar
-#include <config/config_handler.hpp>
+// // LibSmartCar
+// #include <config/config_handler.hpp>
+
+// Incomplete type resolve
+#include <config/config_handler_fwd.hpp>
 
 // Forward declaration of event handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -36,7 +39,7 @@ class CustomWindow: public GL::Window {
 	 */
 public:
 	CustomWindow(GL::uint width, GL::uint height, const std::string& title, GL::WindowStyle::window_style_t style);
-	CustomWindow(Config::WindowConfig config);
+	CustomWindow(const Config::WindowConfig& config);
 
 private:
 	// Event handler now has access to window's private members
@@ -51,6 +54,6 @@ private:
  */
 LRESULT CALLBACK WindowEventHandlerWithImGui(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-void LimitMaxFps(App::Config::WindowConfig window_config);
+void LimitMaxFps(const Config::WindowConfig& window_config);
 
 } // namespace App

@@ -2,6 +2,7 @@
 
 // STL
 #include <algorithm>
+#include <memory>
 
 // Constants
 #include <constants/constants.hpp>
@@ -27,17 +28,15 @@ public:
         const GL::Vec3& center_translation, const Transform& transform);
     CarModel(const Config::CarModelConfig& config);
 
-    // TODO: group by purpose
     virtual const GL::Mat4 GetModelMatrix() const override;
-    // For intersector
-    const GL::Mat4 GetPrecomputedModelMatrix() const;
+
+    // For collision check
+    void SetIntersector(Config::IntersectorConfig intersector_config) { intersector_ = std::make_shared<Intersector>(intersector_config); }
+    std::shared_ptr<Intersector> GetIntersector() { return intersector_; }
+    
     void Move(float delta_time);
     void SetDrawWheelsBBoxes(bool value);
-    // For intersector
     virtual std::vector<MemoryAlignedBBox> CollectMABB() const override;
-
-    // TODO: handle it the other way
-    std::optional<Intersector> intersector_;
 
 private:
     void RotateWheels(float delta_time);
@@ -48,6 +47,10 @@ private:
     void ClearPrecomputedMovementTransform();
     void UpdateMovementTransform();
 
+    // For collision check
+    const GL::Mat4 GetPrecomputedModelMatrix() const;
+    std::shared_ptr<Intersector> intersector_;
+
     // Should be also kept there to compute rotation speed
     float move_max_speed_;
     float rotate_max_speed_;
@@ -56,11 +59,13 @@ private:
 
     const GL::Mat4 center_translation_;
     GL::Mat4 movement_transform_;
+
+    // If there won't be any collisions after check, set it as the resulting movement
     GL::Mat4 precomputed_movement_transform_;
 
     Accelerator accelerator_;
 
-    friend class Gui;
+    friend class Gui; // access to private variables
 };
 
 } // namespace App

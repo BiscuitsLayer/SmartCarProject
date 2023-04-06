@@ -31,6 +31,8 @@ public:
     void Draw();
 
 private:
+    void ModelMeshBBoxSelector(std::shared_ptr<App::Model> model) const;
+
     bool show_imgui_demo_window;
 };
 

@@ -6,7 +6,7 @@ namespace App {
 extern const float APP_CAR_SPEED_EPS;
 
 Accelerator::Accelerator(const float max_speed, const float acceleration)
-    : max_speed_(max_speed), acceleration_(acceleration), cur_speed_(0.0f) {
+    : max_speed_(max_speed), acceleration_(acceleration), cur_speed_(0.0f), was_stopped_(true) {
     if (acceleration <= 0) {
         throw std::runtime_error("Wrong acceleration value given!");
     }

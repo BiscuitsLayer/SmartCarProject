@@ -14,6 +14,12 @@ const int APP_GL_VEC2_BYTESIZE = sizeof(GL::Vec2);
 const int APP_GL_VEC3_COMPONENTS_COUNT = 3;
 const int APP_GL_VEC3_BYTESIZE = sizeof(GL::Vec3);
 
+const int APP_GL_VEC4_COMPONENTS_COUNT = 4;
+const int APP_GL_VEC4_BYTESIZE = sizeof(GL::Vec4);
+
+const int APP_GL_MAT4_COMPONENTS_COUNT = 16;
+const int APP_GL_MAT4_BYTESIZE = sizeof(GL::Mat4);
+
 // Camera
 const GL::Vec3 APP_CAMERA_WORLD_SPACE_UP = GL::Vec3(0.0f, 1.0f, 0.0f);
 const GL::Vec3 APP_CAMERA_RESERVE_WORLD_SPACE_UP = GL::Vec3(1.0f, 0.0f, 0.0f);

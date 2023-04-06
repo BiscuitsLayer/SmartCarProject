@@ -88,8 +88,18 @@ std::vector<MemoryAlignedBBox> Model::CollectMABB() const {
 }
 
 void Model::DrawBBoxOnCollision(size_t bbox_mesh_index) const {
+    auto& context = App::Context::Get();
+    auto& gl = context.gl->get();
+    auto shader_handler = context.shader_handler.value();
+    auto bbox_program = shader_handler.at(bbox_shader_name_);
+
+    gl.UseProgram(*bbox_program);
+
+    bbox_program->SetUniform(bbox_program->GetUniform("aMatrices.modelMatrix"), GetModelMatrix());
+    bbox_program->SetUniform(bbox_program->GetUniform("aMatrices.viewMatrix"), context.camera->GetViewMatrix());
+    bbox_program->SetUniform(bbox_program->GetUniform("aMatrices.projectionMatrix"), context.projection_matrix.value());
+    
     meshes_[bbox_mesh_index].DrawBBoxOnCollision();
 }
-
 
 } // namespace App
