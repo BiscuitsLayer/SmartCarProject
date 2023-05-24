@@ -2,6 +2,10 @@
 cmake_minimum_required(VERSION 3.10)
 project(TorchTest)
 
+# set(CXX_STANDARD_REQUIRED 17)
+# set(CMAKE_CUDA_STANDARD 17)
+# add_compile_options(/std=c++17)
+
 ### Torch ###
 # For Torch naming conventions
 cmake_policy(SET CMP0054 NEW)

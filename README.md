@@ -12,10 +12,12 @@ OpenGL based self-driving car (with DQN algorithm LibTorch neural network)
 
 **Make sure you have (Neural network part)**
 
-1. *CUDA*
-2. *cuDNN*
-3. *NVIDIA Nsight Graphics*
-4. *LibTorch*
+1. *[CUDA](https://developer.nvidia.com/cuda-downloads) (~3.5 GB)*
+2. *[cuDNN](https://developer.nvidia.com/rdp/cudnn-download) (~700 MB)*
+3. *[NVIDIA Nsight Graphics](https://developer.nvidia.com/nsight-graphics) (~1 GB)*
+4. *[LibTorch](https://pytorch.org/get-started/locally) (~2 GB)*
+
+current version works fine with CUDA 12.1
 
 **and copied all files from**
 
@@ -23,7 +25,7 @@ OpenGL based self-driving car (with DQN algorithm LibTorch neural network)
 
 **to**
 
-    C:\Program Files (x86)\Microsoft Visual Studio\<version>\<product>\Microsoft\VC\<version>\BuildCustomizations
+    C:\Program Files (x86)\Microsoft Visual Studio\<version>\<product>\MSBuild\Microsoft\VC\<version>\BuildCustomizations
 
 where *\<product\>* is the MSVC product you use: *{ BuildTools, Enterprise, Community, etc. }*
 

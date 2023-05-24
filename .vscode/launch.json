@@ -1,6 +1,17 @@
 {
     "configurations": [
         {
+            "name": "(NN) Launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/torch_test/build/Debug/TorchTest.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "console": "externalTerminal"
+        },
+        {
             "name": "(MSVC) Launch",
             "type": "cppvsdbg",
             "request": "launch",
@@ -11,30 +22,30 @@
             "environment": [],
             "console": "externalTerminal"
         },
-    {
-        "name": "(GCC) Launch",
-        "type": "cppdbg",
-        "request": "launch",
-        "program": "${workspaceFolder}/build_gcc/SmartCarMain.exe",
-        "args": ["${workspaceFolder}/config.json"],
-        "stopAtEntry": false,
-        "cwd": "${workspaceFolder}/build_gcc",
-        "environment": [],
-        "externalConsole": false,
-        "MIMode": "gdb",
-        "miDebuggerPath": "C:\\TDM-GCC-64\\bin\\gdb.exe",
-        "setupCommands": [
-            {
-                "description": "Enable pretty-printing for gdb",
-                "text": "-enable-pretty-printing",
-                "ignoreFailures": true
-            },
-            {
-                "description": "Set Disassembly Flavor to Intel",
-                "text": "-gdb-set disassembly-flavor intel",
-                "ignoreFailures": true
-            }
-        ]
-    }
+        {
+            "name": "(GCC) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build_gcc/SmartCarMain.exe",
+            "args": ["${workspaceFolder}/config.json"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build_gcc",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:\\TDM-GCC-64\\bin\\gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        }
     ]
 }
