@@ -15,8 +15,8 @@ public:
         out(register_module("out", torch::nn::Linear(inner_dims, 1))) {}
 
     torch::Tensor Forward(torch::Tensor in) {
-        in = torch::relu(fc1(in));
-        in = torch::relu(fc2(in));
+        in = torch::relu(fc1->forward(in));
+        in = torch::relu(fc2->forward(in));
         in = out(in);
         return in;
     }

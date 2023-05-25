@@ -7,7 +7,7 @@
             "program": "${workspaceFolder}/torch_test/build/Debug/TorchTest.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/torch_test/build",
             "environment": [],
             "console": "externalTerminal"
         },
