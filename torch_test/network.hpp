@@ -30,6 +30,6 @@ private:
     int inner_dims_;
 };
 
-// TORCH_MODULE(Net);
+TORCH_MODULE(Net);
 
 } // namespace NetNamespace

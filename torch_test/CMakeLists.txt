@@ -26,6 +26,19 @@ target_link_libraries(${PROJECT_NAME} "${TORCH_LIBRARIES}")
 # )
 
 ### Generate move DLLs script ###
+### Only files needed are:
+# torch_cuda.dll
+# torch_cpu.dll
+# fbgemm.dll
+# nvfuser_codegen.dll
+# libiomp5md.dll
+# c10.dll
+# c10_cuda.dll
+# asmjit.dll
+# cudnn64_8.dll
+# uv.dll
+# nvToolsExt64_1.dll
+### Maybe fix copying later...
 file(GENERATE 
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/CmakeCopyDLLs$<CONFIG>.cmake"
     CONTENT "message(\"Copying DLLs for target $<CONFIG>...\")

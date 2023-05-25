@@ -15,33 +15,19 @@ const int NET_INNER_SIZE = 2;
 const int NET_OBJECTS_COUNT = 7;
 
 int main() {
+	NetNamespace::Net net(NET_INPUT_SIZE, NET_INNER_SIZE);
+
 	std::string model_path{"model.pt"};
-	torch::serialize::InputArchive input_archive;
 	if (CheckFileExists(model_path)) {
 		std::cout << "Saved model file found! Loading..." << std::endl;
-		input_archive.load_from(model_path);
+		torch::load(net, model_path);
 	}
 
-	// NetNamespace::NetImpl net;
-	NetNamespace::NetImpl net(NET_INPUT_SIZE, NET_INNER_SIZE);
-
-	// net.load(input_archive);
-
-
-	// NetNamespace::NetImpl net(NET_INPUT_SIZE, NET_OUTPUT_SIZE);
-	// std::cout << net << std::endl;
-
-	// torch::Tensor x = torch::randn({ NET_OBJECTS_COUNT, NET_INPUT_SIZE });
 	torch::Tensor x = torch::ones({ NET_OBJECTS_COUNT, NET_INPUT_SIZE });
 	torch::Tensor out;
-
-	out = net.Forward(x);
+	out = net->Forward(x);
 	std::cout << out << std::endl;
 
-	// std::string model_path{"model.pt"};
-	torch::serialize::OutputArchive output_archive;
-	net.save(output_archive);
-	output_archive.save_to(model_path);
-
+	torch::save(net, model_path);
 	return 0;
 }
