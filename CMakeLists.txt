@@ -35,8 +35,10 @@ set_target_properties(SmartCarMain PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_B
 target_link_libraries(SmartCarMain PUBLIC LibSmartCar)
 
 ### Move DLLs ###
+# TODO: should be changed with cmake -P <configure_script.cmake> (like in torch test)
 add_custom_command(TARGET SmartCarMain POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:SmartCarMain> $<TARGET_FILE_DIR:SmartCarMain>
+	COMMENT "Copying DLLs for SmartCar..."
   	COMMAND_EXPAND_LISTS
 )
 

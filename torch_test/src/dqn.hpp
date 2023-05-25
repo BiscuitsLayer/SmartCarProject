@@ -2,7 +2,7 @@
 
 #include <torch/torch.h>
 
-class DQN : torch::nn::Module {
+class DQN : public torch::nn::Module {
 public:
     DQN(int64_t observations_count, int64_t actions_count)
         : first(register_module("first", torch::nn::Linear(observations_count, 128))),

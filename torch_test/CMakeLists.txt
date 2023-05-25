@@ -16,9 +16,24 @@ find_package(Torch REQUIRED)
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} "${TORCH_LIBRARIES}")
 
+### Legacy ###
 ### Move DLLs ###
-file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
-    COMMAND_EXPAND_LISTS
-)
+# file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
+# add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+#     COMMENT "Copying DLLs for PyTorch..."
+#     COMMAND_EXPAND_LISTS
+# )
+
+### Generate move DLLs script ###
+file(GENERATE 
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/CmakeCopyDLLs$<CONFIG>.cmake"
+    CONTENT "message(\"Copying DLLs for target $<CONFIG>...\")
+file(
+   COPY \"${TORCH_INSTALL_PREFIX}/lib/\"
+   DESTINATION \"$<TARGET_FILE_DIR:${PROJECT_NAME}>\"
+   PATTERN \"*.dll\"
+   PATTERN \"*.lib\" EXCLUDE
+   PATTERN \"*.pdb\" EXCLUDE
+)")
+
