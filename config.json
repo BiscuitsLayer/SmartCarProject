@@ -1,5 +1,5 @@
 {
-    "case": 1,
+    "case": 2,
     "window_config": "window.json",
     "intersector_config": "intersector.json",
     "cameras_config": "cameras.json",
@@ -133,6 +133,173 @@
                 }
             ],
             "obstacles": [
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            3.0,
+                            0.5,
+                            2.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            10.0,
+                            0.5,
+                            -2.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            22.0,
+                            0.5,
+                            2.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            30.0,
+                            0.5,
+                            2.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            40.0,
+                            0.5,
+                            -2.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            55.0,
+                            0.5,
+                            2.0
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "index": 2,
+            "camera_case": 0,
+            "car": {
+                "name": "SportCar"
+            },
+            "skybox": {
+                "name": "Skybox"
+            },
+            "env": [
+                {
+                    "name": "Garage",
+                    "transform": {
+                        "translation": [
+                            0.0,
+                            -0.5,
+                            0.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Garage",
+                    "transform": {
+                        "translation": [
+                            17.0,
+                            -0.501,
+                            0.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Garage",
+                    "transform": {
+                        "translation": [
+                            34.0,
+                            -0.5,
+                            0.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Garage",
+                    "transform": {
+                        "translation": [
+                            51.0,
+                            -0.501,
+                            0.0
+                        ]
+                    }
+                }
+            ],
+            "obstacles": [
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "scale": [
+                            1.0, 1.0, 9.0
+                        ],
+                        "translation": [
+                            -7.0,
+                            -0.85,
+                            0.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "scale": [
+                            1.0, 1.0, 9.0
+                        ],
+                        "translation": [
+                            63.0,
+                            -0.85,
+                            0.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "scale": [
+                            36.0, 1.0, 1.0
+                        ],
+                        "translation": [
+                            28.0,
+                            -0.85,
+                            9.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "scale": [
+                            36.0, 1.0, 1.0
+                        ],
+                        "translation": [
+                            28.0,
+                            -0.85,
+                            -9.0
+                        ]
+                    }
+                },
+
                 {
                     "name": "Cube",
                     "transform": {
