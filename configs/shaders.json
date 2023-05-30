@@ -20,6 +20,11 @@
     {
         "name": "INTERSECTION",
         "folder": "../shader",
-        "compute": "intersection.comp"
+        "compute": "collision_intersection.comp"
+    },
+    {
+        "name": "RAY_INTERSECTION",
+        "folder": "../shader",
+        "compute": "ray_intersection.comp"
     }
 ]

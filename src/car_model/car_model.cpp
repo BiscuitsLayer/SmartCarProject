@@ -51,17 +51,30 @@ void CarModel::Move(float delta_time) {
         if (context.keyboard_status.value()[GL::Key::D]) {
             RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
         }
+    } else if (context.keyboard_mode.value() == App::KeyboardMode::NN_LEARNING) {
+        if (context.actions[0]) {
+            accelerator_.IncreaseSpeed(delta_time, true);
+        }
+        if (context.actions[1]) {
+            accelerator_.IncreaseSpeed(delta_time, false);
+        }
+        if (context.actions[2]) {
+            RotateLeft(delta_time, accelerator_.GetSpeed() > 0.0);
+        }
+        if (context.actions[3]) {
+            RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
+        }
     }
     MoveForward(delta_time);
 
     // Do intersection
     std::vector<int> intersection_result{};
-    if (intersector_) {
-        intersector_->ClearCarParts();
-        intersector_->AddCarParts(this);
+    if (collision_intersector_) {
+        collision_intersector_->ClearCarParts();
+        collision_intersector_->AddCarParts(this);
 
-        intersector_->Intersect();
-        intersection_result = intersector_->GetIntersectedCarPartMeshIndices(0);
+        collision_intersector_->Intersect();
+        intersection_result = collision_intersector_->GetIntersectedCarPartMeshIndices(0);
     }
     
     // No collisions found - car can be moved
@@ -85,6 +98,10 @@ void CarModel::Move(float delta_time) {
     if (!context.keyboard_status.value()[GL::Key::W] && !context.keyboard_status.value()[GL::Key::S]) {
         accelerator_.DecreaseSpeed(delta_time);
     }
+
+    // Update distances to obstacles
+    ray_intersector_->Intersect(GetModelMatrix());
+    context.distances_from_rays = ray_intersector_->GetResultDistances();
 }
 
 void CarModel::SetDrawWheelsBBoxes(bool value) {

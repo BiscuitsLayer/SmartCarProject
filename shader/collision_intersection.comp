@@ -23,7 +23,7 @@ layout(std430, binding = 2) writeonly buffer IntersetionResultsBlock {
     float intersection_results[];
 };
 
-bool CheckPointInsideStaticBBox(vec4 obstacle_min_point, vec4 obstacle_max_point, vec3 point) {
+bool CheckPointInsideStaticBBox(vec3 obstacle_min_point, vec3 obstacle_max_point, vec3 point) {
     return (point.x <= obstacle_max_point.x) && (obstacle_min_point.x <= point.x)
     && (point.y <= obstacle_max_point.y) && (obstacle_min_point.y <= point.y)
     && (point.z <= obstacle_max_point.z) && (obstacle_min_point.z <= point.z);
@@ -33,7 +33,7 @@ bool CheckPointInsideStaticBBox(vec4 obstacle_min_point, vec4 obstacle_max_point
     Main idea: check if any vertex of dynamic (car part) bbox is inside
     the static (obstacle bbox) <- in this case there is definetely an intersection
 */  
-bool IntersectStaticBBoxWithDynamicBBox(vec4 obstacle_min_point, vec4 obstacle_max_point, vec4 car_parts_min_point, vec4 car_parts_max_point) {
+bool IntersectStaticBBoxWithDynamicBBox(vec3 obstacle_min_point, vec3 obstacle_max_point, vec3 car_parts_min_point, vec3 car_parts_max_point) {
     bool test = false;
     
     vec3 pt0 = vec3(car_parts_min_point.x, car_parts_min_point.y, car_parts_min_point.z);
@@ -71,12 +71,18 @@ void main() {
     uint car_parts_size = gl_NumWorkGroups.y;
 
     BBox obstacle_bbox = obstacle_bboxes[obstacle_id];
-    vec4 obstacle_min_point = obstacle_bbox.model * obstacle_bbox.mesh_to_model * obstacle_bbox.min_point;
-    vec4 obstacle_max_point = obstacle_bbox.model * obstacle_bbox.mesh_to_model * obstacle_bbox.max_point;
+    vec4 obstacle_min_point_vec4 = obstacle_bbox.model * obstacle_bbox.mesh_to_model * obstacle_bbox.min_point;
+    vec3 obstacle_min_point = obstacle_min_point_vec4.xyz / obstacle_min_point_vec4.w;
+
+    vec4 obstacle_max_point_vec4 = obstacle_bbox.model * obstacle_bbox.mesh_to_model * obstacle_bbox.max_point;
+    vec3 obstacle_max_point = obstacle_max_point_vec4.xyz / obstacle_max_point_vec4.w;
 
     BBox car_parts_bbox = car_parts_bboxes[car_parts_id];
-    vec4 car_parts_min_point = car_parts_bbox.model * car_parts_bbox.mesh_to_model * car_parts_bbox.min_point;
-    vec4 car_parts_max_point = car_parts_bbox.model * car_parts_bbox.mesh_to_model * car_parts_bbox.max_point;
+    vec4 car_parts_min_point_vec4 = car_parts_bbox.model * car_parts_bbox.mesh_to_model * car_parts_bbox.min_point;
+    vec3 car_parts_min_point = car_parts_min_point_vec4.xyz / car_parts_min_point_vec4.w;
+
+    vec4 car_parts_max_point_vec4 = car_parts_bbox.model * car_parts_bbox.mesh_to_model * car_parts_bbox.max_point;
+    vec3 car_parts_max_point = car_parts_max_point_vec4.xyz / car_parts_max_point_vec4.w;
 
     bool result = IntersectStaticBBoxWithDynamicBBox(obstacle_min_point, obstacle_max_point, car_parts_min_point, car_parts_max_point);
     intersection_results[obstacle_id * car_parts_size + car_parts_id] = result ? 1 : 0;

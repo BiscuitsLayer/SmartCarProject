@@ -2,6 +2,6 @@
 
 namespace App {
 
-class Intersector;
+class CollisionIntersector;
 
 } // namespace App

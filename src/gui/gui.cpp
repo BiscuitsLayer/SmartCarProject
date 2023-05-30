@@ -156,8 +156,11 @@ void Gui::Draw() {
         ImGui::PopID();
     }
 
-    // CAMERA PARAMETERS
+    // DISTANCES FROM RAYS
+    ImGui::SeparatorText("Distances from rays");
+    ImGui::PlotHistogram("", context.distances_from_rays.data(), APP_RAY_INTERSECTOR_RAYS_COUNT, 0, NULL, 0.0f, 30.0f, ImVec2(0, 80.0f));
 
+    // CAMERA PARAMETERS
     ImGui::SeparatorText("Camera parameters");
 
     ImGui::DragFloat3("Position", (float*)&context.camera->position_, 0.1f, -100.0f, 100.0f);

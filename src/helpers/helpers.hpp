@@ -61,6 +61,12 @@ public:
     std::vector<std::shared_ptr<Model>> env;
     std::vector<std::shared_ptr<Model>> obstacles;
 
+    // INPUT TO NEURAL NETWORK
+    std::array<float, APP_RAY_INTERSECTOR_RAYS_COUNT> distances_from_rays;
+
+    // OUTPUT FROM NEURAL NETWORK
+    std::array<bool, APP_CAR_ACTIONS_COUNT> actions;
+
 private:
     Context();
 };

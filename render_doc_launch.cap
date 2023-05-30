@@ -1,0 +1,33 @@
+{
+    "rdocCaptureSettings": 1,
+    "settings": {
+        "autoStart": false,
+        "commandLine": "C:\\Users\\vWX1074699\\Desktop\\Graphics\\SmartCarProject\\config.json",
+        "environment": [
+            {
+                "separator": "Platform style",
+                "type": "Set",
+                "value": "C:/Users/vWX1074699/Desktop/Graphics/LumeTools2022/MyLumeSamples/Sources/build/windows/LumeEngine/DLL/Debug",
+                "variable": "PATH"
+            }
+        ],
+        "executable": "C:\\Users\\vWX1074699\\Desktop\\Graphics\\SmartCarProject\\build\\SmartCarMain.exe",
+        "inject": false,
+        "numQueuedFrames": 0,
+        "options": {
+            "allowFullscreen": true,
+            "allowVSync": true,
+            "apiValidation": true,
+            "captureAllCmdLists": false,
+            "captureCallstacks": false,
+            "captureCallstacksOnlyDraws": false,
+            "debugOutputMute": true,
+            "delayForDebugger": 0,
+            "hookIntoChildren": false,
+            "refAllResources": false,
+            "verifyBufferAccess": false
+        },
+        "queuedFrameCap": 0,
+        "workingDir": "C:\\Users\\vWX1074699\\Desktop\\Graphics\\SmartCarProject\\build\\"
+    }
+}

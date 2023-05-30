@@ -16,10 +16,10 @@
 
 namespace App {
 
-class Intersector {
+class CollisionIntersector {
 public:
-    Intersector(const std::string& intersect_shader_name);
-    Intersector(const Config::IntersectorConfig& config);
+    CollisionIntersector(const std::string& intersect_shader_name);
+    CollisionIntersector(const Config::IntersectorConfig& config);
 
     void ClearObstacles();
     void AddObstacles(const Model* model);
@@ -52,13 +52,13 @@ public:
     }
 
 private:
-    std::pair<int, int> ObstacleIndexToModelNameMeshIndex(const int obstacle_index) const {
-        return obstacle_index_to_model_index_mesh_index.at(obstacle_index);
-    }
+    // std::pair<int, int> ObstacleIndexToModelNameMeshIndex(const int obstacle_index) const {
+    //     return obstacle_index_to_model_index_mesh_index.at(obstacle_index);
+    // }
 
-    std::pair<int, int> CarPartIndexToModelNameMeshIndex(const int car_part_index) const {
-        return car_part_index_to_model_index_mesh_index.at(car_part_index);
-    }
+    // std::pair<int, int> CarPartIndexToModelNameMeshIndex(const int car_part_index) const {
+    //     return car_part_index_to_model_index_mesh_index.at(car_part_index);
+    // }
 
     std::map<int, std::pair<int, int>> obstacle_index_to_model_index_mesh_index{};
     std::map<int, std::pair<int, int>> car_part_index_to_model_index_mesh_index{};

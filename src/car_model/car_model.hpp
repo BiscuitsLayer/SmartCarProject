@@ -16,6 +16,7 @@
 #include <transform/transform.hpp>
 #include <accelerator/accelerator.hpp>
 #include <intersector/intersector.hpp>
+#include <ray_intersector/ray_intersector.hpp>
 
 namespace App {
 
@@ -31,8 +32,12 @@ public:
     virtual const GL::Mat4 GetModelMatrix() const override;
 
     // For collision check
-    void SetIntersector(Config::IntersectorConfig intersector_config) { intersector_ = std::make_shared<Intersector>(intersector_config); }
-    std::shared_ptr<Intersector> GetIntersector() { return intersector_; }
+    void SetCollisionIntersector(Config::IntersectorConfig collision_intersector_config) { collision_intersector_ = std::make_shared<CollisionIntersector>(collision_intersector_config); }
+    std::shared_ptr<CollisionIntersector> GetCollisionIntersector() { return collision_intersector_; }
+
+    // To compute distances to obstacles
+    void SetRayIntersector(Config::IntersectorConfig ray_intersector_config) { ray_intersector_ = std::make_shared<RayIntersector>(ray_intersector_config); }
+    std::shared_ptr<RayIntersector> GetRayIntersector() { return ray_intersector_; }
     
     void Move(float delta_time);
     void SetDrawWheelsBBoxes(bool value);
@@ -49,7 +54,8 @@ private:
 
     // For collision check
     const GL::Mat4 GetPrecomputedModelMatrix() const;
-    std::shared_ptr<Intersector> intersector_;
+    std::shared_ptr<CollisionIntersector> collision_intersector_;
+    std::shared_ptr<RayIntersector> ray_intersector_;
 
     // Should be also kept there to compute rotation speed
     float move_max_speed_;

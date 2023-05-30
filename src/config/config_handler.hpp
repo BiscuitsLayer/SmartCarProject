@@ -120,13 +120,14 @@ public:
     ConfigHandler(const std::string& filename, const std::string& config_files_folder);
 
     Config::WindowConfig GetWindowConfig() const;
-    Config::IntersectorConfig GetIntersectorConfig() const;
+    Config::IntersectorConfig GetCollisionIntersectorConfig() const;
+    Config::IntersectorConfig GetRayIntersectorConfig() const;
     Config::CameraConfig GetCameraConfig() const;
     ShaderHandler GetShaderHandler() const;
 
 private:
     void SetWindowConfig(const std::shared_ptr<json> window_json);
-    void SetIntersectorConfig(const std::shared_ptr<json> intersector_json);
+    void SetIntersectorsConfigs(const std::shared_ptr<json> intersector_json);
     void SetCamerasConfigs(const std::shared_ptr<json> cameras_json);
     void SetShaderHandler(const std::shared_ptr<json> shaders_json);
     void SetModelsConfigs(const std::shared_ptr<json> models_json);
@@ -166,7 +167,10 @@ private:
     int camera_case_selected_index_;
 
     Config::WindowConfig window_config_;
-    Config::IntersectorConfig intersector_config_;
+
+    Config::IntersectorConfig collision_intersector_config_;
+    Config::IntersectorConfig ray_intersector_config_;
+
     std::vector<Config::CameraConfig> cameras_configs_;
     ShaderHandler shader_handler_;
 

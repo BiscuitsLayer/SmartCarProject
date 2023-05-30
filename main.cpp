@@ -35,7 +35,8 @@ int main(int argc, char** argv) try {
     App::ConfigHandler config_handler{argv[1], APP_CONFIG_DIR};
 
     auto window_config = config_handler.GetWindowConfig();
-	auto intersector_config = config_handler.GetIntersectorConfig();
+	auto collision_intersector_config = config_handler.GetCollisionIntersectorConfig();
+	auto ray_intersector_config = config_handler.GetRayIntersectorConfig();
     auto camera_config = config_handler.GetCameraConfig();
 
     context.projection_matrix = GL::Mat4::Perspective(
@@ -54,7 +55,8 @@ int main(int argc, char** argv) try {
     gl.BlendFunc(GL::BlendingFactor::SourceAlpha, GL::BlendingFactor::OneMinusSourceAlpha);
 
     context.camera = App::Camera(camera_config);
-    context.car_model->SetIntersector(intersector_config);
+    context.car_model->SetCollisionIntersector(collision_intersector_config);
+    context.car_model->SetRayIntersector(ray_intersector_config);
     App::Gui gui(window_config);
 
     App::Timer main_timer;
@@ -88,20 +90,31 @@ int main(int argc, char** argv) try {
             }
         }
 
-        auto car_intersector = context.car_model->GetIntersector();
-        if (car_intersector) {
-            car_intersector->ClearObstacles();
+        // FIX THIS PART
+        auto car_collision_intersector = context.car_model->GetCollisionIntersector();
+        auto car_ray_intersector = context.car_model->GetRayIntersector();
+
+        if (car_collision_intersector) {
+            car_collision_intersector->ClearObstacles();
 
             for (auto obstacle : context.obstacles) {
-                car_intersector->AddObstacles(obstacle.get());
+                car_collision_intersector->AddObstacles(obstacle.get());
             }
         }
+        if (car_ray_intersector) {
+            car_ray_intersector->ClearObstacles();
+
+            for (auto obstacle : context.obstacles) {
+                car_ray_intersector->AddObstacles(obstacle.get());
+            }
+        }
+        // FIX THIS PART
 
         context.camera->Move(delta_time);
         context.car_model->Move(delta_time);
 
         for (int model_index = 0; model_index < context.obstacles.size(); ++model_index) {
-            auto intersection_result = car_intersector->GetIntersectedObstacleMeshIndices(model_index);
+            auto intersection_result = car_collision_intersector->GetIntersectedObstacleMeshIndices(model_index);
             for (auto mesh_index : intersection_result) {
                 context.obstacles[model_index]->DrawBBoxOnCollision(mesh_index);
             }

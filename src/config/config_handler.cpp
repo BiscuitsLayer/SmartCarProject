@@ -32,7 +32,7 @@ ConfigHandler::ConfigHandler(const std::string& filename, const std::string& con
 
     auto intersector_config_filename = FindString(data_, "intersector_config");
     auto intersector_config_json = std::make_shared<json>(json::parse(ReadFileData(config_files_folder + intersector_config_filename, false)));
-    SetIntersectorConfig(intersector_config_json);
+    SetIntersectorsConfigs(intersector_config_json);
 
     auto cameras_config_filename = FindString(data_, "cameras_config");
     auto cameras_config_json = std::make_shared<json>(json::parse(ReadFileData(config_files_folder + cameras_config_filename, false)));
@@ -121,8 +121,12 @@ Config::WindowConfig ConfigHandler::GetWindowConfig() const {
     return window_config_;
 }
 
-Config::IntersectorConfig ConfigHandler::GetIntersectorConfig() const {
-    return intersector_config_;
+Config::IntersectorConfig ConfigHandler::GetCollisionIntersectorConfig() const {
+    return collision_intersector_config_;
+}
+
+Config::IntersectorConfig ConfigHandler::GetRayIntersectorConfig() const {
+    return ray_intersector_config_;
 }
 
 Config::CameraConfig ConfigHandler::GetCameraConfig() const {
@@ -148,10 +152,21 @@ void ConfigHandler::SetWindowConfig(const std::shared_ptr<json> window_json) {
     window_config_.params.fullscreen = FindBoolean(params, "fullscreen");
 };
 
-void ConfigHandler::SetIntersectorConfig(const std::shared_ptr<json> intersector_json) {
-    auto shader = FindObject(intersector_json, "shader");
-    intersector_config_.shader.compute_shader_name = FindString(shader, "default");
-    intersector_config_.enabled = FindBoolean(intersector_json, "enabled");
+void ConfigHandler::SetIntersectorsConfigs(const std::shared_ptr<json> intersector_json) {
+    auto cases = ConvertToArray(intersector_json);
+
+    for (auto intersector_case : cases) {
+        auto type = FindString(intersector_case, "type");
+        if (type == "COLLISION") {
+            auto shader = FindObject(intersector_case, "shader");
+            collision_intersector_config_.shader.compute_shader_name = FindString(shader, "default");
+            collision_intersector_config_.enabled = FindBoolean(intersector_case, "enabled");
+        } else { // type == "RAY_INTERSECTION"
+            auto shader = FindObject(intersector_case, "shader");
+            ray_intersector_config_.shader.compute_shader_name = FindString(shader, "default");
+            ray_intersector_config_.enabled = FindBoolean(intersector_case, "enabled");
+        }
+    }
 };
 
 void ConfigHandler::SetCamerasConfigs(const std::shared_ptr<json> cameras_json) {

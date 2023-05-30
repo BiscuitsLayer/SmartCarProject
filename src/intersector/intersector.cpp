@@ -7,18 +7,18 @@ extern const int APP_INTERSECTOR_NUM_GROUPS_Z_COUNT;
 extern const float APP_INTERSECTOR_INTERSECTION_FOUND;
 extern const float APP_INTERSECTOR_INTERSECTION_NOT_FOUND;
 
-Intersector::Intersector(const std::string& intersect_shader_name)
+CollisionIntersector::CollisionIntersector(const std::string& intersect_shader_name)
     : intersect_shader_name_(intersect_shader_name) {}
 
-Intersector::Intersector(const Config::IntersectorConfig& config)
-    : Intersector(config.shader.compute_shader_name) {}
+CollisionIntersector::CollisionIntersector(const Config::IntersectorConfig& config)
+    : CollisionIntersector(config.shader.compute_shader_name) {}
 
-void Intersector::ClearObstacles() {
+void CollisionIntersector::ClearObstacles() {
     obstacle_bboxes_.clear();
     current_obstacle_index_ = 0;
 }
 
-void Intersector::AddObstacles(const Model* model) {
+void CollisionIntersector::AddObstacles(const Model* model) {
     std::vector<MemoryAlignedBBox> new_obstacle_bboxes = model->CollectMABB();
     obstacle_bboxes_.reserve(obstacle_bboxes_.size() + new_obstacle_bboxes.size());
 
@@ -29,12 +29,12 @@ void Intersector::AddObstacles(const Model* model) {
     ++current_obstacle_index_;
 }
 
-void Intersector::ClearCarParts() {
+void CollisionIntersector::ClearCarParts() {
     car_parts_bboxes_.clear();
     current_car_part_index_ = 0;
 }
 
-void Intersector::AddCarParts(const CarModel* car_model) {
+void CollisionIntersector::AddCarParts(const CarModel* car_model) {
     std::vector<MemoryAlignedBBox> new_car_parts_bboxes = car_model->CollectMABB();
     car_parts_bboxes_.reserve(car_parts_bboxes_.size() + new_car_parts_bboxes.size());
 
@@ -45,7 +45,7 @@ void Intersector::AddCarParts(const CarModel* car_model) {
     ++current_car_part_index_;
 }
 
-void Intersector::Intersect() {
+void CollisionIntersector::Intersect() {
     // TODO: get rid of magic numbers
     // TODO: fix code (with SubData) instead of generating buffer object every frame
     // TODO: fix SubData and GetSubData in OOGL (check if they need glBindBufferBase)

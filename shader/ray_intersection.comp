@@ -1,0 +1,102 @@
+#version 430
+
+// Define the size of the local work group 
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+// WARNING: std430 will pad your struct of vec3 out to the size of a vec4
+struct BBox {
+    vec4 min_point;
+    vec4 max_point;
+    mat4 model;
+    mat4 mesh_to_model;
+};
+
+struct Ray {
+    vec4 origin;
+    vec4 direction;
+    mat4 car_model_matrix;
+};
+
+layout (std430, binding = 0) readonly buffer ObstaclesBlock {
+    BBox obstacle_bboxes[];
+};
+
+layout (std430, binding = 1) readonly buffer RayBlock {
+    Ray rays[];
+};
+
+layout(std430, binding = 2) writeonly buffer IntersetionResultsBlock {
+    float t_values[];
+};
+
+// source: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection.html
+// modification: returns positive t - value of intersection point (closest <=> tmin)
+// if there is no intersection, returns -1.0
+float IntersectStaticBBoxWithRay(vec3 obstacle_min_point, vec3 obstacle_max_point, vec3 ray_origin, vec3 ray_direction) {
+    vec3 invdir = 1.0 / ray_direction.xyz;
+    ivec3 is_negative_invdir = ivec3(
+        invdir.x < 0.0 ? 1 : 0, 
+        invdir.y < 0.0 ? 1 : 0,
+        invdir.z < 0.0 ? 1 : 0
+    );
+    vec3 bounds[2] = {
+        obstacle_min_point,
+        obstacle_max_point
+    };
+
+    float tmin, tmax, tymin, tymax, tzmin, tzmax;
+    
+    tmin = (bounds[is_negative_invdir.x].x - ray_origin.x) * invdir.x;
+    tmax = (bounds[1 - is_negative_invdir.x].x - ray_origin.x) * invdir.x;
+
+    tymin = (bounds[is_negative_invdir.y].y - ray_origin.y) * invdir.y;
+    tymax = (bounds[1 - is_negative_invdir.y].y - ray_origin.y) * invdir.y;
+    
+    if ((tmin > tymax) || (tymin > tmax))
+        return -1.0;
+
+    if (tymin > tmin)
+        tmin = tymin;
+    if (tymax < tmax)
+        tmax = tymax;
+    
+    tzmin = (bounds[is_negative_invdir.z].z - ray_origin.z) * invdir.z;
+    tzmax = (bounds[1 - is_negative_invdir.z].z - ray_origin.z) * invdir.z;
+    
+    if ((tmin > tzmax) || (tzmin > tmax))
+        return -1.0;
+
+    if (tzmin > tmin)
+        tmin = tzmin;
+    if (tzmax < tmax)
+        tmax = tzmax;
+
+    return tmin < 0.0 ? -1.0 : tmin;
+}
+
+void main() {
+    uint obstacle_id = gl_GlobalInvocationID.x;
+    uint ray_id = gl_GlobalInvocationID.y;
+
+    uint obstacles_size = gl_NumWorkGroups.x;
+    uint rays_size = gl_NumWorkGroups.y;
+
+    BBox obstacle_bbox = obstacle_bboxes[obstacle_id];
+    vec4 obstacle_min_point_vec4 = obstacle_bbox.model * obstacle_bbox.mesh_to_model * obstacle_bbox.min_point;
+    vec3 obstacle_min_point = obstacle_min_point_vec4.xyz / obstacle_min_point_vec4.w;
+
+    vec4 obstacle_max_point_vec4 = obstacle_bbox.model * obstacle_bbox.mesh_to_model * obstacle_bbox.max_point;
+    vec3 obstacle_max_point = obstacle_max_point_vec4.xyz / obstacle_max_point_vec4.w;
+
+    Ray ray = rays[ray_id];
+    vec4 ray_origin_vec4 = ray.car_model_matrix * ray.origin;
+    vec3 ray_origin = ray_origin_vec4.xyz / ray_origin_vec4.w;
+
+    vec4 ray_direction_vec4 = ray.car_model_matrix * ray.direction;
+    // WARNING: direction vectors have w component == 0.0, because the should not be translated (only rotated)
+    // so we just ignore that component
+    vec3 ray_direction = normalize(ray_direction_vec4.xyz);
+
+    float t_value = IntersectStaticBBoxWithRay(obstacle_min_point, obstacle_max_point, ray_origin, ray_direction);
+    t_values[obstacle_id * rays_size + ray_id] = t_value;
+}
