@@ -27,6 +27,28 @@ GL::Vec3 GetTranslation(const GL::Mat4& matrix) {
     return GL::Vec3{matrix.m[12], matrix.m[13], matrix.m[14]};
 }
 
+std::string GetLastSavedFileWithPrefix(const std::string& path, const std::string& prefix) {
+    std::filesystem::file_time_type ans_last_mod_time;
+    std::string ans{};
+
+    bool is_first = true;
+    for (auto entry : std::filesystem::directory_iterator(path)) {
+        std::string entry_filepath = entry.path().u8string();
+        std::string entry_filename = GetFilenameFromPath(entry_filepath);
+        if (entry_filename.substr(0, prefix.size()) != prefix) {
+            continue;
+        }
+        std::filesystem::file_time_type last_mod_time = std::filesystem::last_write_time(entry);
+        if ((last_mod_time >= ans_last_mod_time) || is_first) {
+            is_first = false;
+            ans_last_mod_time = last_mod_time;
+            ans = entry_filepath;
+        }
+    }
+
+    return ans;
+}
+
 std::string GetFilenameFromPath(const std::string& path) {
     size_t starting_index = path.find_last_of('/') + 1;
     if (starting_index >= path.size()) {
@@ -37,6 +59,11 @@ std::string GetFilenameFromPath(const std::string& path) {
 
 std::string GetFolderFromPath(const std::string& path) {
     return path.substr(0, path.find_last_of('/')) + '/';
+}
+
+bool CheckIfFileExists(const std::string& path) {
+    std::ifstream file{path};
+    return file.good();
 }
 
 std::string ReadFileData(const std::string& filename, bool debug_dump) {

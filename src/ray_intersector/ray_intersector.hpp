@@ -1,9 +1,8 @@
 #pragma once
 
+// STL
 #define NOMINMAX
 #include <algorithm>
-#include <limits>
-#include <numbers>
 
 // OpenGL Wrapper
 #include <GL/OOGL.hpp>
@@ -61,20 +60,9 @@ public:
         // TODO: fix SubData and GetSubData in OOGL (check if they need glBindBufferBase)
 
         std::array<Ray, APP_RAY_INTERSECTOR_RAYS_COUNT> rays_;
-        //  = {
-        //     // WARNING: origins have w component == 1.0, because they can be translated
-        //     // but direction have w component == 0.0, because the should not be translated (only rotated)
-        //     Ray{GL::Vec4{0.000, 0.000, 0.000, 1.000}, GL::Vec4{+1.000, 0.000, 0.000, 0.000}, car_model_matrix},
-        //     Ray{GL::Vec4{0.000, 0.000, 0.000, 1.000}, GL::Vec4{+0.866, 0.000, 0.500, 0.000}, car_model_matrix},
-        //     Ray{GL::Vec4{0.000, 0.000, 0.000, 1.000}, GL::Vec4{+0.500, 0.000, 0.866, 0.000}, car_model_matrix},
-        //     Ray{GL::Vec4{0.000, 0.000, 0.000, 1.000}, GL::Vec4{+0.000, 0.000, 1.000, 0.000}, car_model_matrix},
-        //     Ray{GL::Vec4{0.000, 0.000, 0.000, 1.000}, GL::Vec4{-0.500, 0.000, 0.866, 0.000}, car_model_matrix},
-        //     Ray{GL::Vec4{0.000, 0.000, 0.000, 1.000}, GL::Vec4{-0.866, 0.000, 0.500, 0.000}, car_model_matrix},
-        //     Ray{GL::Vec4{0.000, 0.000, 0.000, 1.000}, GL::Vec4{-1.000, 0.000, 0.000, 0.000}, car_model_matrix}
-        // };
 
         assert(APP_RAY_INTERSECTOR_RAYS_COUNT > 1);
-        float coef = std::numbers::pi / (APP_RAY_INTERSECTOR_RAYS_COUNT - 1);
+        float coef = APP_MATH_PI / (APP_RAY_INTERSECTOR_RAYS_COUNT - 1);
         for (int k = 0; k < APP_RAY_INTERSECTOR_RAYS_COUNT; ++k) {
             float x_component = std::cos(coef * k);
             float z_component = std::sin(coef * k);

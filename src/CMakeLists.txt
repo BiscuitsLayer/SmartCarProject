@@ -4,8 +4,9 @@ set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 project(LibSmartCar VERSION 1.0.0)
 
 ### Definitions ###
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(LIB_SMART_CAR_ASSETS_DIR "../assets/")
+set(LIB_SMART_CAR_NN_MODELS_DIR "../models/")
 set(LIB_SMART_CAR_SHADER_DIR "../shader/")
 set(LIB_SMART_CAR_SERIALIZED_FILES_DIR "serialized/")
 # Provide includes (not using target_include_directories, because there are many libraries there, 
@@ -24,6 +25,12 @@ configure_file(
 )
 # Create directory for serialized files
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${LIB_SMART_CAR_SERIALIZED_FILES_DIR})
+
+### Torch ###
+# For Torch naming conventions
+cmake_policy(SET CMP0054 NEW)
+# Find Torch
+find_package(Torch REQUIRED)
 
 ### OOGL ###
 # Provide directories
@@ -125,8 +132,21 @@ add_library(${PROJECT_NAME} STATIC
 )
 # Link the library
 target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_LIBRARIES} OOGL 
-    MyImGuiSubset assimp::assimp nlohmann_json::nlohmann_json
+    MyImGuiSubset assimp::assimp nlohmann_json::nlohmann_json ${TORCH_LIBRARIES}
 )
+
+# # TODO:
+# ### Maybe fix copying later...
+# file(GENERATE 
+#     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/CmakeCopyDLLs$<CONFIG>.cmake"
+#     CONTENT "message(\"Copying DLLs for target $<CONFIG>...\")
+# file(
+#    COPY \"${TORCH_INSTALL_PREFIX}/lib/\"
+#    DESTINATION \"$<TARGET_FILE_DIR:${PROJECT_NAME}>\"
+#    PATTERN \"*.dll\"
+#    PATTERN \"*.lib\" EXCLUDE
+#    PATTERN \"*.pdb\" EXCLUDE
+# )")
 
 ### Check include directories ###
 get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)

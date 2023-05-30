@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <memory>
 #include <optional>
+#include <chrono>
+#include <filesystem>
 
 // OpenGL Wrapper
 #include <GL/OOGL.hpp>
@@ -73,10 +75,13 @@ private:
 
 GL::Vec3 GetTranslation(const GL::Mat4& matrix);
 
+std::string GetLastSavedFileWithPrefix(const std::string& path, const std::string& prefix);
 std::string GetFilenameFromPath(const std::string& path);
 std::string GetFolderFromPath(const std::string& path);
 
+bool CheckIfFileExists(const std::string& path);
 std::string ReadFileData(const std::string& filename, bool debug_dump = true);
 void SaveToFile(const std::string& filename, const std::vector<unsigned char>& buffer, bool debug_dump = true);
+
 
 } // namespace App

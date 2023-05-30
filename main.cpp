@@ -1,3 +1,6 @@
+// Windows defines for PyTorch
+#define NOMINMAX
+
 // LibSmartCar
 #include <helpers/helpers.hpp>
 #include <transform/transform.hpp>
@@ -7,6 +10,7 @@
 #include <window/window.hpp>
 #include <config/config_handler.hpp>
 #include <intersector/intersector.hpp>
+#include <dqn/trainer.hpp>
 
 // Model
 #include <model/model.hpp>
@@ -61,6 +65,8 @@ int main(int argc, char** argv) try {
 
     App::Timer main_timer;
     main_timer.Start();
+
+    App::Trainer nn_trainer;
 
     bool space_was_pressed = false;
     bool draw_gui = true;
@@ -147,6 +153,8 @@ int main(int argc, char** argv) try {
     if (draw_gui) {
         gui.Cleanup();
     }
+    nn_trainer.SaveModel();
+
     return 0;
 }
 catch (std::exception& e) {

@@ -2,6 +2,7 @@
 
 // STL
 #include <string>
+#include <cmath>
 
 // Assimp
 #include <assimp/scene.h>
@@ -34,12 +35,21 @@ struct AssimpMaterialFloatParameters {
     unsigned int index;
 };
 
+/* ===== MATH CONSTANTS ===== */
+inline constexpr double APP_MATH_PI = 3.14159265358979323846;
+
 /* ===== CONSTEXPR VARIABLES (FOR ARRAY SIZE) ===== */
 // Application constants
 constexpr int APP_KEYBOARD_KEYS_COUNT = GL::Key::key_t::Divide + 1;
 
 // Textures
 constexpr int APP_CUBEMAP_TEXTURES_COUNT = 6;
+
+// Ray intersector
+constexpr int APP_RAY_INTERSECTOR_RAYS_COUNT = 121;
+
+// For DQN algorithm
+constexpr int APP_CAR_ACTIONS_COUNT = 4;
 
 /* ===== EXTERN VARIABLES ===== */
 // Keyboard
@@ -120,11 +130,5 @@ extern const float APP_CAR_SPEED_EPS;
 extern const int APP_INTERSECTOR_NUM_GROUPS_Z_COUNT;
 extern const float APP_INTERSECTOR_INTERSECTION_FOUND;
 extern const float APP_INTERSECTOR_INTERSECTION_NOT_FOUND;
-
-// Ray intersector
-constexpr int APP_RAY_INTERSECTOR_RAYS_COUNT = 121;
-
-// For DQN algorithm
-constexpr int APP_CAR_ACTIONS_COUNT = 4;
 
 } // namespace App
