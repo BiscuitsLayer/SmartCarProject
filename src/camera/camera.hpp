@@ -70,6 +70,7 @@ protected:
     bool is_position_fixed_behind_car_;
     bool reached_final_position_;
 
+    friend class Context; // access to private variables
     friend class Gui; // access to private variables
 };
 

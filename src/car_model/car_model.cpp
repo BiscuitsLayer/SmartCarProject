@@ -36,6 +36,14 @@ const GL::Mat4 CarModel::GetModelMatrix() const {
     return static_cast<GL::Mat4>(transform_) * movement_transform_ * center_translation_;
 }
 
+const float CarModel::GetSpeed() const {
+    return accelerator_.GetSpeed();
+}
+
+const GL::Vec3 CarModel::GetPosition() const {
+    return GetTranslation(movement_transform_);
+}
+
 void CarModel::Move(float delta_time) {
     auto& context = App::Context::Get();
     if (context.keyboard_mode.value() == App::KeyboardMode::CAR_MOVEMENT) {
@@ -95,13 +103,16 @@ void CarModel::Move(float delta_time) {
         context.camera->UpdateWithModel(GetModelMatrix());
     }
 
-    if (!context.keyboard_status.value()[GL::Key::W] && !context.keyboard_status.value()[GL::Key::S]) {
-        accelerator_.DecreaseSpeed(delta_time);
-    }
-
     // Update distances to obstacles
     ray_intersector_->Intersect(GetModelMatrix());
     context.distances_from_rays = ray_intersector_->GetResultDistances();
+
+    if (context.keyboard_mode.value() == App::KeyboardMode::CAR_MOVEMENT) {
+        if (context.keyboard_status.value()[GL::Key::W] || context.keyboard_status.value()[GL::Key::S]) {
+            return;
+        }
+    }
+    accelerator_.DecreaseSpeed(delta_time);
 }
 
 void CarModel::SetDrawWheelsBBoxes(bool value) {

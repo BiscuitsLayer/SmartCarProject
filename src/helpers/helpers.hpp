@@ -65,9 +65,12 @@ public:
 
     // INPUT TO NEURAL NETWORK
     std::array<float, APP_RAY_INTERSECTOR_RAYS_COUNT> distances_from_rays;
+    std::array<float, APP_CAR_STATE_PARAMETERS_COUNT> state;
 
     // OUTPUT FROM NEURAL NETWORK
     std::array<bool, APP_CAR_ACTIONS_COUNT> actions;
+
+    void ClearCarTransform();
 
 private:
     Context();
@@ -82,6 +85,5 @@ std::string GetFolderFromPath(const std::string& path);
 bool CheckIfFileExists(const std::string& path);
 std::string ReadFileData(const std::string& filename, bool debug_dump = true);
 void SaveToFile(const std::string& filename, const std::vector<unsigned char>& buffer, bool debug_dump = true);
-
 
 } // namespace App

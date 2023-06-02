@@ -96,13 +96,7 @@ void Gui::Draw() {
     //ImGui::Begin("Parameters");
 
     if (ImGui::Button("Clear car transform")) {
-        // Update car movement transform
-        context.car_model->precomputed_movement_transform_ = Transform{};
-        context.car_model->UpdateMovementTransform();
-        context.car_model->accelerator_.Stop();
-
-        // Update camera target and position
-        context.camera->reached_final_position_ = false;
+        context.ClearCarTransform();
     }
     ImGui::SameLine();
     ImGui::Checkbox("Demo Window", &show_imgui_demo_window);
@@ -155,6 +149,13 @@ void Gui::Draw() {
         }
         ImGui::PopID();
     }
+
+    // Car state
+    ImGui::SeparatorText("Car state");
+    auto car_position = context.car_model->GetPosition();
+    ImGui::Text("Car position: x = %.3f, y = %.3f, z = %.3f", car_position.X, car_position.Y, car_position.Z);
+    ImGui::Text("Car speed = %.3f", context.car_model->GetSpeed());
+    ImGui::Text("Actions: %.1f, %.1f, %.1f, %.1f", context.actions[0] ? 1.0 : 0.0, context.actions[1] ? 1.0 : 0.0, context.actions[2] ? 1.0 : 0.0, context.actions[3] ? 1.0 : 0.0);
 
     // DISTANCES FROM RAYS
     ImGui::SeparatorText("Distances from rays");

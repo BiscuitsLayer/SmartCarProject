@@ -1,18 +1,16 @@
 #pragma once
 
 #include <vector>
+#include <random>
 
 #include <torch/torch.h>
 
-using Action = torch::tensor;
-using State = torch::tensor;
-using Reward = torch::tensor;
-
-using Transition = std::tuple<State, Action, State, Reward>;
+// TODO FIX
+#include "types.hpp"
 
 class ReplayBuffer {
 public:
-    ReplayBuffer(int64_t new_capacity)
+    ReplayBuffer(int new_capacity)
     : capacity(new_capacity) {}
 
     void Push(Transition transition) {
@@ -26,15 +24,15 @@ public:
         }
     }
 
-    int64_t Size() const {
+    int Size() const {
         return buffer.size();
     }
 
-    std::vector<Transition> SampleQueue(int64_t batch_size) {
+    std::vector<Transition> SampleQueue(int batch_size) {
         std::vector<Transition> batch(batch_size);
         std::sample(
             buffer.begin(), buffer.end(),
-            batch.begin(), batch.end(),
+            batch.begin(), batch_size,
             std::mt19937{std::random_device{}()}
         );
         return batch;
@@ -42,5 +40,5 @@ public:
 
 private:
     std::deque<Transition> buffer;
-    int64_t capacity;
+    int capacity;
 };

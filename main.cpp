@@ -10,7 +10,10 @@
 #include <window/window.hpp>
 #include <config/config_handler.hpp>
 #include <intersector/intersector.hpp>
+
+// NN
 #include <dqn/trainer.hpp>
+#include <dqn/env.hpp>
 
 // Model
 #include <model/model.hpp>
@@ -66,7 +69,8 @@ int main(int argc, char** argv) try {
     App::Timer main_timer;
     main_timer.Start();
 
-    App::Trainer nn_trainer;
+    // NN stuff
+    AppNN::Trainer nn_trainer;
 
     bool space_was_pressed = false;
     bool draw_gui = true;
@@ -117,14 +121,18 @@ int main(int argc, char** argv) try {
         // FIX THIS PART
 
         context.camera->Move(delta_time);
-        context.car_model->Move(delta_time);
-
-        for (int model_index = 0; model_index < context.obstacles.size(); ++model_index) {
-            auto intersection_result = car_collision_intersector->GetIntersectedObstacleMeshIndices(model_index);
-            for (auto mesh_index : intersection_result) {
-                context.obstacles[model_index]->DrawBBoxOnCollision(mesh_index);
-            }
+        if (context.keyboard_mode.value() == App::KeyboardMode::NN_LEARNING) {
+            nn_trainer.TrainingStep(delta_time);
+        } else {
+            context.car_model->Move(delta_time);
         }
+
+        // for (int model_index = 0; model_index < context.obstacles.size(); ++model_index) {
+        //     auto intersection_result = car_collision_intersector->GetIntersectedObstacleMeshIndices(model_index);
+        //     for (auto mesh_index : intersection_result) {
+        //         context.obstacles[model_index]->DrawBBoxOnCollision(mesh_index);
+        //     }
+        // }
 
         gl.Clear(GL::Buffer::Color | GL::Buffer::Depth);
         if (draw_gui) {

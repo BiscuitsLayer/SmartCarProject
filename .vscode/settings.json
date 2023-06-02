@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.inc": "glsl",
         "TODO": "plaintext",
         "*.frag": "hlsl",
         "*.vert": "hlsl",
@@ -93,7 +94,8 @@
         "ranges": "cpp",
         "span": "cpp",
         "valarray": "cpp",
-        "csignal": "cpp"
+        "csignal": "cpp",
+        "numbers": "cpp"
     },
     "C_Cpp.default.includePath": [
         "C:\\MyCodeLibs\\include\\torch\\csrc\\api\\include"

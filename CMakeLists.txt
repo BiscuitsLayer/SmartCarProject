@@ -42,11 +42,11 @@ target_link_libraries(SmartCarMain PUBLIC LibSmartCar ${TORCH_LIBRARIES})
 
 ### Move DLLs for SmartCar ###
 # TODO: should be changed with cmake -P <configure_script.cmake> (like in torch test)
-add_custom_command(TARGET SmartCarMain POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:SmartCarMain> $<TARGET_FILE_DIR:SmartCarMain>
-	COMMENT "Copying DLLs for SmartCar..."
-  	COMMAND_EXPAND_LISTS
-)
+# add_custom_command(TARGET SmartCarMain POST_BUILD
+# 	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:SmartCarMain> $<TARGET_FILE_DIR:SmartCarMain>
+# 	COMMENT "Copying DLLs for SmartCar..."
+#   	COMMAND_EXPAND_LISTS
+# )
 
 # TODO: FIX THIS PART! do not forget to turn on when recompiling from start
 # ### Move DLLs for PyTorch ###

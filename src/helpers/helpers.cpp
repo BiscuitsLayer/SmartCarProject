@@ -19,6 +19,16 @@ Context& Context::Get() {
     return instance;
 }
 
+void Context::ClearCarTransform() {
+    // Update car movement transform
+    car_model->precomputed_movement_transform_ = Transform{};
+    car_model->UpdateMovementTransform();
+    car_model->accelerator_.Stop();
+    
+    // Update camera target and position
+    camera->reached_final_position_ = false;
+}
+
 Context::Context()
     : gl(std::nullopt), shader_handler(std::nullopt), camera(std::nullopt), projection_matrix(std::nullopt),
     keyboard_mode(std::nullopt), keyboard_status(std::nullopt), env({}), obstacles({}) {}

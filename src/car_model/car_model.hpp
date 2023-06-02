@@ -39,6 +39,8 @@ public:
     void SetRayIntersector(Config::IntersectorConfig ray_intersector_config) { ray_intersector_ = std::make_shared<RayIntersector>(ray_intersector_config); }
     std::shared_ptr<RayIntersector> GetRayIntersector() { return ray_intersector_; }
     
+    const float GetSpeed() const;
+    const GL::Vec3 GetPosition() const;
     void Move(float delta_time);
     void SetDrawWheelsBBoxes(bool value);
     virtual std::vector<MemoryAlignedBBox> CollectMABB() const override;
@@ -71,6 +73,7 @@ private:
 
     Accelerator accelerator_;
 
+    friend class Context; // access to private variables
     friend class Gui; // access to private variables
 };
 
