@@ -50,6 +50,15 @@
         }
     },
     {
+        "name": "Flag",
+        "type": "COMMON",
+        "GLTF": "flag/scene.gltf",
+        "shader": {
+            "default": "DEFAULT",
+            "bbox": "BBOX"
+        }
+    },
+    {
         "name": "Backpack",
         "type": "COMMON",
         "GLTF": "backpack/scene.gltf",

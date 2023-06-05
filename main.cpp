@@ -123,6 +123,8 @@ int main(int argc, char** argv) try {
         context.camera->Move(delta_time);
         if (context.keyboard_mode.value() == App::KeyboardMode::NN_LEARNING) {
             nn_trainer.TrainingStep(delta_time);
+        } else if (context.keyboard_mode.value() == App::KeyboardMode::NN_TEST) {
+            nn_trainer.TrainingStep(delta_time);
         } else {
             context.car_model->Move(delta_time);
         }

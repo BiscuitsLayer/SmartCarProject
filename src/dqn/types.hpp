@@ -6,6 +6,8 @@
 // Constants
 #include <constants/constants.hpp>
 
+#include "batch.hpp"
+
 using Reward = int;
 using Qvalues = std::array<float, App::APP_CAR_ACTIONS_COUNT>;
 using Action = int;
@@ -13,9 +15,9 @@ using State = std::array<float, App::APP_CAR_STATE_PARAMETERS_COUNT>;
 
 using Transition = std::tuple<State, Action, State, Reward>;
 constexpr int APP_NN_TRANSITION_OLD_STATE_INDEX = 0;
-constexpr int APP_NN_TRANSITION_ACTION_INDEX = 0;
-constexpr int APP_NN_TRANSITION_NEW_STATE_INDEX = 0;
-constexpr int APP_NN_TRANSITION_REWARD_INDEX = 0;
+constexpr int APP_NN_TRANSITION_ACTION_INDEX = 1;
+constexpr int APP_NN_TRANSITION_NEW_STATE_INDEX = 2;
+constexpr int APP_NN_TRANSITION_REWARD_INDEX = 3;
 
 constexpr int APP_NN_BATCH_SIZE = 64;
 

@@ -199,12 +199,45 @@
             "index": 2,
             "camera_case": 0,
             "car": {
-                "name": "SportCar"
+                "name": "SportCar",
+                "transform": {
+                    "rotation": {
+                        "axis": [
+                            0.0,
+                            1.0,
+                            0.0
+                        ],
+                        "angle": 90.0
+                    },
+                    "translation": [
+                        0.0,
+                        0.0,
+                        -1.0
+                    ]
+                }
             },
             "skybox": {
                 "name": "Skybox"
             },
             "env": [
+                {
+                    "name": "Flag",
+                    "transform": {
+                        "rotation": {
+                            "axis": [
+                                0.0,
+                                1.0,
+                                0.0
+                            ],
+                            "angle": 270.0
+                        },
+                        "translation": [
+                            57.0,
+                            1.0,
+                            -3.0
+                        ]
+                    }
+                },
                 {
                     "name": "Garage",
                     "transform": {
@@ -316,7 +349,17 @@
                         "translation": [
                             10.0,
                             0.5,
-                            -3.0
+                            -4.0
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            10.0,
+                            0.5,
+                            3.0
                         ]
                     }
                 },
@@ -346,7 +389,7 @@
                         "translation": [
                             40.0,
                             0.5,
-                            -5.0
+                            -4.5
                         ]
                     }
                 },
@@ -354,7 +397,17 @@
                     "name": "Cube",
                     "transform": {
                         "translation": [
-                            55.0,
+                            38.0,
+                            0.5,
+                            3.5
+                        ]
+                    }
+                },
+                {
+                    "name": "Cube",
+                    "transform": {
+                        "translation": [
+                            50.0,
                             0.5,
                             1.0
                         ]

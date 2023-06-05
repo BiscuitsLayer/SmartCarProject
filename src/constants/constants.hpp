@@ -58,6 +58,7 @@ enum class KeyboardMode: int {
     ORBIT_CAMERA = 0,
     CAR_MOVEMENT,
     NN_LEARNING,
+    NN_TEST,
     SIZE
 };
 extern const char* keyboard_modes[static_cast<size_t>(KeyboardMode::SIZE)];

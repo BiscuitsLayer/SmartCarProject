@@ -60,6 +60,24 @@ void CarModel::Move(float delta_time) {
             RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
         }
     } else if (context.keyboard_mode.value() == App::KeyboardMode::NN_LEARNING) {
+        context.user_selected_actions.fill(false);
+        if (context.keyboard_status.value()[GL::Key::W]) {
+            accelerator_.IncreaseSpeed(delta_time, true);
+            context.user_selected_actions[0] = true;
+        }
+        if (context.keyboard_status.value()[GL::Key::S]) {
+            accelerator_.IncreaseSpeed(delta_time, false);
+            context.user_selected_actions[1] = true;
+        }
+        if (context.keyboard_status.value()[GL::Key::A]) {
+            RotateLeft(delta_time, accelerator_.GetSpeed() > 0.0);
+            context.user_selected_actions[2] = true;
+        }
+        if (context.keyboard_status.value()[GL::Key::D]) {
+            RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
+            context.user_selected_actions[3] = true;
+        }
+    } else if (context.keyboard_mode.value() == App::KeyboardMode::NN_TEST) {
         if (context.actions[0]) {
             accelerator_.IncreaseSpeed(delta_time, true);
         }
@@ -73,6 +91,20 @@ void CarModel::Move(float delta_time) {
             RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
         }
     }
+    // else if (context.keyboard_mode.value() == App::KeyboardMode::NN_LEARNING) {
+    //     if (context.actions[0]) {
+    //         accelerator_.IncreaseSpeed(delta_time, true);
+    //     }
+    //     if (context.actions[1]) {
+    //         accelerator_.IncreaseSpeed(delta_time, false);
+    //     }
+    //     if (context.actions[2]) {
+    //         RotateLeft(delta_time, accelerator_.GetSpeed() > 0.0);
+    //     }
+    //     if (context.actions[3]) {
+    //         RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
+    //     }
+    // }
     MoveForward(delta_time);
 
     // Do intersection
@@ -109,6 +141,16 @@ void CarModel::Move(float delta_time) {
 
     if (context.keyboard_mode.value() == App::KeyboardMode::CAR_MOVEMENT) {
         if (context.keyboard_status.value()[GL::Key::W] || context.keyboard_status.value()[GL::Key::S]) {
+            return;
+        }
+    }
+    if (context.keyboard_mode.value() == App::KeyboardMode::NN_LEARNING) {
+        if (context.keyboard_status.value()[GL::Key::W] || context.keyboard_status.value()[GL::Key::S]) {
+            return;
+        }
+    }
+    if (context.keyboard_mode.value() == App::KeyboardMode::NN_TEST) {
+        if (context.actions[0] || context.actions[1]) {
             return;
         }
     }

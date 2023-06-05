@@ -69,6 +69,7 @@ public:
 
     // OUTPUT FROM NEURAL NETWORK
     std::array<bool, APP_CAR_ACTIONS_COUNT> actions;
+    std::array<bool, APP_CAR_ACTIONS_COUNT> user_selected_actions; // TODO: for supervides learning (should get rid of it)
 
     void ClearCarTransform();
 

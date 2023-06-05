@@ -24,13 +24,14 @@ public:
         return seq->forward(in);
     }
 
-    std::array<Qvalues, APP_NN_BATCH_SIZE> PredictForBatch(std::array<State, APP_NN_BATCH_SIZE> states, torch::Device device) {
+/*
+    Batch<Qvalues, APP_NN_BATCH_SIZE> PredictForBatch(Batch<State, APP_NN_BATCH_SIZE> states, torch::Device device) {
         auto raw = StatesBatchToRaw(states);
         torch::Tensor states_gpu = torch::from_blob(raw.data(), {APP_NN_BATCH_SIZE, states[0].size()}).clone().to(device);
 
         torch::Tensor q_values = Forward(states_gpu);
 
-        std::array<Qvalues, APP_NN_BATCH_SIZE> qvalues;
+        Batch<Qvalues, APP_NN_BATCH_SIZE> qvalues;
         for (int i = 0; i < APP_NN_BATCH_SIZE; ++i) {
             for (int j = 0; j < App::APP_CAR_ACTIONS_COUNT; ++j) {
                 qvalues[i][j] = q_values[i][j].item<float>();
@@ -40,7 +41,7 @@ public:
         return qvalues;
         // torch::Tensor actions_tensor = std::get<1>(q_values.max(1));
 
-    //     std::array<Action, APP_NN_BATCH_SIZE> best_action_indices;
+    //     Batch<Action, APP_NN_BATCH_SIZE> best_action_indices;
     //     for (int i = 0; i < APP_NN_BATCH_SIZE; ++i) {
     //         best_action_indices[i] = actions_tensor[i].item<int>();
     //     }
@@ -48,6 +49,7 @@ public:
     //     // long& best_action_indices[APP_NN_BATCH_SIZE] = actions_tensor.data<long>();
     //     return best_action_indices;
     }
+*/
 
     Qvalues PredictForOne(State state, torch::Device device) {
         torch::Tensor state_gpu = torch::from_blob(state.data(), {1, state.size()}).clone().to(device);
@@ -63,6 +65,12 @@ public:
     //     torch::Tensor action_tensor = std::get<1>(q_value.max(1));
     //     long best_action_index = action_tensor[0].item<int>();
     //     return best_action_index;
+    }
+
+    torch::Tensor PredictForOneSupervised(State state, torch::Device device) {
+        torch::Tensor state_gpu = torch::from_blob(state.data(), {1, state.size()}).clone().to(device);
+        torch::Tensor q_values = Forward(state_gpu);
+        return q_values;
     }
 
 private:
