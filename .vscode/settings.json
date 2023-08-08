@@ -97,7 +97,5 @@
         "csignal": "cpp",
         "numbers": "cpp"
     },
-    "C_Cpp.default.includePath": [
-        "C:\\MyCodeLibs\\include\\torch\\csrc\\api\\include"
-    ]
+    "cmake.configureOnOpen": false
 }

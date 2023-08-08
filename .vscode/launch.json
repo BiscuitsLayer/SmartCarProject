@@ -1,17 +1,6 @@
 {
     "configurations": [
         {
-            "name": "(NN) Launch",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/torch_test/build/Debug/TorchTest.exe",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/torch_test/build",
-            "environment": [],
-            "console": "externalTerminal"
-        },
-        {
             "name": "(MSVC) Launch",
             "type": "cppvsdbg",
             "request": "launch",

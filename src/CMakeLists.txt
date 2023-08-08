@@ -2,6 +2,9 @@
 cmake_minimum_required(VERSION 3.14)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 project(LibSmartCar VERSION 1.0.0)
+# Redirect .dll output path
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}$<0:>)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}$<0:>)
 
 ### Definitions ###
 set(CMAKE_CXX_STANDARD 17)
@@ -34,7 +37,7 @@ find_package(Torch REQUIRED)
 
 ### OOGL ###
 # Provide directories
-set(OOGL_DIR "../include/OOGL")
+set(OOGL_DIR "../third-party/OOGL")
 set(OOGL_INCLUDE_DIR "${OOGL_DIR}/include")
 set(OOGL_BINARY_DIR "${CMAKE_BINARY_DIR}/lib/OOGL")
 # Add package
@@ -51,7 +54,7 @@ set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF)
 set(ASSIMP_BUILD_GLTF_IMPORTER ON)
 set(ASSIMP_BUILD_OBJ_IMPORTER ON)
 # Provide directories
-set(ASSIMP_DIR ../include/assimp)
+set(ASSIMP_DIR "../third-party/assimp")
 set(ASSIMP_BINARY_DIR "${CMAKE_BINARY_DIR}/lib/assimp")
 set(ASSIMP_INCLUDE_DIRS "${ASSIMP_DIR}/include" "${ASSIMP_BINARY_DIR}/include")
 # Add package
@@ -61,7 +64,7 @@ include_directories(${ASSIMP_INCLUDE_DIRS})
 
 ### ImGui ###
 # Provide directories
-set(IMGUI_DIR "../include/imgui")
+set(IMGUI_DIR "../third-party/imgui")
 set(IMGUI_BACKENDS_DIR "${IMGUI_DIR}/backends")
 # Build new library
 file(GLOB SRC_IMGUI "${IMGUI_DIR}/*.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_win32.cpp")
@@ -75,7 +78,7 @@ include_directories(${IMGUI_DIR} ${IMGUI_BACKENDS_DIR})
 
 ### JSON ###
 # Provide directories
-set(JSON_DIR "../include/json")
+set(JSON_DIR "../third-party/json")
 set(JSON_INCLUDE_DIRS "${JSON_DIR}/include")
 set(JSON_BINARY_DIR "${CMAKE_BINARY_DIR}/lib/json")
 # Add package
@@ -134,19 +137,6 @@ add_library(${PROJECT_NAME} STATIC
 target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_LIBRARIES} OOGL 
     MyImGuiSubset assimp::assimp nlohmann_json::nlohmann_json ${TORCH_LIBRARIES}
 )
-
-# # TODO:
-# ### Maybe fix copying later...
-# file(GENERATE 
-#     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/CmakeCopyDLLs$<CONFIG>.cmake"
-#     CONTENT "message(\"Copying DLLs for target $<CONFIG>...\")
-# file(
-#    COPY \"${TORCH_INSTALL_PREFIX}/lib/\"
-#    DESTINATION \"$<TARGET_FILE_DIR:${PROJECT_NAME}>\"
-#    PATTERN \"*.dll\"
-#    PATTERN \"*.lib\" EXCLUDE
-#    PATTERN \"*.pdb\" EXCLUDE
-# )")
 
 ### Check include directories ###
 get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)

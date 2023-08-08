@@ -40,22 +40,49 @@ set_target_properties(SmartCarMain PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_B
 # Link the main target
 target_link_libraries(SmartCarMain PUBLIC LibSmartCar ${TORCH_LIBRARIES})
 
-### Move DLLs for SmartCar ###
-# TODO: should be changed with cmake -P <configure_script.cmake> (like in torch test)
+### LEGACY: old-style DLL copying for Graphics (is done every build) ###
 # add_custom_command(TARGET SmartCarMain POST_BUILD
 # 	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:SmartCarMain> $<TARGET_FILE_DIR:SmartCarMain>
 # 	COMMENT "Copying DLLs for SmartCar..."
 #   	COMMAND_EXPAND_LISTS
 # )
 
-# TODO: FIX THIS PART! do not forget to turn on when recompiling from start
-# ### Move DLLs for PyTorch ###
-# file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
-# add_custom_command(TARGET SmartCarMain POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS} $<TARGET_FILE_DIR:SmartCarMain>
-#     COMMENT "Copying DLLs for PyTorch..."
-#     COMMAND_EXPAND_LISTS
-# )
+### Copy DLLs for PyTorch ###
+# Set necessary DLL`s names
+set(PyTorchDDLNames
+    "torch_cuda.dll"
+    "torch_cpu.dll"
+    "fbgemm.dll"
+    "nvfuser_codegen.dll"
+    "libiomp5md.dll"
+    "c10.dll"
+    "c10_cuda.dll"
+    "asmjit.dll"
+    "cudnn64_8.dll"
+    "uv.dll"
+    "nvToolsExt64_1.dll"
+
+    "cusparse64_11.dll"
+    "cufft64_10.dll"
+    "cublas64_11.dll"
+    "cublasLt64_11.dll"
+)
+# Check that all files exist, error if they don't
+foreach(PyTorchDDLName ${PyTorchDDLNames})
+    if(EXISTS "${TORCH_INSTALL_PREFIX}/lib/${PyTorchDDLName}")
+        set(PyTorchDDLFile "${TORCH_INSTALL_PREFIX}/lib/${PyTorchDDLName}")
+        list(APPEND PyTorchDDLFiles ${PyTorchDDLFile})
+    else()
+        message(FATAL_ERROR "${PyTorchDDLName} not found in ${TORCH_INSTALL_PREFIX}/lib; Please, move the file and try again")
+    endif()
+endforeach()
+# Copy files to the folder with executable
+message("Copying DLLs for PyTorch...")
+file(
+    COPY ${PyTorchDDLFiles}
+    DESTINATION ${CMAKE_BINARY_DIR}
+)
+message("Copied DLLs for PyTorch successfully!")
 
 ### Check include directories ###
 get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)

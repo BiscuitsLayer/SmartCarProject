@@ -1,15 +1,15 @@
-[submodule "include/OOGL"]
-	path = include/OOGL
+[submodule "third-party/OOGL"]
+	path = third-party/OOGL
 	url = https://github.com/BiscuitsLayer/OOGL.git
 
-[submodule "include/imgui"]
-	path = include/imgui
+[submodule "third-party/imgui"]
+	path = third-party/imgui
 	url = https://github.com/ocornut/imgui.git
 
-[submodule "include/assimp"]
-	path = include/assimp
+[submodule "third-party/assimp"]
+	path = third-party/assimp
 	url = https://github.com/assimp/assimp.git
 
-[submodule "include/json"]
-	path = include/json
+[submodule "third-party/json"]
+	path = third-party/json
 	url = https://github.com/nlohmann/json.git
