@@ -50,6 +50,15 @@
         }
     },
     {
+        "name": "Danila",
+        "type": "COMMON",
+        "GLTF": "danila/scene.gltf",
+        "shader": {
+            "default": "DEFAULT",
+            "bbox": "BBOX"
+        }
+    },
+    {
         "name": "Flag",
         "type": "COMMON",
         "GLTF": "flag/scene.gltf",
