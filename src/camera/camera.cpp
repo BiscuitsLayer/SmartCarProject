@@ -35,6 +35,12 @@ Camera::Camera(const Config::CameraConfig& config)
         config.length_to_target.min, config.length_to_target.max, config.target.fixed_on_car, config.position.fixed_behind_car,
         config.position.translation_from_car) {}
 
+void Camera::SetPose(const GL::Vec3& position, const GL::Vec3& target) {
+    position_ = position;
+    target_ = target;
+    UpdateMatrix();
+}
+
 void Camera::Move(const float delta_time) {
     auto& context = App::Context::Get();
     if (context.keyboard_mode.value() == App::KeyboardMode::ORBIT_CAMERA) {

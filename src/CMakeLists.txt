@@ -9,9 +9,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}$<0:>)
 ### Definitions ###
 set(CMAKE_CXX_STANDARD 17)
 set(LIB_SMART_CAR_ASSETS_DIR "../assets/")
-set(LIB_SMART_CAR_NN_MODELS_DIR "../models/")
 set(LIB_SMART_CAR_SHADER_DIR "../shader/")
-set(LIB_SMART_CAR_SERIALIZED_FILES_DIR "serialized/")
 # Provide includes (not using target_include_directories, because there are many libraries there, 
 # so we just include these directories for all of them)
 # CMAKE_CURRENT_SOURCE_DIR <- for LibSmartCar includes
@@ -26,14 +24,6 @@ configure_file(
     config_in.hpp
     ${CMAKE_CURRENT_BINARY_DIR}/config_out.hpp
 )
-# Create directory for serialized files
-execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${LIB_SMART_CAR_SERIALIZED_FILES_DIR})
-
-### Torch ###
-# For Torch naming conventions
-cmake_policy(SET CMP0054 NEW)
-# Find Torch
-find_package(Torch REQUIRED)
 
 ### OOGL ###
 # Provide directories
@@ -63,18 +53,20 @@ add_subdirectory(${ASSIMP_DIR} ${ASSIMP_BINARY_DIR})
 include_directories(${ASSIMP_INCLUDE_DIRS})
 
 ### ImGui ###
-# Provide directories
-set(IMGUI_DIR "../third-party/imgui")
-set(IMGUI_BACKENDS_DIR "${IMGUI_DIR}/backends")
-# Build new library
-file(GLOB SRC_IMGUI "${IMGUI_DIR}/*.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_win32.cpp")
-add_library(MyImGuiSubset STATIC ${SRC_IMGUI})
-# Provide includes
-target_include_directories(MyImGuiSubset PUBLIC ${IMGUI_DIR} ${IMGUI_BACKENDS_DIR})
-# Link the library
-target_link_libraries(MyImGuiSubset PUBLIC dwmapi)
-# Provide includes (for main target)
-include_directories(${IMGUI_DIR} ${IMGUI_BACKENDS_DIR})
+if(WIN32)
+    # Provide directories
+    set(IMGUI_DIR "../third-party/imgui")
+    set(IMGUI_BACKENDS_DIR "${IMGUI_DIR}/backends")
+    # Build new library
+    file(GLOB SRC_IMGUI "${IMGUI_DIR}/*.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp" "${IMGUI_BACKENDS_DIR}/imgui_impl_win32.cpp")
+    add_library(MyImGuiSubset STATIC ${SRC_IMGUI})
+    # Provide includes
+    target_include_directories(MyImGuiSubset PUBLIC ${IMGUI_DIR} ${IMGUI_BACKENDS_DIR})
+    # Link the library
+    target_link_libraries(MyImGuiSubset PUBLIC dwmapi)
+    # Provide includes (for main target)
+    include_directories(${IMGUI_DIR} ${IMGUI_BACKENDS_DIR})
+endif()
 
 ### JSON ###
 # Provide directories
@@ -86,6 +78,13 @@ add_subdirectory(${JSON_DIR} ${JSON_BINARY_DIR})
 # Provide includes (for main target)
 include_directories(${JSON_INCLUDE_DIRS})
 
+### Video export ###
+if(NOT WIN32)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(FFMPEG REQUIRED IMPORTED_TARGET libavcodec libavformat libavutil libswscale)
+    find_package(Freetype REQUIRED)
+endif()
+
 ### LibSmartCar ###
 # Accelerator
 add_library(Accelerator OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/accelerator/accelerator.cpp)
@@ -93,6 +92,10 @@ add_library(Accelerator OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/accelerator/accelerat
 add_library(BBox OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/bbox/bbox.cpp)
 # Camera
 add_library(Camera OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/camera/camera.cpp)
+# Cinematic director
+if(NOT WIN32)
+    add_library(Cinematic OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/cinematic/cinematic_director.cpp)
+endif()
 # Car model
 add_library(CarModel OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/car_model/car_model.cpp)
 # Config
@@ -100,7 +103,9 @@ add_library(Config OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/config/config_handler.cpp)
 # Constants
 add_library(Constants OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/constants/constants.cpp)
 # Gui
-add_library(Gui OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/gui/gui.cpp)
+if(WIN32)
+    add_library(Gui OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/gui/gui.cpp)
+endif()
 # Helpers
 add_library(Helpers OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/helpers/helpers.cpp)
 # Instanced model
@@ -123,20 +128,36 @@ add_library(Texture OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture.cpp)
 add_library(Timer OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/timer/timer.cpp)
 # Transform
 add_library(Transform OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/transform/transform.cpp)
+# Video exporter
+if(NOT WIN32)
+    add_library(VideoExporter OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/video_exporter/video_exporter.cpp)
+    target_link_libraries(VideoExporter PRIVATE PkgConfig::FFMPEG Freetype::Freetype)
+endif()
 # Window
 add_library(Window OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/window/window.cpp)
 # Add a new library (main target)
-add_library(${PROJECT_NAME} STATIC 
+set(LIB_SMART_CAR_OBJECTS
     $<TARGET_OBJECTS:Accelerator> $<TARGET_OBJECTS:BBox> $<TARGET_OBJECTS:Camera> $<TARGET_OBJECTS:CarModel>
-    $<TARGET_OBJECTS:Config> $<TARGET_OBJECTS:Constants> $<TARGET_OBJECTS:Gui> $<TARGET_OBJECTS:Helpers>
+    $<TARGET_OBJECTS:Config> $<TARGET_OBJECTS:Constants> $<TARGET_OBJECTS:Helpers>
     $<TARGET_OBJECTS:InstancedModel> $<TARGET_OBJECTS:Intersector> $<TARGET_OBJECTS:Loader> 
     $<TARGET_OBJECTS:Material> $<TARGET_OBJECTS:Mesh> $<TARGET_OBJECTS:Model> $<TARGET_OBJECTS:Skybox> 
     $<TARGET_OBJECTS:Texture> $<TARGET_OBJECTS:Timer> $<TARGET_OBJECTS:Transform> $<TARGET_OBJECTS:Window>
 )
+if(WIN32)
+    list(APPEND LIB_SMART_CAR_OBJECTS $<TARGET_OBJECTS:Gui>)
+else()
+    list(APPEND LIB_SMART_CAR_OBJECTS $<TARGET_OBJECTS:Cinematic> $<TARGET_OBJECTS:VideoExporter>)
+endif()
+add_library(${PROJECT_NAME} STATIC ${LIB_SMART_CAR_OBJECTS})
 # Link the library
 target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_LIBRARIES} OOGL 
-    MyImGuiSubset assimp::assimp nlohmann_json::nlohmann_json ${TORCH_LIBRARIES}
+    assimp::assimp nlohmann_json::nlohmann_json
 )
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} PUBLIC MyImGuiSubset)
+else()
+    target_link_libraries(${PROJECT_NAME} PUBLIC PkgConfig::FFMPEG Freetype::Freetype)
+endif()
 
 ### Check include directories ###
 get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)

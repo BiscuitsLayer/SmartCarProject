@@ -1,19 +1,24 @@
-// Windows defines for PyTorch
+// Keep Windows headers from defining min/max macros.
 #define NOMINMAX
+
+#include <cstdlib>
+#include <memory>
 
 // LibSmartCar
 #include <helpers/helpers.hpp>
 #include <transform/transform.hpp>
 #include <camera/camera.hpp>
+#ifdef _WIN32
 #include <gui/gui.hpp>
+#endif
 #include <timer/timer.hpp>
 #include <window/window.hpp>
 #include <config/config_handler.hpp>
 #include <intersector/intersector.hpp>
-
-// NN
-#include <dqn/trainer.hpp>
-#include <dqn/env.hpp>
+#ifndef _WIN32
+#include <cinematic/cinematic_director.hpp>
+#include <video_exporter/video_exporter.hpp>
+#endif
 
 // Model
 #include <model/model.hpp>
@@ -42,9 +47,10 @@ int main(int argc, char** argv) try {
     App::ConfigHandler config_handler{argv[1], APP_CONFIG_DIR};
 
     auto window_config = config_handler.GetWindowConfig();
-	auto collision_intersector_config = config_handler.GetCollisionIntersectorConfig();
+    auto collision_intersector_config = config_handler.GetCollisionIntersectorConfig();
 	auto ray_intersector_config = config_handler.GetRayIntersectorConfig();
-    auto camera_config = config_handler.GetCameraConfig();
+    const char* camera_preset = std::getenv("SMARTCAR_CAMERA");
+    auto camera_config = config_handler.GetCameraConfig(camera_preset ? std::stoi(camera_preset) : -1);
 
     context.projection_matrix = GL::Mat4::Perspective(
         GL::Rad(camera_config.projection.FOV),
@@ -64,20 +70,36 @@ int main(int argc, char** argv) try {
     context.camera = App::Camera(camera_config);
     context.car_model->SetCollisionIntersector(collision_intersector_config);
     context.car_model->SetRayIntersector(ray_intersector_config);
+#ifdef _WIN32
     App::Gui gui(window_config);
+#else
+    const char* cinematic_config = std::getenv("SMARTCAR_CINEMATIC");
+    std::unique_ptr<App::CinematicDirector> cinematic;
+    std::unique_ptr<App::VideoExporter> video_exporter;
+    float cinematic_time = 0.0f;
+    if (cinematic_config) {
+        cinematic = std::make_unique<App::CinematicDirector>(cinematic_config);
+        video_exporter = std::make_unique<App::VideoExporter>(cinematic_config,
+            window_config.params.width, window_config.params.height);
+    }
+#endif
 
     App::Timer main_timer;
     main_timer.Start();
 
-    // NN stuff
-    AppNN::Trainer nn_trainer;
-
+#ifdef _WIN32
     bool space_was_pressed = false;
     bool draw_gui = true;
+#endif
 
     GL::Event ev;
     while (context.window->IsOpen()) {
         auto delta_time = static_cast<float>(main_timer.Tick<App::Timer::Seconds>());
+#ifndef _WIN32
+        if (cinematic) {
+            delta_time = 1.0f / cinematic->GetFps();
+        }
+#endif
 
         while (context.window->GetEvent(ev)) {
             if (ev.Type == GL::Event::KeyDown) {
@@ -86,6 +108,7 @@ int main(int argc, char** argv) try {
                 context.keyboard_status.value()[ev.Key.Code] = false;
             }
 
+#ifdef _WIN32
             if (context.keyboard_status.value()[GL::Key::Space]) {
                 if (!space_was_pressed) {
                     draw_gui = !draw_gui;
@@ -94,38 +117,40 @@ int main(int argc, char** argv) try {
             } else {
                 space_was_pressed = false;
             }
+#endif
 
             if (context.keyboard_status.value()[GL::Key::Escape]) {
                 context.window->Close();
             }
         }
 
-        // FIX THIS PART
-        auto car_collision_intersector = context.car_model->GetCollisionIntersector();
-        auto car_ray_intersector = context.car_model->GetRayIntersector();
+#ifndef _WIN32
+        if (cinematic) {
+            cinematic->Update(cinematic_time, delta_time);
+        } else
+#endif
+        {
+            // FIX THIS PART
+            auto car_collision_intersector = context.car_model->GetCollisionIntersector();
+            auto car_ray_intersector = context.car_model->GetRayIntersector();
 
-        if (car_collision_intersector) {
-            car_collision_intersector->ClearObstacles();
+            if (car_collision_intersector) {
+                car_collision_intersector->ClearObstacles();
 
-            for (auto obstacle : context.obstacles) {
-                car_collision_intersector->AddObstacles(obstacle.get());
+                for (auto obstacle : context.obstacles) {
+                    car_collision_intersector->AddObstacles(obstacle.get());
+                }
             }
-        }
-        if (car_ray_intersector) {
-            car_ray_intersector->ClearObstacles();
+            if (car_ray_intersector) {
+                car_ray_intersector->ClearObstacles();
 
-            for (auto obstacle : context.obstacles) {
-                car_ray_intersector->AddObstacles(obstacle.get());
+                for (auto obstacle : context.obstacles) {
+                    car_ray_intersector->AddObstacles(obstacle.get());
+                }
             }
-        }
-        // FIX THIS PART
+            // FIX THIS PART
 
-        context.camera->Move(delta_time);
-        if (context.keyboard_mode.value() == App::KeyboardMode::NN_LEARNING) {
-            nn_trainer.TrainingStep(delta_time);
-        } else if (context.keyboard_mode.value() == App::KeyboardMode::NN_TEST) {
-            nn_trainer.TrainingStep(delta_time);
-        } else {
+            context.camera->Move(delta_time);
             context.car_model->Move(delta_time);
         }
 
@@ -137,37 +162,75 @@ int main(int argc, char** argv) try {
         // }
 
         gl.Clear(GL::Buffer::Color | GL::Buffer::Depth);
+#ifdef _WIN32
         if (draw_gui) {
             gui.Prepare();
         }
+#endif
 
-        context.car_model->Draw();
+#ifndef _WIN32
+        if (!cinematic || cinematic->DrawCar()) {
+#else
+        {
+#endif
+            context.car_model->Draw();
+        }
         context.skybox->Draw();
         for (auto env_object : context.env) {
-            env_object->Draw();
+#ifndef _WIN32
+            if (!cinematic || cinematic->DrawEnvironment(env_object->GetName())) {
+#else
+            {
+#endif
+                env_object->Draw();
+            }
         }
         for (auto obstacle : context.obstacles) {
-            obstacle->Draw();
+#ifndef _WIN32
+            if (!cinematic || cinematic->DrawObstacle(obstacle->GetName())) {
+#else
+            {
+#endif
+                obstacle->Draw();
+            }
         }
 
+#ifdef _WIN32
         if (draw_gui) {
             gui.Draw();
         }
+#endif
 
         context.camera->UpdateMatrix();
 
+#ifndef _WIN32
+        if (video_exporter) {
+            video_exporter->CaptureFrame(cinematic_time);
+        }
+#endif
         context.window->Present();
-        App::LimitMaxFps(window_config);
+#ifndef _WIN32
+        if (cinematic) {
+            cinematic_time += delta_time;
+            if (cinematic_time >= cinematic->GetDuration()) {
+                video_exporter->Finish();
+                break;
+            }
+        } else
+#endif
+        {
+            App::LimitMaxFps(window_config);
+        }
     }
 
+#ifdef _WIN32
     if (draw_gui) {
         gui.Cleanup();
     }
-    nn_trainer.SaveModel();
-
+#endif
     return 0;
 }
 catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
-    return 0;
+    return 1;
 }

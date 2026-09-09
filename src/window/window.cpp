@@ -9,12 +9,17 @@ namespace App {
 /* empty */
 
 CustomWindow::CustomWindow(GL::uint width, GL::uint height, const std::string& title, GL::WindowStyle::window_style_t style)
+#ifdef _WIN32
     : Window(width, height, title, style, WindowEventHandlerWithImGui) {}
+#else
+    : Window(width, height, title, style) {}
+#endif
 
 CustomWindow::CustomWindow(const Config::WindowConfig& config)
     : CustomWindow(config.params.width, config.params.height, config.params.title,
         config.params.fullscreen ? GL::WindowStyle::Fullscreen : GL::WindowStyle::Close) {}
 
+#ifdef _WIN32
 LRESULT CALLBACK WindowEventHandlerWithImGui(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam)) {
         return true;
@@ -40,6 +45,7 @@ LRESULT CALLBACK WindowEventHandlerWithImGui(HWND hwnd, UINT msg, WPARAM wParam,
             return DefWindowProc(hwnd, msg, wParam, lParam);
     }
 }
+#endif
 
 void LimitMaxFps(const Config::WindowConfig& window_config) {
     if (window_config.max_fps.enabled) {

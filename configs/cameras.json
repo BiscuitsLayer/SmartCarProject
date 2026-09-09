@@ -3,7 +3,7 @@
         "index": 0,
         "projection": {
             "FOV": 45.0,
-            "near": 3.0,
+            "near": 0.1,
             "far": 100.0
         },
         "length_to_target": {
@@ -30,6 +30,81 @@
                 0.0
             ],
             "fixed_on_car": true
+        },
+        "speed": {
+            "move": 5.0,
+            "rotate": 10.0
+        }
+    },
+    {
+        "index": 1,
+        "projection": {
+            "FOV": 52.0,
+            "near": 0.1,
+            "far": 100.0
+        },
+        "length_to_target": {
+            "min": 1.0,
+            "max": 1000.0
+        },
+        "position": {
+            "value": [-7.0, 9.0, -10.0],
+            "fixed_behind_car": true,
+            "translation_from_car": [5.0, 9.0, -8.0]
+        },
+        "target": {
+            "value": [0.0, 1.0, -1.0],
+            "fixed_on_car": true
+        },
+        "speed": {
+            "move": 5.0,
+            "rotate": 10.0
+        }
+    },
+    {
+        "index": 2,
+        "projection": {
+            "FOV": 55.0,
+            "near": 0.1,
+            "far": 100.0
+        },
+        "length_to_target": {
+            "min": 1.0,
+            "max": 1000.0
+        },
+        "position": {
+            "value": [10.0, 3.0, -1.0],
+            "fixed_behind_car": true,
+            "translation_from_car": [0.0, 3.0, 10.0]
+        },
+        "target": {
+            "value": [0.0, 0.0, -1.0],
+            "fixed_on_car": true
+        },
+        "speed": {
+            "move": 5.0,
+            "rotate": 10.0
+        }
+    },
+    {
+        "index": 3,
+        "projection": {
+            "FOV": 50.0,
+            "near": 0.1,
+            "far": 100.0
+        },
+        "length_to_target": {
+            "min": 1.0,
+            "max": 1000.0
+        },
+        "position": {
+            "value": [44.0, 4.2, -4.0],
+            "fixed_behind_car": false,
+            "translation_from_car": [0.0, 0.0, 0.0]
+        },
+        "target": {
+            "value": [55.0, 2.2, 0.0],
+            "fixed_on_car": false
         },
         "speed": {
             "move": 5.0,

@@ -42,6 +42,8 @@ public:
     const float GetSpeed() const;
     const GL::Vec3 GetPosition() const;
     void Move(float delta_time);
+    void SetCinematicPose(const GL::Vec3& position, float yaw_degrees);
+    void SpinWheels(float amount);
     void SetDrawWheelsBBoxes(bool value);
     virtual std::vector<MemoryAlignedBBox> CollectMABB() const override;
 
@@ -67,6 +69,7 @@ private:
 
     const GL::Mat4 center_translation_;
     GL::Mat4 movement_transform_;
+    std::optional<GL::Mat4> cinematic_model_matrix_;
 
     // If there won't be any collisions after check, set it as the resulting movement
     GL::Mat4 precomputed_movement_transform_;

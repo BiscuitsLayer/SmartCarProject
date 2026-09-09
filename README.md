@@ -1,51 +1,50 @@
 # Smart Car Project
 
-OpenGL based self-driving car (with DQN algorithm LibTorch neural network)
+OpenGL driving demo with a Docker runtime and a JSON-driven cinematic exporter.
 
-## Installation
+## Docker
 
-**Make sure you have (Graphics part)**
+```sh
+git clone --branch danila_model https://github.com/BiscuitsLayer/SmartCarProject.git
+cd SmartCarProject
+git submodule update --init --recursive
+docker build -t smartcar:danila-model .
+docker run --name smartcar-danila -p 6080:6080 smartcar:danila-model
+```
 
-1. *Git*
-2. *Powershell*
-3. *OpenGL*
+Open `http://localhost:6080/vnc.html?autoconnect=1` to see the 1280x720 application. Use `W/A/S/D` to drive and `Esc` to close it.
 
-**Make sure you have (Neural network part)**
+## Cinematic export
 
-1. *[CUDA](https://developer.nvidia.com/cuda-downloads) (~3.5 GB) [Tested version 12.2.1_536.67 on Windows 11]*
-2. *[cuDNN](https://developer.nvidia.com/rdp/cudnn-download) (~700 MB) [Tested version 8.9.3.28 for CUDA 12 on Windows 11]*
-3. *[NVIDIA Nsight Graphics](https://developer.nvidia.com/nsight-graphics) (~1 GB) [Tested version 2023.2.1.23178 on Windows 11]*
-4. *[LibTorch for C++](https://pytorch.org/get-started/locally) (~3 GB) [Tested **DEBUG** version 2.0.1 for CUDA 11.8  on Windows 11]*
+The application records the OpenGL framebuffer, renders the configured UTF-8 titles, encodes H.264 and muxes the configured audio itself through the linked FFmpeg libraries. It does not launch an external video editor or `ffmpeg` executable.
 
-**and copied all files from**
+```sh
+mkdir -p output
+docker run --rm \
+  -e SMARTCAR_CINEMATIC=/app/configs/cinematic.json \
+  -v "$PWD/configs/cinematic.json:/app/configs/cinematic.json:ro" \
+  -v "/absolute/path/to/music.mp3:/media/vangelis-chariots-of-fire.mp3:ro" \
+  -v "$PWD/output:/output" \
+  smartcar:danila-model
+```
 
-    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\<version>\extras\visual_studio_integration\MSBuildExtensions
+Everything specific to the edit is in [`configs/cinematic.json`](configs/cinematic.json), not in `main.cpp`:
 
-**to**
+- `export`: output path, FPS, duration, video codec, font, plus the audio path,
+  start offset, AAC codec and bitrate. AAC-LC is used by the supplied config for
+  reliable iPhone playback.
+- `titles`: text, visible interval, fade, size, normalized position and RGB color.
+- `shots`: shot interval, visible scene objects, car motion and camera motion.
+- A car or camera motion can be `fixed` or `orbit`. Angles and angular speeds are radians/radians per second; car yaw and drift slip are degrees. An orbit can use one `radius` or separate `radius_x`/`radius_z` values for a collision-safe oval.
 
-    C:\Program Files (x86)\Microsoft Visual Studio\<version>\<product>\MSBuild\Microsoft\VC\<version>\BuildCustomizations
+Changing the JSON is enough to move cuts, add or remove titles, change camera positions, adjust the drift orbit, or select a different part of the soundtrack. No rebuild is needed when the file is bind-mounted as shown above.
 
-where *\<product\>* is the MSVC product you use: *{ BuildTools, Enterprise, Community, etc. }*
+## Native Windows run
 
-## Execution
-
-    git clone https://github.com/BiscuitsLayer/SmartCarProject.git
-    cd ./SmartCarProject
-    git submodule update --init --recursive
-    ./run.ps1
+```powershell
+./run.ps1
+```
 
 Sport car model: [link](https://sketchfab.com/3d-models/concept-sport-car-566075bdb499404b908895a5f4dc6aa0)
 
 Road model: [link](https://sketchfab.com/3d-models/parking-garage-free-download-5310b7d77b70427d936ec4253fff679c)
-
-Checked flag model: [link](https://sketchfab.com/3d-models/checkered-racing-flag-4301c9957d414343af361a7e1528a283)
-
-# Useful sources:
-
-[LibTorch RL implementation](https://github.com/navneet-nmk/Pytorch-RL-CPP)
-
-[DQN Theory](https://jaromiru.com/2016/09/27/lets-make-a-dqn-theory/)
-
-[DQN Basics](https://tomroth.com.au/dqn-basics/)
-
-[DQN for Continuous Control Tasks](https://medium.com/analytics-vidhya/naf-normalized-advantage-function-dqn-for-continuous-control-tasks-b9dcb6ebeab8)

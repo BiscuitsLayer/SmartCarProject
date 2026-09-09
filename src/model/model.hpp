@@ -22,7 +22,9 @@ namespace App {
 class Model {
 public:
     Model(std::string model_name, std::string default_shader_name,
-        std::string bbox_shader_name, std::string gltf, Transform transform);
+        std::string bbox_shader_name, std::string gltf, Transform transform,
+        const std::vector<std::string>& hidden_meshes = {}, int fill_holes_up_to = 0,
+        bool double_sided = false);
     Model(Config::CommonModelConfig config);
 
     // To make the class polymorphic, so we are able
@@ -39,6 +41,7 @@ public:
     void UpdateTranslation(GL::Vec3 additional_translation);
 
     virtual const GL::Mat4 GetModelMatrix() const;
+    const std::string& GetName() const { return name_; }
 
     void SetDrawBBoxes(bool value);
     virtual void Draw() const;
@@ -52,6 +55,7 @@ protected:
 
     std::string default_shader_name_;
     std::string bbox_shader_name_;
+    bool double_sided_;
 
     friend class Gui;
 };

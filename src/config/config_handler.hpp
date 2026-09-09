@@ -94,6 +94,9 @@ struct BaseModelConfig {
 struct CommonModelConfig: public BaseModelConfig {
     std::string gltf;
     Transform transform;
+    std::vector<std::string> hidden_meshes;
+    bool double_sided = false;
+    int fill_holes_up_to = 0;
 };
 
 struct CarModelConfig: public BaseModelConfig {
@@ -122,7 +125,7 @@ public:
     Config::WindowConfig GetWindowConfig() const;
     Config::IntersectorConfig GetCollisionIntersectorConfig() const;
     Config::IntersectorConfig GetRayIntersectorConfig() const;
-    Config::CameraConfig GetCameraConfig() const;
+    Config::CameraConfig GetCameraConfig(int camera_index = -1) const;
     ShaderHandler GetShaderHandler() const;
 
 private:

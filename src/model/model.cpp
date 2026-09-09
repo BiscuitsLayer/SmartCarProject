@@ -5,17 +5,19 @@ namespace App {
 // Extern variables
 /* empty */
 
-Model::Model(std::string model_name, std::string default_shader_name, std::string bbox_shader_name, std::string gltf, Transform transform)
+Model::Model(std::string model_name, std::string default_shader_name, std::string bbox_shader_name, std::string gltf,
+    Transform transform, const std::vector<std::string>& hidden_meshes, int fill_holes_up_to, bool double_sided)
     : name_(model_name), default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name),
-    transform_(transform) {
+    transform_(transform), double_sided_(double_sided) {
     if (!gltf.empty()) {
-        auto loader = AssimpLoader{default_shader_name, bbox_shader_name, gltf};
+        auto loader = AssimpLoader{default_shader_name, bbox_shader_name, gltf, hidden_meshes, fill_holes_up_to};
         meshes_ = loader.GetMeshes();
     }
 }
 
 Model::Model(Config::CommonModelConfig config)
-    : Model(config.name, config.shader.default_shader_name, config.shader.bbox_shader_name, config.gltf, config.transform) {}
+    : Model(config.name, config.shader.default_shader_name, config.shader.bbox_shader_name, config.gltf,
+        config.transform, config.hidden_meshes, config.fill_holes_up_to, config.double_sided) {}
 
 void Model::SetScale(GL::Vec3 scale) {
     transform_.SetScale(scale);
@@ -70,8 +72,14 @@ void Model::Draw() const {
     bbox_program->SetUniform(bbox_program->GetUniform("aMatrices.viewMatrix"), context.camera->GetViewMatrix());
     bbox_program->SetUniform(bbox_program->GetUniform("aMatrices.projectionMatrix"), context.projection_matrix.value());
 
+    if (double_sided_) {
+        gl.Disable(GL::Capability::CullFace);
+    }
     for (auto&& mesh : meshes_) {
         mesh.Draw();
+    }
+    if (double_sided_) {
+        gl.Enable(GL::Capability::CullFace);
     }
 }
 

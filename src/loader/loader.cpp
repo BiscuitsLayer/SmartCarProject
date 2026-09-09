@@ -10,13 +10,16 @@ extern const AssimpMaterialFloatParameters APP_ASSIMP_METALLIC_FACTOR_PARAMETERS
 extern const AssimpMaterialFloatParameters APP_ASSIMP_ROUGHNESS_FACTOR_PARAMETERS;
 extern const AssimpMaterialTextureParameters APP_ASSIMP_NORMAL_TEXTURE_PARAMETERS;
 
-AssimpLoader::AssimpLoader(std::string default_shader_name, std::string bbox_shader_name, std::string& path)
-    : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name) {
+AssimpLoader::AssimpLoader(std::string default_shader_name, std::string bbox_shader_name, std::string& path,
+    const std::vector<std::string>& hidden_meshes, int fill_holes_up_to)
+    : default_shader_name_(default_shader_name), bbox_shader_name_(bbox_shader_name),
+    hidden_meshes_(hidden_meshes), fill_holes_up_to_(fill_holes_up_to) {
     directory_ = GetFolderFromPath(path);
 
     Assimp::Importer importer;
     // aiProcess_FlipUVs flips the texture coordinates on the y-axis <- necessary for OpenGL
-    const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_FlipUVs);
+    const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
+        | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         throw std::runtime_error(importer.GetErrorString());
     }
@@ -81,7 +84,7 @@ GL::Vec4 AssimpLoader::GetMaterialFactor(aiMaterial* assimp_material, Material::
     }
 }
 
-Material AssimpLoader::HandleMaterial(aiMaterial* assimp_material) {
+Material AssimpLoader::HandleMaterial(aiMaterial* assimp_material, const aiScene* scene) {
     Material ans{assimp_material->GetName().C_Str()};
 
     for (int type = Material::ParameterType::BASE_COLOR; type < Material::ParameterType::SIZE; ++type) {
@@ -97,7 +100,8 @@ Material AssimpLoader::HandleMaterial(aiMaterial* assimp_material) {
         if (texture_count > 0) { // Getting both texture and factor
             aiString texture_filename;
             assimp_material->GetTexture(assimp_texture_parameters.type, assimp_texture_parameters.index, &texture_filename);
-            std::string full_path{directory_ + texture_filename.C_Str()};
+            const aiTexture* embedded_texture = scene->GetEmbeddedTexture(texture_filename.C_Str());
+            std::string full_path = embedded_texture ? texture_filename.C_Str() : directory_ + texture_filename.C_Str();
 
             auto found = paths_to_loaded_textures_.find(full_path);
             if (found != paths_to_loaded_textures_.end()) {
@@ -108,7 +112,17 @@ Material AssimpLoader::HandleMaterial(aiMaterial* assimp_material) {
                 Timer texture_loading_timer{};
                 texture_loading_timer.Start();
 
-                Texture new_texture = Texture{full_path, factor};
+                Texture new_texture;
+                if (embedded_texture) {
+                    if (embedded_texture->mHeight != 0) {
+                        throw std::runtime_error("AssimpLoader: uncompressed embedded textures are not supported");
+                    }
+                    GL::Image image;
+                    image.Load(reinterpret_cast<unsigned char*>(embedded_texture->pcData), embedded_texture->mWidth);
+                    new_texture = Texture{GL::Texture{image, GL::InternalFormat::RGB}, factor};
+                } else {
+                    new_texture = Texture{full_path, factor};
+                }
 
                 paths_to_loaded_textures_.insert(std::make_pair(full_path, new_texture));
                 ans.SetTexture(new_texture, parameter_type);
@@ -126,6 +140,10 @@ Material AssimpLoader::HandleMaterial(aiMaterial* assimp_material) {
 }
 
 void AssimpLoader::HandleMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation) {
+    if (std::find(hidden_meshes_.begin(), hidden_meshes_.end(), mesh->mName.C_Str()) != hidden_meshes_.end()) {
+        return;
+    }
+
     std::vector<GL::Vertex> vertices;
     std::vector<int> indices;
 
@@ -180,13 +198,111 @@ void AssimpLoader::HandleMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 tr
         }
     }
 
+    if (fill_holes_up_to_ >= 3) {
+        struct Edge {
+            int from;
+            int to;
+            int count;
+        };
+        std::unordered_map<unsigned long long, Edge> edges;
+        auto edge_key = [](int a, int b) {
+            const auto low = static_cast<unsigned int>((std::min)(a, b));
+            const auto high = static_cast<unsigned int>((std::max)(a, b));
+            return (static_cast<unsigned long long>(low) << 32) | high;
+        };
+
+        for (size_t i = 0; i + 2 < indices.size(); i += 3) {
+            const int triangle[3]{indices[i], indices[i + 1], indices[i + 2]};
+            for (int edge_index = 0; edge_index < 3; ++edge_index) {
+                const int from = triangle[edge_index];
+                const int to = triangle[(edge_index + 1) % 3];
+                const auto key = edge_key(from, to);
+                auto found = edges.find(key);
+                if (found == edges.end()) {
+                    edges.emplace(key, Edge{from, to, 1});
+                } else {
+                    ++found->second.count;
+                }
+            }
+        }
+
+        std::unordered_multimap<int, int> boundary;
+        for (const auto& [key, edge] : edges) {
+            if (edge.count == 1) {
+                boundary.emplace(edge.from, edge.to);
+            }
+        }
+
+        std::unordered_set<unsigned long long> visited;
+        int filled_holes = 0;
+        for (const auto& [first_from, first_to] : boundary) {
+            if (visited.count(edge_key(first_from, first_to)) != 0) {
+                continue;
+            }
+
+            std::vector<int> loop{first_from};
+            int current = first_from;
+            bool closed = false;
+            while (static_cast<int>(loop.size()) <= fill_holes_up_to_) {
+                auto range = boundary.equal_range(current);
+                auto next_edge = range.second;
+                for (auto candidate = range.first; candidate != range.second; ++candidate) {
+                    if (visited.count(edge_key(current, candidate->second)) == 0) {
+                        next_edge = candidate;
+                        break;
+                    }
+                }
+                if (next_edge == range.second) {
+                    break;
+                }
+
+                const int next = next_edge->second;
+                visited.insert(edge_key(current, next));
+                if (next == loop.front()) {
+                    closed = true;
+                    break;
+                }
+                loop.push_back(next);
+                current = next;
+            }
+
+            if (!closed || loop.size() < 3 || static_cast<int>(loop.size()) > fill_holes_up_to_) {
+                continue;
+            }
+
+            GL::Vertex center{};
+            for (int vertex_index : loop) {
+                center.Pos += vertices[vertex_index].Pos;
+                center.Tex += vertices[vertex_index].Tex;
+                center.Normal += vertices[vertex_index].Normal;
+                center.Tangent += vertices[vertex_index].Tangent;
+            }
+            const float divisor = static_cast<float>(loop.size());
+            center.Pos = center.Pos / divisor;
+            center.Tex = center.Tex / divisor;
+            center.Normal = center.Normal.Normal();
+            center.Tangent = center.Tangent.Normal();
+            const int center_index = static_cast<int>(vertices.size());
+            vertices.push_back(center);
+
+            for (size_t i = 0; i < loop.size(); ++i) {
+                indices.push_back(center_index);
+                indices.push_back(loop[(i + 1) % loop.size()]);
+                indices.push_back(loop[i]);
+            }
+            ++filled_holes;
+        }
+
+        std::cout << "Mesh (" << mesh->mName.C_Str() << "): filled " << filled_holes << " holes" << std::endl;
+    }
+
     // Materials
     Material material;
 
     // WARNING: don't compare like mesh->mMaterialIndex > -1, because of unsigned comparison
     if (mesh->mMaterialIndex >= 0) {
         aiMaterial* assimp_material = scene->mMaterials[mesh->mMaterialIndex];
-        material = HandleMaterial(assimp_material);
+        material = HandleMaterial(assimp_material, scene);
     }
 
     BBox bbox{bbox_shader_name_, bbox_min, bbox_max};

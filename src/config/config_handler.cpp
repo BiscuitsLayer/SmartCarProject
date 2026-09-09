@@ -129,11 +129,12 @@ Config::IntersectorConfig ConfigHandler::GetRayIntersectorConfig() const {
     return ray_intersector_config_;
 }
 
-Config::CameraConfig ConfigHandler::GetCameraConfig() const {
-    if ((camera_case_selected_index_ < 0) && (camera_case_selected_index_ >= cameras_configs_.size())) {
+Config::CameraConfig ConfigHandler::GetCameraConfig(int camera_index) const {
+    const int selected_index = camera_index >= 0 ? camera_index : camera_case_selected_index_;
+    if ((selected_index < 0) || (static_cast<size_t>(selected_index) >= cameras_configs_.size())) {
         throw std::runtime_error("Wrong camera_case set");
     }
-    return cameras_configs_[camera_case_selected_index_];
+    return cameras_configs_[selected_index];
 }
 
 ShaderHandler ConfigHandler::GetShaderHandler() const {
@@ -309,6 +310,12 @@ void ConfigHandler::SetCommonModelConfig(const json_object& common_object) {
     common_model_config.name = FindString(common_object, "name");
     common_model_config.type = FindString(common_object, "type");
     common_model_config.gltf = APP_ASSETS_DIR + FindString(common_object, "GLTF");
+    common_model_config.double_sided = FindBoolean(common_object, "double_sided", true, false);
+    common_model_config.fill_holes_up_to = FindInteger(common_object, "fill_holes_up_to", true, 0);
+
+    for (auto mesh_name : FindArray(common_object, "hidden_meshes", true)) {
+        common_model_config.hidden_meshes.push_back(mesh_name->is_string() ? *mesh_name : "");
+    }
 
     auto shader = FindObject(common_object, "shader");
     common_model_config.shader.default_shader_name = FindString(shader, "default");

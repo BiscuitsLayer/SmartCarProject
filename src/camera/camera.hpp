@@ -30,6 +30,7 @@ public:
 
     GL::Mat4 GetViewMatrix() const { return view_matrix_; }
     GL::Vec3 GetPosition() const { return position_; }
+    void SetPose(const GL::Vec3& position, const GL::Vec3& target);
 
     void Move(const float delta_time);
     void UpdateWithModel(const GL::Mat4& model_matrix);

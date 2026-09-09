@@ -4,6 +4,8 @@
 #include <map>
 #include <exception>
 #include <algorithm>
+#include <unordered_map>
+#include <unordered_set>
 
 // Assimp
 #include <assimp/Importer.hpp>
@@ -27,14 +29,15 @@ namespace App {
 
 class AssimpLoader {
 public:
-    AssimpLoader(std::string default_shader_name, std::string bbox_shader_name, std::string& path);
+    AssimpLoader(std::string default_shader_name, std::string bbox_shader_name, std::string& path,
+        const std::vector<std::string>& hidden_meshes = {}, int fill_holes_up_to = 0);
 
     std::vector<Mesh> GetMeshes() const;
 
 private:
     AssimpMaterialTextureParameters GetAssimpTextureParameters(Material::ParameterType parameter_type);
     GL::Vec4 GetMaterialFactor(aiMaterial* assimp_material, Material::ParameterType parameter_type);
-    Material HandleMaterial(aiMaterial* assimp_material);
+    Material HandleMaterial(aiMaterial* assimp_material, const aiScene* scene);
     
     void HandleMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation);
     void HandleNodeRecursive(aiNode* node, const aiScene* scene, aiMatrix4x4 transformation);
@@ -45,6 +48,8 @@ private:
 
     std::string default_shader_name_;
     std::string bbox_shader_name_;
+    std::vector<std::string> hidden_meshes_;
+    int fill_holes_up_to_;
 };
 
 } // namespace App

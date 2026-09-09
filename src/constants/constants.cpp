@@ -3,7 +3,7 @@
 namespace App {
 
 // Keyboard
-const char* keyboard_modes[static_cast<size_t>(KeyboardMode::SIZE)] = { "ORBIT CAMERA", "CAR MOVEMENT", "NN_LEARNING", "NN_TEST" };
+const char* keyboard_modes[static_cast<size_t>(KeyboardMode::SIZE)] = { "ORBIT CAMERA", "CAR MOVEMENT" };
 
 // Vectors constants
 const float APP_VECTOR_LENGTH_EPS = 1e-3f;
@@ -25,10 +25,10 @@ const GL::Vec3 APP_CAMERA_WORLD_SPACE_UP = GL::Vec3(0.0f, 1.0f, 0.0f);
 const GL::Vec3 APP_CAMERA_RESERVE_WORLD_SPACE_UP = GL::Vec3(1.0f, 0.0f, 0.0f);
 
 // GL constants
-const int APP_WINDOW_COLOR_BITS = 23;
+const int APP_WINDOW_COLOR_BITS = 32;
 const int APP_WINDOW_DEPTH_BITS= 24;
 const int APP_WINDOW_STENCIL_BITS = 0;
-const int APP_WINDOW_MULTISAMPLE_BITS = 4;
+const int APP_WINDOW_MULTISAMPLE_BITS = 1;
 
 const int APP_GL_VERTEX_BYTESIZE = sizeof(GL::Vertex);
 

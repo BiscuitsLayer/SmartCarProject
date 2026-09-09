@@ -95,19 +95,4 @@ std::string ReadFileData(const std::string& filename, bool debug_dump) {
     return buffer;
 }
 
-void SaveToFile(const std::string& filename, const std::vector<unsigned char>& buffer, bool debug_dump) {
-    // WARNING: using modified ofstream instead of std::ofstream to write unsigned chars
-    std::basic_fstream<unsigned char, std::char_traits<unsigned char>> destination;
-    destination.open(filename, std::fstream::out | std::fstream::binary);
-    if (!destination) {
-        throw std::runtime_error("SaveToFile: can't open file: " + filename);
-    }
-
-    destination.write(buffer.data(), buffer.size());
-
-    if (debug_dump) {
-        std::cout << std::string{buffer.begin(), buffer.end()} << std::endl;
-    }
-}
-
 } // namespace App

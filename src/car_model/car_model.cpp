@@ -33,6 +33,9 @@ CarModel::CarModel(const Config::CarModelConfig& config)
         config.wheels.speed.rotate, config.rotation_center, config.transform) {}
 
 const GL::Mat4 CarModel::GetModelMatrix() const {
+    if (cinematic_model_matrix_) {
+        return cinematic_model_matrix_.value();
+    }
     return static_cast<GL::Mat4>(transform_) * movement_transform_ * center_translation_;
 }
 
@@ -59,52 +62,7 @@ void CarModel::Move(float delta_time) {
         if (context.keyboard_status.value()[GL::Key::D]) {
             RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
         }
-    } else if (context.keyboard_mode.value() == App::KeyboardMode::NN_LEARNING) {
-        context.user_selected_actions.fill(false);
-        if (context.keyboard_status.value()[GL::Key::W]) {
-            accelerator_.IncreaseSpeed(delta_time, true);
-            context.user_selected_actions[0] = true;
-        }
-        if (context.keyboard_status.value()[GL::Key::S]) {
-            accelerator_.IncreaseSpeed(delta_time, false);
-            context.user_selected_actions[1] = true;
-        }
-        if (context.keyboard_status.value()[GL::Key::A]) {
-            RotateLeft(delta_time, accelerator_.GetSpeed() > 0.0);
-            context.user_selected_actions[2] = true;
-        }
-        if (context.keyboard_status.value()[GL::Key::D]) {
-            RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
-            context.user_selected_actions[3] = true;
-        }
-    } else if (context.keyboard_mode.value() == App::KeyboardMode::NN_TEST) {
-        if (context.actions[0]) {
-            accelerator_.IncreaseSpeed(delta_time, true);
-        }
-        if (context.actions[1]) {
-            accelerator_.IncreaseSpeed(delta_time, false);
-        }
-        if (context.actions[2]) {
-            RotateLeft(delta_time, accelerator_.GetSpeed() > 0.0);
-        }
-        if (context.actions[3]) {
-            RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
-        }
     }
-    // else if (context.keyboard_mode.value() == App::KeyboardMode::NN_LEARNING) {
-    //     if (context.actions[0]) {
-    //         accelerator_.IncreaseSpeed(delta_time, true);
-    //     }
-    //     if (context.actions[1]) {
-    //         accelerator_.IncreaseSpeed(delta_time, false);
-    //     }
-    //     if (context.actions[2]) {
-    //         RotateLeft(delta_time, accelerator_.GetSpeed() > 0.0);
-    //     }
-    //     if (context.actions[3]) {
-    //         RotateRight(delta_time, accelerator_.GetSpeed() > 0.0);
-    //     }
-    // }
     MoveForward(delta_time);
 
     // Do intersection
@@ -144,17 +102,18 @@ void CarModel::Move(float delta_time) {
             return;
         }
     }
-    if (context.keyboard_mode.value() == App::KeyboardMode::NN_LEARNING) {
-        if (context.keyboard_status.value()[GL::Key::W] || context.keyboard_status.value()[GL::Key::S]) {
-            return;
-        }
-    }
-    if (context.keyboard_mode.value() == App::KeyboardMode::NN_TEST) {
-        if (context.actions[0] || context.actions[1]) {
-            return;
-        }
-    }
     accelerator_.DecreaseSpeed(delta_time);
+}
+
+void CarModel::SetCinematicPose(const GL::Vec3& position, float yaw_degrees) {
+    GL::Mat4 pose;
+    pose.Translate(position);
+    pose.RotateY(GL::Rad(yaw_degrees));
+    cinematic_model_matrix_ = pose * center_translation_;
+}
+
+void CarModel::SpinWheels(float amount) {
+    RotateWheels(amount);
 }
 
 void CarModel::SetDrawWheelsBBoxes(bool value) {

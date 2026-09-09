@@ -1,0 +1,180 @@
+{
+    "export": {
+        "output": "/output/danila-galya-wedding-reel-30s.mp4",
+        "fps": 30,
+        "duration": 30.0,
+        "codec": "libx264",
+        "audio": {
+            "path": "/media/vangelis-chariots-of-fire.mp3",
+            "offset": 30.0,
+            "codec": "aac",
+            "bitrate": 192000
+        },
+        "font": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    },
+    "titles": [
+        {
+            "text": "SMART CAR представляет",
+            "start": 0.5,
+            "end": 4.0,
+            "fade": 0.5,
+            "font_size": 54,
+            "position": [0.5, 0.14],
+            "color": [255, 215, 106]
+        },
+        {
+            "text": "Данила и Галя",
+            "start": 21.0,
+            "end": 30.0,
+            "fade": 0.5,
+            "font_size": 68,
+            "position": [0.5, 0.13],
+            "color": [255, 215, 106]
+        },
+        {
+            "text": "поздравляю со свадьбой!",
+            "start": 21.0,
+            "end": 30.0,
+            "fade": 0.5,
+            "font_size": 48,
+            "position": [0.5, 0.23],
+            "color": [255, 255, 255]
+        }
+    ],
+    "shots": [
+        {
+            "name": "orbit_car",
+            "start": 0.0,
+            "end": 4.5,
+            "draw_car": true,
+            "car": {
+                "type": "fixed",
+                "position": [18.0, 0.0, 0.0],
+                "yaw": 90.0,
+                "wheel_speed": 1.5
+            },
+            "camera": {
+                "type": "orbit",
+                "center": [18.0, 0.0, 0.0],
+                "target": [18.0, 0.65, 0.0],
+                "radius": 7.0,
+                "height": 2.6,
+                "start_angle": -0.9,
+                "angular_speed": 0.65
+            },
+            "visible": {"environment": ["Garage"], "obstacles": []}
+        },
+        {
+            "name": "slow_orbit_car",
+            "start": 4.5,
+            "end": 10.0,
+            "draw_car": true,
+            "car": {
+                "type": "fixed",
+                "position": [18.0, 0.0, 0.0],
+                "yaw": 90.0,
+                "wheel_speed": 1.0
+            },
+            "camera": {
+                "type": "orbit",
+                "center": [18.0, 0.0, 0.0],
+                "target": [18.0, 0.55, 0.0],
+                "radius": 5.6,
+                "height": 1.45,
+                "start_angle": 2.25,
+                "angular_speed": -0.24
+            },
+            "visible": {"environment": ["Garage"], "obstacles": []}
+        },
+        {
+            "name": "spinning_wheel",
+            "start": 10.0,
+            "end": 13.0,
+            "draw_car": true,
+            "car": {
+                "type": "fixed",
+                "position": [18.0, 0.0, 0.0],
+                "yaw": 90.0,
+                "wheel_speed": 8.0
+            },
+            "camera": {
+                "type": "fixed",
+                "position": [16.35, 0.55, -2.65],
+                "target": [16.35, 0.4, -1.25]
+            },
+            "visible": {"environment": ["Garage"], "obstacles": []}
+        },
+        {
+            "name": "orbit_danila",
+            "start": 13.0,
+            "end": 18.0,
+            "draw_car": false,
+            "camera": {
+                "type": "orbit",
+                "center": [55.0, 2.0, 0.0],
+                "target": [55.0, 2.15, 0.0],
+                "radius": 5.8,
+                "height": 1.2,
+                "start_angle": 2.5,
+                "angular_speed": 0.25
+            },
+            "visible": {"environment": ["Garage"], "obstacles": ["Danila"]}
+        },
+        {
+            "name": "drift_clockwise_around_danila",
+            "start": 18.0,
+            "end": 24.0,
+            "draw_car": true,
+            "car": {
+                "type": "orbit",
+                "center": [55.0, 0.0, 0.0],
+                "radius_x": 5.0,
+                "radius_z": 3.4,
+                "height": 0.0,
+                "start_angle": 4.0,
+                "angular_speed": 1.0471976,
+                "yaw_mode": "tangent_with_slip",
+                "slip_angle": 10.0,
+                "wheel_speed": 10.0
+            },
+            "camera": {
+                "type": "orbit",
+                "center": [55.0, 0.0, 0.0],
+                "target": [55.0, 1.55, 0.0],
+                "radius": 10.5,
+                "height": 4.2,
+                "start_angle": 2.7,
+                "angular_speed": 0.03
+            },
+            "visible": {"environment": ["Garage"], "obstacles": ["Danila"]}
+        },
+        {
+            "name": "drift_counterclockwise_around_danila",
+            "start": 24.0,
+            "end": 30.0,
+            "draw_car": true,
+            "car": {
+                "type": "orbit",
+                "center": [55.0, 0.0, 0.0],
+                "radius_x": 5.0,
+                "radius_z": 3.4,
+                "height": 0.0,
+                "start_angle": 10.2831853,
+                "angular_speed": -1.0471976,
+                "yaw_mode": "tangent_with_slip",
+                "slip_angle": -10.0,
+                "wheel_speed": 10.0
+            },
+            "camera": {
+                "type": "orbit",
+                "center": [55.0, 0.0, 0.0],
+                "target": [55.0, 1.55, 0.0],
+                "radius": 10.5,
+                "height": 4.2,
+                "start_angle": 2.88,
+                "angular_speed": 0.03
+            },
+            "visible": {"environment": ["Garage"], "obstacles": ["Danila"]}
+        }
+    ]
+}

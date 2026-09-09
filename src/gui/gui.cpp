@@ -155,8 +155,6 @@ void Gui::Draw() {
     auto car_position = context.car_model->GetPosition();
     ImGui::Text("Car position: x = %.3f, y = %.3f, z = %.3f", car_position.X, car_position.Y, car_position.Z);
     ImGui::Text("Car speed = %.3f", context.car_model->GetSpeed());
-    ImGui::Text("Actions: %.1f, %.1f, %.1f, %.1f", context.actions[0] ? 1.0 : 0.0, context.actions[1] ? 1.0 : 0.0, context.actions[2] ? 1.0 : 0.0, context.actions[3] ? 1.0 : 0.0);
-
     // DISTANCES FROM RAYS
     ImGui::SeparatorText("Distances from rays");
     ImGui::PlotHistogram("", context.distances_from_rays.data(), APP_RAY_INTERSECTOR_RAYS_COUNT, 0, NULL, 0.0f, 30.0f, ImVec2(0, 80.0f));

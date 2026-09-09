@@ -48,17 +48,11 @@ constexpr int APP_CUBEMAP_TEXTURES_COUNT = 6;
 // Ray intersector
 constexpr int APP_RAY_INTERSECTOR_RAYS_COUNT = 121;
 
-// For DQN algorithm
-constexpr int APP_CAR_STATE_PARAMETERS_COUNT = APP_RAY_INTERSECTOR_RAYS_COUNT + 4;
-constexpr int APP_CAR_ACTIONS_COUNT = 4;
-
 /* ===== EXTERN VARIABLES ===== */
 // Keyboard
 enum class KeyboardMode: int {
     ORBIT_CAMERA = 0,
     CAR_MOVEMENT,
-    NN_LEARNING,
-    NN_TEST,
     SIZE
 };
 extern const char* keyboard_modes[static_cast<size_t>(KeyboardMode::SIZE)];

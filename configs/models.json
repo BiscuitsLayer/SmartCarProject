@@ -35,6 +35,7 @@
         "name": "Garage",
         "type": "COMMON",
         "GLTF": "garage/scene.gltf",
+        "hidden_meshes": ["Object_1"],
         "shader": {
             "default": "DEFAULT",
             "bbox": "BBOX"
@@ -53,6 +54,8 @@
         "name": "Danila",
         "type": "COMMON",
         "GLTF": "danila/scene.gltf",
+        "double_sided": true,
+        "fill_holes_up_to": 256,
         "shader": {
             "default": "DEFAULT",
             "bbox": "BBOX"
